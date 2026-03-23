@@ -6,6 +6,8 @@ import HeroStatus from "@/components/HeroStatus";
 import MountainScene from "@/components/MountainScene";
 import WeatherDetails from "@/components/WeatherDetails";
 import ViewpointCard from "@/components/ViewpointCard";
+import LiveWebcams from "@/components/LiveWebcams";
+import { WEBCAM_FEEDS } from "@/lib/webcams";
 
 interface ViewpointData {
   id: string;
@@ -184,7 +186,7 @@ export default function Home() {
           durationMessage={data.visibility.durationMessage}
         />
 
-        {/* Mountain Photo Scene */}
+        {/* Mountain Visual Scene */}
         <section>
           <MountainScene
             skyTheme={data.skyTheme}
@@ -193,6 +195,9 @@ export default function Home() {
             viewpointDistance={selectedVp?.distanceMiles}
           />
         </section>
+
+        {/* Live Webcam Feeds */}
+        <LiveWebcams feeds={WEBCAM_FEEDS} />
 
         {/* Two column layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
