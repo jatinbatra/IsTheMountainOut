@@ -14,6 +14,7 @@ function buildResponse(
 ) {
   const visibility = calculateVisibility(weather);
   const viewpoints = rankViewpoints(
+    visibility.score,
     visibility.isVisible,
     weather.visibility / 1609.34,
     weather.pm25

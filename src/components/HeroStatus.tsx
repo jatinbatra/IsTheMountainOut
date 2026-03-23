@@ -1,6 +1,6 @@
 "use client";
 
-import { Mountain, Eye, EyeOff } from "lucide-react";
+import { Mountain, Eye, EyeOff, TrendingUp, TrendingDown } from "lucide-react";
 
 interface Props {
   isVisible: boolean;
@@ -16,7 +16,7 @@ export default function HeroStatus({
   durationMessage,
 }: Props) {
   return (
-    <div className="text-center space-y-6">
+    <div className="text-center space-y-6 animate-fade-up">
       {/* Big YES/NO */}
       <div className="space-y-2">
         <h1 className="text-lg font-medium tracking-wider uppercase text-white/60">
@@ -24,7 +24,7 @@ export default function HeroStatus({
         </h1>
         <div
           className={`text-8xl sm:text-9xl font-black tracking-tight ${
-            isVisible ? "text-green-400" : "text-red-400"
+            isVisible ? "gradient-text" : "gradient-text-red"
           }`}
         >
           {isVisible ? "YES" : "NO"}
@@ -64,13 +64,29 @@ export default function HeroStatus({
               {confidence} confidence
             </span>
           </div>
+          {/* Score bar */}
+          <div className="mt-2 w-48 h-2 rounded-full bg-white/10 overflow-hidden">
+            <div
+              className={`h-full rounded-full animate-score-fill ${
+                score >= 70 ? "bg-green-400" : score >= 50 ? "bg-yellow-400" : "bg-red-400"
+              }`}
+              style={{ width: `${score}%` }}
+            />
+          </div>
         </div>
       </div>
 
       {/* Duration message */}
-      <p className="text-white/70 text-lg max-w-xl mx-auto leading-relaxed">
-        {durationMessage}
-      </p>
+      <div className="flex items-center justify-center gap-2 max-w-xl mx-auto">
+        {isVisible ? (
+          <TrendingUp className="w-5 h-5 text-green-400/50 shrink-0" />
+        ) : (
+          <TrendingDown className="w-5 h-5 text-red-400/50 shrink-0" />
+        )}
+        <p className="text-white/70 text-lg leading-relaxed">
+          {durationMessage}
+        </p>
+      </div>
     </div>
   );
 }
