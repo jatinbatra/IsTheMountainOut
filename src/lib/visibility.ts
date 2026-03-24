@@ -138,6 +138,14 @@ function scoreHour(h: HourlyForecast): number {
   return Math.max(0, Math.min(100, Math.round(s)));
 }
 
+/**
+ * Public version of scoreHour for the hourly timeline API.
+ */
+export function scoreHourForTimeline(h: HourlyForecast): { score: number; isVisible: boolean } {
+  const score = scoreHour(h);
+  return { score, isVisible: score >= 50 };
+}
+
 function estimateDuration(
   forecast: HourlyForecast[],
   currentlyVisible: boolean

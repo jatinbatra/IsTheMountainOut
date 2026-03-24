@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { RefreshCw, Mountain } from "lucide-react";
+import { useEffect, useState, useCallback } from "react";
+import { RefreshCw, Mountain, Share2, Check } from "lucide-react";
 import HeroStatus from "@/components/HeroStatus";
 import MountainScene from "@/components/MountainScene";
 import WeatherDetails from "@/components/WeatherDetails";
 import ViewpointCard from "@/components/ViewpointCard";
 import LiveWebcams from "@/components/LiveWebcams";
 import NightSky from "@/components/NightSky";
+import ForecastTimeline from "@/components/ForecastTimeline";
 import { WEBCAM_FEEDS } from "@/lib/webcams";
 
 interface ViewpointData {
@@ -25,6 +26,19 @@ interface ViewpointData {
   locationScore: number;
   locationConfidence: string;
   skyDescription: string;
+}
+
+interface HourlyTimelineData {
+  time: string;
+  score: number;
+  isVisible: boolean;
+  cloudLow: number;
+  cloudMid: number;
+  cloudHigh: number;
+  temperature: number;
+  humidity: number;
+  visibility: number;
+  weatherCode: number;
 }
 
 interface MountainData {
@@ -65,6 +79,7 @@ interface MountainData {
     fogOpacity: number;
     label: string;
   };
+  hourlyTimeline: HourlyTimelineData[];
   lastUpdated: string;
 }
 
@@ -83,8 +98,9 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [selectedViewpoint, setSelectedViewpoint] = useState(0);
   const [regionFilter, setRegionFilter] = useState("all");
+  const [shared, setShared] = useState(false);
 
-  async function fetchData() {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -97,13 +113,50 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     fetchData();
     const interval = setInterval(fetchData, 15 * 60 * 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchData]);
+
+  const handleShare = async () => {
+    if (!data) return;
+    const text = `Mt. Rainier is ${data.visibility.isVisible ? "OUT" : "hiding"}! Score: ${data.visibility.score}/100. ${data.visibility.durationMessage}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "Is The Mountain Out?", text });
+      } else {
+        await navigator.clipboard.writeText(text);
+      }
+      setShared(true);
+      setTimeout(() => setShared(false), 2000);
+    } catch {
+      // User cancelled share
+    }
+  };
+
+  // Keyboard navigation for viewpoints
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (!data) return;
+      const filtered =
+        regionFilter === "all"
+          ? data.viewpoints
+          : data.viewpoints.filter((vp) => vp.region === regionFilter);
+
+      if (e.key === "ArrowDown" || e.key === "j") {
+        e.preventDefault();
+        setSelectedViewpoint((prev) => Math.min(prev + 1, filtered.length - 1));
+      } else if (e.key === "ArrowUp" || e.key === "k") {
+        e.preventDefault();
+        setSelectedViewpoint((prev) => Math.max(prev - 1, 0));
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [data, regionFilter]);
 
   if (loading && !data) {
     return (
@@ -179,8 +232,19 @@ export default function Home() {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-[11px] text-white/20 font-medium">{timeStr} PT</span>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] text-white/20 font-medium hidden sm:inline">{timeStr} PT</span>
+            <button
+              onClick={handleShare}
+              className="p-2.5 rounded-xl glass hover:bg-white/[0.06] transition-all"
+              title="Share status"
+            >
+              {shared ? (
+                <Check className="w-4 h-4 text-emerald-400" />
+              ) : (
+                <Share2 className="w-4 h-4 text-white/40" />
+              )}
+            </button>
             <button
               onClick={fetchData}
               disabled={loading}
@@ -194,15 +258,23 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Hero Status */}
+        {/* Hero Status - now with score breakdown */}
         <HeroStatus
           isVisible={data.visibility.isVisible}
           score={data.visibility.score}
           confidence={data.visibility.confidence}
           durationMessage={data.visibility.durationMessage}
+          scoreBreakdown={{
+            cloudLow: data.weather.cloudLow,
+            cloudMid: data.weather.cloudMid,
+            cloudHigh: data.weather.cloudHigh,
+            visibilityMeters: data.weather.visibilityMeters,
+            pm25: data.weather.pm25,
+            weatherCode: data.weather.weatherCode,
+          }}
         />
 
-        {/* Mountain Scene */}
+        {/* Mountain Scene - now interactive */}
         <section className="animate-fade-up delay-200" style={{ opacity: 0, animationFillMode: "forwards" }}>
           <MountainScene
             skyTheme={data.skyTheme}
@@ -211,6 +283,16 @@ export default function Home() {
             viewpointDistance={selectedVp?.distanceMiles}
           />
         </section>
+
+        {/* 24-Hour Forecast Timeline - NEW */}
+        {data.hourlyTimeline && data.hourlyTimeline.length > 0 && (
+          <section className="animate-fade-up delay-200" style={{ opacity: 0, animationFillMode: "forwards" }}>
+            <ForecastTimeline
+              hourlyTimeline={data.hourlyTimeline}
+              currentScore={data.visibility.score}
+            />
+          </section>
+        )}
 
         {/* Interactive Night Sky (only at night) */}
         {isNight && (
@@ -235,9 +317,14 @@ export default function Home() {
               <h2 className="font-display text-xl font-bold text-white">
                 {data.visibility.isVisible ? "Best Viewpoints" : "Viewpoints"}
               </h2>
-              <span className="text-xs text-white/20 font-medium">
-                {filteredViewpoints.length} locations
-              </span>
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] text-white/15 font-medium hidden sm:inline">
+                  Arrow keys to browse
+                </span>
+                <span className="text-xs text-white/20 font-medium">
+                  {filteredViewpoints.length} locations
+                </span>
+              </div>
             </div>
 
             {/* Region filter */}
@@ -274,7 +361,7 @@ export default function Home() {
             </div>
           </section>
 
-          {/* Weather details */}
+          {/* Weather details - now with expandable cards */}
           <section>
             <WeatherDetails
               weather={data.weather}

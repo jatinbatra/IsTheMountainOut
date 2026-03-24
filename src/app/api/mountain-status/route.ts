@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { fetchWeatherData } from "@/lib/weather";
-import { calculateVisibility } from "@/lib/visibility";
+import { calculateVisibility, scoreHourForTimeline } from "@/lib/visibility";
 import { rankViewpoints } from "@/lib/viewpoints";
 import { getSkyTheme } from "@/lib/sky";
 
@@ -21,6 +21,23 @@ function buildResponse(
   );
   const skyTheme = getSkyTheme(weather);
 
+  // Build hourly timeline data for the forecast scrubber
+  const hourlyTimeline = weather.hourlyForecast.map((h) => {
+    const hourScore = scoreHourForTimeline(h);
+    return {
+      time: h.time,
+      score: hourScore.score,
+      isVisible: hourScore.isVisible,
+      cloudLow: h.cloudLow,
+      cloudMid: h.cloudMid,
+      cloudHigh: h.cloudHigh,
+      temperature: h.temperature,
+      humidity: h.humidity,
+      visibility: h.visibility,
+      weatherCode: h.weatherCode,
+    };
+  });
+
   return {
     visibility,
     weather: {
@@ -40,6 +57,7 @@ function buildResponse(
     },
     viewpoints,
     skyTheme,
+    hourlyTimeline,
     lastUpdated: new Date().toISOString(),
   };
 }
