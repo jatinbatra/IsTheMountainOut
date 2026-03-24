@@ -16,10 +16,19 @@ export default function MountainScene({
   viewpointDistance,
 }: Props) {
   return (
-    <div className="relative w-full overflow-hidden rounded-2xl border border-white/10 shadow-2xl">
+    <div className="relative w-full overflow-hidden rounded-3xl ring-1 ring-white/[0.08] shadow-2xl shadow-black/40">
+      {/* Outer glow */}
+      <div
+        className={`absolute -inset-px rounded-3xl pointer-events-none ${
+          isVisible
+            ? "shadow-[0_0_80px_-20px_rgba(34,197,94,0.15)]"
+            : "shadow-[0_0_80px_-20px_rgba(239,68,68,0.1)]"
+        }`}
+      />
+
       <svg
         viewBox="0 0 1000 500"
-        className="w-full h-auto"
+        className="w-full h-auto block"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
@@ -76,6 +85,16 @@ export default function MountainScene({
             </feMerge>
           </filter>
 
+          {/* Stronger glow for sun */}
+          <filter id="sunGlow">
+            <feGaussianBlur stdDeviation="12" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+
           {/* Soft shadow for mountain */}
           <filter id="mountainShadow">
             <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="rgba(0,0,0,0.3)" />
@@ -86,6 +105,16 @@ export default function MountainScene({
             <stop offset="0%" stopColor="transparent" />
             <stop offset="60%" stopColor="rgba(180,200,220,0.15)" />
             <stop offset="100%" stopColor="rgba(180,200,220,0.4)" />
+          </linearGradient>
+
+          {/* Aurora gradient */}
+          <linearGradient id="auroraGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#22c55e" stopOpacity="0" />
+            <stop offset="20%" stopColor="#22c55e" stopOpacity="0.06" />
+            <stop offset="40%" stopColor="#3b82f6" stopOpacity="0.08" />
+            <stop offset="60%" stopColor="#8b5cf6" stopOpacity="0.06" />
+            <stop offset="80%" stopColor="#22c55e" stopOpacity="0.04" />
+            <stop offset="100%" stopColor="#22c55e" stopOpacity="0" />
           </linearGradient>
         </defs>
 
@@ -100,6 +129,17 @@ export default function MountainScene({
             }}
           />
         </foreignObject>
+
+        {/* === AURORA LAYER (subtle) === */}
+        {skyTheme.showStars && (
+          <g opacity="0.5">
+            <path
+              d="M0 50 Q200 20 400 60 Q600 30 800 55 Q900 40 1000 50 L1000 180 Q800 150 600 170 Q400 140 200 165 Q100 150 0 160 Z"
+              fill="url(#auroraGrad)"
+              className="animate-clouds"
+            />
+          </g>
+        )}
 
         {/* === STARS (night) === */}
         {skyTheme.showStars && (
@@ -126,9 +166,10 @@ export default function MountainScene({
         {/* === SUN === */}
         {skyTheme.showSun && (
           <g className="animate-sun-pulse">
-            <circle cx="780" cy="90" r="50" fill={skyTheme.sunMoonColor} opacity="0.15" />
-            <circle cx="780" cy="90" r="38" fill={skyTheme.sunMoonColor} opacity="0.25" />
-            <circle cx="780" cy="90" r="28" fill={skyTheme.sunMoonColor} filter="url(#glow)" opacity="0.9" />
+            <circle cx="780" cy="90" r="60" fill={skyTheme.sunMoonColor} opacity="0.08" />
+            <circle cx="780" cy="90" r="50" fill={skyTheme.sunMoonColor} opacity="0.12" />
+            <circle cx="780" cy="90" r="38" fill={skyTheme.sunMoonColor} opacity="0.2" />
+            <circle cx="780" cy="90" r="28" fill={skyTheme.sunMoonColor} filter="url(#sunGlow)" opacity="0.9" />
           </g>
         )}
 
@@ -142,19 +183,16 @@ export default function MountainScene({
 
         {/* === DISTANT MOUNTAINS (Cascades backdrop) === */}
         <g opacity={isVisible ? 0.4 : 0.15} className="transition-opacity duration-1000">
-          {/* Far left range */}
           <path
             d="M0 340 L30 310 L60 325 L100 295 L130 315 L160 290 L190 310 L220 330 L220 400 L0 400 Z"
             fill="#4a5a6a"
             opacity="0.5"
           />
-          {/* Mid range */}
           <path
             d="M180 340 L220 300 L260 320 L290 285 L310 305 L340 340 L340 400 L180 400 Z"
             fill="#3a4a5a"
             opacity="0.4"
           />
-          {/* Right range */}
           <path
             d="M700 340 L740 310 L770 325 L810 290 L840 310 L870 295 L910 315 L950 305 L1000 330 L1000 400 L700 400 Z"
             fill="#4a5a6a"
@@ -162,7 +200,7 @@ export default function MountainScene({
           />
         </g>
 
-        {/* === MT. RAINIER — THE HERO === */}
+        {/* === MT. RAINIER === */}
         <g
           className={isVisible ? "animate-mountain-reveal" : ""}
           style={{
@@ -171,63 +209,46 @@ export default function MountainScene({
           }}
           filter={isVisible ? "url(#mountainShadow)" : undefined}
         >
-          {/* Mountain base/body — wider, more realistic profile */}
           <path
             d="M330 380 L370 310 L390 325 L410 280 L430 260 L445 240 L460 220 L475 205 L490 195 L505 188 L520 195 L535 205 L550 218 L565 235 L580 255 L595 275 L610 290 L630 315 L650 330 L680 380 Z"
             fill={skyTheme.mountainFill}
           />
-
-          {/* Left ridge */}
           <path
             d="M330 380 L350 345 L370 310 L390 325 L395 335 L380 355 L360 370 L340 378 Z"
             fill={skyTheme.mountainFill}
             opacity="0.8"
           />
-
-          {/* Right ridge */}
           <path
             d="M650 330 L660 345 L665 360 L670 375 L680 380 L660 378 L645 365 L640 345 Z"
             fill={skyTheme.mountainFill}
             opacity="0.8"
           />
-
-          {/* Snow cap — extensive coverage */}
           <path
             d="M410 280 L430 260 L445 240 L460 220 L475 205 L490 195 L505 188 L520 195 L535 205 L550 218 L565 235 L580 255 L595 275 L610 290 L598 300 L580 285 L565 295 L550 278 L535 290 L520 275 L505 288 L490 272 L475 285 L460 270 L445 285 L430 275 L418 290 Z"
             fill="url(#snowGrad)"
             opacity="0.95"
           />
-
-          {/* Glacier details — Nisqually */}
           <path
             d="M480 280 L490 310 L500 295 L510 320 L505 340 L495 335 L485 310 Z"
             fill="url(#glacierGrad)"
             opacity="0.5"
           />
-
-          {/* Glacier details — Emmons */}
           <path
             d="M530 280 L540 305 L550 295 L555 325 L545 340 L535 320 L525 300 Z"
             fill="url(#glacierGrad)"
             opacity="0.5"
           />
-
-          {/* Glacier details — Ingraham */}
           <path
             d="M505 285 L510 300 L520 310 L525 330 L515 335 L505 315 Z"
             fill="url(#glacierGrad)"
             opacity="0.4"
           />
-
-          {/* Rock ridges / texture lines */}
           <g stroke={skyTheme.mountainFill} strokeWidth="1" opacity="0.3">
             <line x1="460" y1="270" x2="470" y2="320" />
             <line x1="545" y1="268" x2="555" y2="310" />
             <line x1="420" y1="290" x2="435" y2="340" />
             <line x1="590" y1="285" x2="600" y2="330" />
           </g>
-
-          {/* Snow ridge highlights */}
           <g stroke="white" strokeWidth="1" opacity="0.25">
             <path d="M460 225 L475 210 L490 198 L505 192 L520 198 L535 210 L548 225" fill="none" />
             <path d="M445 245 L458 230 L475 215" fill="none" />
@@ -237,12 +258,10 @@ export default function MountainScene({
 
         {/* === FOOTHILLS WITH TREES === */}
         <g opacity="0.9">
-          {/* Rolling foothills */}
           <path
             d="M0 400 Q80 370 160 385 Q240 365 320 378 Q400 360 500 372 Q580 358 660 370 Q740 355 820 368 Q900 360 1000 375 L1000 430 L0 430 Z"
             fill="url(#treeline)"
           />
-          {/* Tree texture bumps */}
           <g fill="#1f3a22" opacity="0.7">
             {[100, 180, 270, 360, 440, 530, 620, 710, 800, 890].map((x, i) => (
               <ellipse key={i} cx={x} cy={375 + (i % 3) * 3} rx={18 + (i % 2) * 8} ry={8 + (i % 3) * 3} />
@@ -250,50 +269,43 @@ export default function MountainScene({
           </g>
         </g>
 
-        {/* === CITY SKYLINE SILHOUETTE === */}
+        {/* === CITY SKYLINE === */}
         <g opacity="0.7">
-          {/* Buildings */}
           <rect x="300" y="395" width="8" height="25" fill="#1a2540" />
           <rect x="315" y="385" width="12" height="35" fill="#1a2540" />
           <rect x="335" y="390" width="7" height="30" fill="#1a2540" />
           <rect x="350" y="380" width="15" height="40" fill="#1a2540" />
           <rect x="370" y="392" width="9" height="28" fill="#1a2540" />
           <rect x="385" y="388" width="11" height="32" fill="#1a2540" />
-          {/* Space Needle hint */}
           <rect x="410" y="375" width="3" height="45" fill="#1a2540" />
           <ellipse cx="411" cy="375" rx="8" ry="3" fill="#1a2540" />
           <rect x="430" y="395" width="10" height="25" fill="#1a2540" />
           <rect x="450" y="385" width="14" height="35" fill="#1a2540" />
           <rect x="470" y="392" width="8" height="28" fill="#1a2540" />
           <rect x="490" y="398" width="6" height="22" fill="#1a2540" />
-
-          {/* Right side buildings */}
           <rect x="560" y="395" width="8" height="25" fill="#1a2540" />
           <rect x="580" y="390" width="10" height="30" fill="#1a2540" />
           <rect x="600" y="397" width="7" height="23" fill="#1a2540" />
-
-          {/* Building window lights (night only) */}
           {!skyTheme.showSun && (
-            <g fill="#ffd700" opacity="0.3">
+            <g fill="#ffd700" opacity="0.4">
               {[318, 353, 388, 433, 453, 583].map((x, i) => (
                 <g key={i}>
-                  <rect x={x} y={392 + (i % 3) * 5} width="2" height="2" />
-                  <rect x={x + 4} y={395 + (i % 2) * 4} width="2" height="2" />
+                  <rect x={x} y={392 + (i % 3) * 5} width="2" height="2" rx="0.5" />
+                  <rect x={x + 4} y={395 + (i % 2) * 4} width="2" height="2" rx="0.5" />
                 </g>
               ))}
             </g>
           )}
         </g>
 
-        {/* === FOREGROUND GROUND === */}
+        {/* === FOREGROUND === */}
         <path
           d="M0 420 Q200 410 400 418 Q600 408 800 415 Q900 412 1000 418 L1000 500 L0 500 Z"
-          fill="#0f1f2e"
+          fill="#0a1520"
         />
 
         {/* === WATER / PUGET SOUND === */}
         <rect x="0" y="435" width="1000" height="65" fill="url(#waterGrad)" />
-        {/* Water shimmer lines */}
         <g opacity="0.12" stroke="white" strokeWidth="0.8">
           <line x1="50" y1="450" x2="200" y2="450" />
           <line x1="300" y1="458" x2="500" y2="458" />
@@ -306,7 +318,7 @@ export default function MountainScene({
         {/* === ATMOSPHERIC HAZE === */}
         <rect x="0" y="200" width="1000" height="300" fill="url(#hazeGrad)" opacity={isVisible ? 0.3 : 0.7} />
 
-        {/* === CLOUD LAYER === */}
+        {/* === CLOUDS === */}
         {skyTheme.cloudOpacity > 0.1 && (
           <g opacity={skyTheme.cloudOpacity} className="animate-clouds">
             <g transform="translate(100, 110)">
@@ -338,7 +350,7 @@ export default function MountainScene({
           </g>
         )}
 
-        {/* === FOG LAYER === */}
+        {/* === FOG === */}
         {skyTheme.fogOpacity > 0 && (
           <rect
             x="0" y="280" width="1000" height="220"
@@ -346,44 +358,52 @@ export default function MountainScene({
             opacity={skyTheme.fogOpacity}
           />
         )}
+
+        {/* === VIGNETTE === */}
+        <rect x="0" y="0" width="1000" height="500" fill="url(#hazeGrad)" opacity="0.15" />
       </svg>
 
       {/* Viewpoint label */}
       {viewpointName && (
-        <div className="absolute bottom-4 left-4 bg-black/50 backdrop-blur-md rounded-xl px-4 py-2.5 border border-white/10">
-          <div className="text-[10px] text-white/40 uppercase tracking-wider mb-0.5">Viewing from</div>
+        <div className="absolute bottom-4 left-4 glass-strong rounded-2xl px-4 py-3">
+          <div className="text-[10px] text-white/35 uppercase tracking-[0.15em] font-medium mb-0.5">Viewing from</div>
           <div className="text-sm font-semibold text-white">{viewpointName}</div>
           {viewpointDistance && (
-            <div className="text-xs text-white/35 mt-0.5">
-              {viewpointDistance} miles to summit
+            <div className="text-xs text-white/30 mt-0.5">
+              {viewpointDistance} mi to summit
             </div>
           )}
         </div>
       )}
 
       {/* Sky condition */}
-      <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-md rounded-xl px-4 py-2 border border-white/10">
-        <div className="text-[10px] text-white/40 uppercase tracking-wider mb-0.5">Sky</div>
+      <div className="absolute top-4 right-4 glass-strong rounded-2xl px-4 py-2.5">
+        <div className="text-[10px] text-white/35 uppercase tracking-[0.15em] font-medium mb-0.5">Sky</div>
         <div className="text-sm font-medium text-white">{skyTheme.label}</div>
       </div>
 
       {/* Mountain status badge */}
       <div
-        className={`absolute top-4 left-4 rounded-xl px-4 py-2 border backdrop-blur-md ${
+        className={`absolute top-4 left-4 rounded-2xl px-4 py-2.5 backdrop-blur-xl ${
           isVisible
-            ? "bg-green-500/20 border-green-400/30"
-            : "bg-red-500/20 border-red-400/30"
+            ? "bg-emerald-500/15 ring-1 ring-emerald-400/25"
+            : "bg-red-500/15 ring-1 ring-red-400/25"
         }`}
       >
-        <div className="flex items-center gap-2">
-          <div
-            className={`w-2 h-2 rounded-full ${
-              isVisible ? "bg-green-400 animate-pulse" : "bg-red-400"
-            }`}
-          />
+        <div className="flex items-center gap-2.5">
+          <div className="relative">
+            <div
+              className={`w-2.5 h-2.5 rounded-full ${
+                isVisible ? "bg-emerald-400" : "bg-red-400"
+              }`}
+            />
+            {isVisible && (
+              <div className="absolute inset-0 w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping opacity-75" />
+            )}
+          </div>
           <span
-            className={`text-sm font-medium ${
-              isVisible ? "text-green-300" : "text-red-300"
+            className={`text-sm font-semibold ${
+              isVisible ? "text-emerald-300" : "text-red-300"
             }`}
           >
             {isVisible ? "Mountain is OUT" : "Hidden"}
