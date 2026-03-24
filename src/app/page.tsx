@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { RefreshCw } from "lucide-react";
+import { useEffect, useState, useCallback } from "react";
+import { RefreshCw, Mountain, Share2, Check } from "lucide-react";
 import HeroStatus from "@/components/HeroStatus";
 import MountainScene from "@/components/MountainScene";
 import WeatherDetails from "@/components/WeatherDetails";
 import ViewpointCard from "@/components/ViewpointCard";
 import LiveWebcams from "@/components/LiveWebcams";
+import NightSky from "@/components/NightSky";
+import ForecastTimeline from "@/components/ForecastTimeline";
 import { WEBCAM_FEEDS } from "@/lib/webcams";
 
 interface ViewpointData {
@@ -24,6 +26,19 @@ interface ViewpointData {
   locationScore: number;
   locationConfidence: string;
   skyDescription: string;
+}
+
+interface HourlyTimelineData {
+  time: string;
+  score: number;
+  isVisible: boolean;
+  cloudLow: number;
+  cloudMid: number;
+  cloudHigh: number;
+  temperature: number;
+  humidity: number;
+  visibility: number;
+  weatherCode: number;
 }
 
 interface MountainData {
@@ -47,6 +62,8 @@ interface MountainData {
     visibilityMeters: number;
     pm25?: number;
     pm10?: number;
+    sunrise?: string;
+    sunset?: string;
   };
   viewpoints: ViewpointData[];
   skyTheme: {
@@ -62,11 +79,12 @@ interface MountainData {
     fogOpacity: number;
     label: string;
   };
+  hourlyTimeline: HourlyTimelineData[];
   lastUpdated: string;
 }
 
 const REGIONS = [
-  { key: "all", label: "All Locations" },
+  { key: "all", label: "All" },
   { key: "seattle", label: "Seattle" },
   { key: "eastside", label: "Eastside" },
   { key: "tacoma", label: "Tacoma" },
@@ -80,8 +98,9 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [selectedViewpoint, setSelectedViewpoint] = useState(0);
   const [regionFilter, setRegionFilter] = useState("all");
+  const [shared, setShared] = useState(false);
 
-  async function fetchData() {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -94,20 +113,64 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     fetchData();
     const interval = setInterval(fetchData, 15 * 60 * 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchData]);
+
+  const handleShare = async () => {
+    if (!data) return;
+    const text = `Mt. Rainier is ${data.visibility.isVisible ? "OUT" : "hiding"}! Score: ${data.visibility.score}/100. ${data.visibility.durationMessage}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "Is The Mountain Out?", text });
+      } else {
+        await navigator.clipboard.writeText(text);
+      }
+      setShared(true);
+      setTimeout(() => setShared(false), 2000);
+    } catch {
+      // User cancelled share
+    }
+  };
+
+  // Keyboard navigation for viewpoints
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (!data) return;
+      const filtered =
+        regionFilter === "all"
+          ? data.viewpoints
+          : data.viewpoints.filter((vp) => vp.region === regionFilter);
+
+      if (e.key === "ArrowDown" || e.key === "j") {
+        e.preventDefault();
+        setSelectedViewpoint((prev) => Math.min(prev + 1, filtered.length - 1));
+      } else if (e.key === "ArrowUp" || e.key === "k") {
+        e.preventDefault();
+        setSelectedViewpoint((prev) => Math.max(prev - 1, 0));
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [data, regionFilter]);
 
   if (loading && !data) {
     return (
       <div className="flex-1 flex items-center justify-center min-h-screen">
-        <div className="text-center space-y-4">
-          <div className="w-12 h-12 border-4 border-white/20 border-t-blue-400 rounded-full animate-spin mx-auto" />
-          <p className="text-white/50 animate-pulse">Checking the skies over the Pacific Northwest...</p>
+        <div className="ambient-bg" />
+        <div className="noise-overlay" />
+        <div className="relative text-center space-y-6">
+          <div className="relative">
+            <div className="w-16 h-16 border-2 border-white/[0.06] border-t-blue-400/50 rounded-full animate-spin mx-auto" />
+            <Mountain className="w-6 h-6 text-white/20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+          </div>
+          <p className="text-white/30 animate-pulse text-sm font-medium tracking-wide">
+            Checking the skies...
+          </p>
         </div>
       </div>
     );
@@ -116,11 +179,13 @@ export default function Home() {
   if (error && !data) {
     return (
       <div className="flex-1 flex items-center justify-center min-h-screen">
-        <div className="text-center space-y-4">
-          <p className="text-red-400">{error}</p>
+        <div className="ambient-bg" />
+        <div className="noise-overlay" />
+        <div className="relative text-center space-y-4">
+          <p className="text-red-400/80 font-medium">{error}</p>
           <button
             onClick={fetchData}
-            className="px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors text-sm"
+            className="px-5 py-2.5 glass rounded-xl hover:bg-white/[0.08] transition-colors text-sm font-medium text-white/60"
           >
             Retry
           </button>
@@ -144,50 +209,73 @@ export default function Home() {
       : data.viewpoints.filter((vp) => vp.region === regionFilter);
 
   const selectedVp = filteredViewpoints[selectedViewpoint] ?? data.viewpoints[0];
+  const isNight = !data.weather.isDay;
 
   return (
-    <main className="flex-1">
-      <div className="max-w-5xl mx-auto px-4 py-8 sm:py-12 space-y-10">
+    <main className="flex-1 relative">
+      <div className="ambient-bg" />
+      <div className="noise-overlay" />
+
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-14 space-y-14">
         {/* Header */}
-        <header className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-lg font-bold text-white shadow-lg shadow-blue-500/20">
-              R
+        <header className="flex items-center justify-between animate-fade-up">
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500/80 to-violet-600/80 flex items-center justify-center shadow-lg shadow-blue-500/15 ring-1 ring-white/10">
+              <Mountain className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="font-bold text-white text-lg leading-tight">
+              <h2 className="font-display font-bold text-white text-base leading-tight">
                 IsTheMountainOut
               </h2>
-              <p className="text-xs text-white/40">
-                Real-time Mt. Rainier visibility tracker
+              <p className="text-[11px] text-white/25 font-medium">
+                Mt. Rainier &middot; 14,411 ft
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-white/30">Updated {timeStr} PT</span>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] text-white/20 font-medium hidden sm:inline">{timeStr} PT</span>
+            <button
+              onClick={handleShare}
+              className="p-2.5 rounded-xl glass hover:bg-white/[0.06] transition-all"
+              title="Share status"
+            >
+              {shared ? (
+                <Check className="w-4 h-4 text-emerald-400" />
+              ) : (
+                <Share2 className="w-4 h-4 text-white/40" />
+              )}
+            </button>
             <button
               onClick={fetchData}
               disabled={loading}
-              className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors disabled:opacity-50"
+              className="p-2.5 rounded-xl glass hover:bg-white/[0.06] transition-all disabled:opacity-50"
               title="Refresh"
             >
               <RefreshCw
-                className={`w-4 h-4 text-white/50 ${loading ? "animate-spin" : ""}`}
+                className={`w-4 h-4 text-white/40 ${loading ? "animate-spin" : ""}`}
               />
             </button>
           </div>
         </header>
 
-        {/* Hero Status */}
+        {/* Hero Status - now with score breakdown */}
         <HeroStatus
           isVisible={data.visibility.isVisible}
           score={data.visibility.score}
           confidence={data.visibility.confidence}
           durationMessage={data.visibility.durationMessage}
+          scoreBreakdown={{
+            cloudLow: data.weather.cloudLow,
+            cloudMid: data.weather.cloudMid,
+            cloudHigh: data.weather.cloudHigh,
+            visibilityMeters: data.weather.visibilityMeters,
+            pm25: data.weather.pm25,
+            weatherCode: data.weather.weatherCode,
+          }}
         />
 
-        {/* Mountain Visual Scene */}
-        <section>
+        {/* Mountain Scene - now interactive */}
+        <section className="animate-fade-up delay-200" style={{ opacity: 0, animationFillMode: "forwards" }}>
           <MountainScene
             skyTheme={data.skyTheme}
             isVisible={data.visibility.isVisible}
@@ -196,26 +284,51 @@ export default function Home() {
           />
         </section>
 
-        {/* Live Webcam Feeds */}
-        <LiveWebcams feeds={WEBCAM_FEEDS} />
+        {/* 24-Hour Forecast Timeline - NEW */}
+        {data.hourlyTimeline && data.hourlyTimeline.length > 0 && (
+          <section className="animate-fade-up delay-200" style={{ opacity: 0, animationFillMode: "forwards" }}>
+            <ForecastTimeline
+              hourlyTimeline={data.hourlyTimeline}
+              currentScore={data.visibility.score}
+            />
+          </section>
+        )}
+
+        {/* Interactive Night Sky (only at night) */}
+        {isNight && (
+          <section className="animate-fade-up delay-300" style={{ opacity: 0, animationFillMode: "forwards" }}>
+            <NightSky
+              sunrise={data.weather.sunrise || ""}
+              isDay={data.weather.isDay}
+            />
+          </section>
+        )}
+
+        {/* Live Webcams */}
+        <section className="animate-fade-up delay-300" style={{ opacity: 0, animationFillMode: "forwards" }}>
+          <LiveWebcams feeds={WEBCAM_FEEDS} />
+        </section>
 
         {/* Two column layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* Viewpoints */}
-          <section className="space-y-4">
+          <section className="space-y-5">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-white">
-                {data.visibility.isVisible
-                  ? "Best Viewpoints Right Now"
-                  : "Viewpoints to Check When It Clears"}
+              <h2 className="font-display text-xl font-bold text-white">
+                {data.visibility.isVisible ? "Best Viewpoints" : "Viewpoints"}
               </h2>
-              <span className="text-xs text-white/30">
-                {filteredViewpoints.length} locations
-              </span>
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] text-white/15 font-medium hidden sm:inline">
+                  Arrow keys to browse
+                </span>
+                <span className="text-xs text-white/20 font-medium">
+                  {filteredViewpoints.length} locations
+                </span>
+              </div>
             </div>
 
-            {/* Region filter tabs */}
-            <div className="flex flex-wrap gap-2">
+            {/* Region filter */}
+            <div className="flex flex-wrap gap-1.5">
               {REGIONS.map((r) => (
                 <button
                   key={r.key}
@@ -223,10 +336,10 @@ export default function Home() {
                     setRegionFilter(r.key);
                     setSelectedViewpoint(0);
                   }}
-                  className={`text-xs px-3 py-1.5 rounded-full transition-all ${
+                  className={`text-xs font-medium px-3.5 py-1.5 rounded-xl transition-all ${
                     regionFilter === r.key
-                      ? "bg-blue-500/20 text-blue-300 border border-blue-400/30"
-                      : "bg-white/5 text-white/40 border border-white/5 hover:bg-white/10"
+                      ? "bg-blue-500/15 text-blue-300 ring-1 ring-blue-400/25"
+                      : "text-white/30 hover:text-white/45 hover:bg-white/[0.04]"
                   }`}
                 >
                   {r.label}
@@ -248,7 +361,7 @@ export default function Home() {
             </div>
           </section>
 
-          {/* Weather details */}
+          {/* Weather details - now with expandable cards */}
           <section>
             <WeatherDetails
               weather={data.weather}
@@ -257,39 +370,33 @@ export default function Home() {
           </section>
         </div>
 
-        {/* About + Credits */}
-        <section className="bg-white/[0.03] rounded-2xl border border-white/5 p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-white">About This Project</h2>
-          <div className="text-sm text-white/50 space-y-3 leading-relaxed">
+        {/* About */}
+        <section className="glass rounded-3xl p-8 space-y-5">
+          <h2 className="font-display text-lg font-bold text-white">About</h2>
+          <div className="text-sm text-white/35 space-y-3 leading-relaxed">
             <p>
-              <strong className="text-white/70">Why I built this:</strong> As a Pacific Northwest
-              resident, &quot;Is the mountain out?&quot; is the quintessential Seattle question. On
-              clear days, seeing Mt. Rainier towering at 14,411 feet above the horizon is one of
-              the most magical sights in the region. But with Seattle&apos;s famously cloudy weather,
-              catching the mountain out is never guaranteed. I wanted a simple, beautiful way to
-              check — and to know exactly <em>where</em> to go for the best views.
-            </p>
-            <p>
-              This app uses real-time weather data including cloud layers at different altitudes,
-              atmospheric visibility, air quality (PM2.5), and weather conditions to calculate
-              visibility scores — not just for Seattle overall, but for each individual viewpoint
-              based on its elevation, distance, and obstructions.
+              If you live in the Pacific Northwest, you know the question. <strong className="text-white/55">&quot;Is the mountain out?&quot;</strong> On
+              clear days, Rainier at 14,411 feet is hard to miss. But with Seattle weather, you never
+              know when you&apos;ll actually get to see it. This app pulls real-time weather data
+              (cloud layers, atmospheric visibility, PM2.5) and scores visibility for each
+              viewpoint based on elevation, distance, and obstructions. No API keys, no cost.
+              Everything runs on free public data from Open-Meteo and government webcam feeds.
             </p>
           </div>
           <div className="flex items-center gap-4 pt-2">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-xs font-bold text-white">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-400/70 to-violet-500/70 flex items-center justify-center text-xs font-bold text-white ring-1 ring-white/10">
                 JB
               </div>
               <div>
-                <p className="text-sm font-medium text-white/70">Built by Jatin Batra</p>
+                <p className="text-sm font-medium text-white/50">Built by Jatin Batra</p>
                 <a
                   href="https://x.com/jatin_batra1"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-blue-400/70 hover:text-blue-300 transition-colors"
+                  className="text-xs text-blue-400/50 hover:text-blue-300 transition-colors font-medium"
                 >
-                  @jatin_batra1 on X
+                  @jatin_batra1
                 </a>
               </div>
             </div>
@@ -297,12 +404,12 @@ export default function Home() {
         </section>
 
         {/* Footer */}
-        <footer className="text-center text-xs text-white/20 py-8 border-t border-white/5 space-y-1">
+        <footer className="text-center text-[11px] text-white/15 py-10 border-t border-white/[0.04] space-y-1.5 font-medium">
           <p>
             Weather data from{" "}
             <a
               href="https://open-meteo.com/"
-              className="underline hover:text-white/40"
+              className="underline hover:text-white/30 transition-colors"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -311,20 +418,7 @@ export default function Home() {
             &middot; Air quality from Open-Meteo AQ API
           </p>
           <p>
-            Data refreshes every 15 minutes &middot; Visibility is estimated
-            using cloud cover, atmospheric visibility, and air quality
-            heuristics
-          </p>
-          <p className="mt-2 text-white/15">
-            Built with Next.js, Tailwind CSS, and a love for the PNW &middot;{" "}
-            <a
-              href="https://x.com/jatin_batra1"
-              className="underline hover:text-white/30"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              @jatin_batra1
-            </a>
+            Refreshes every 15 minutes &middot; Built with Next.js &amp; Tailwind
           </p>
         </footer>
       </div>

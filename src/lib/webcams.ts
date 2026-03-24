@@ -13,14 +13,14 @@ export interface WebcamFeed {
 
 /**
  * Curated list of public webcam feeds showing Mt. Rainier.
- * All URLs are from US government sources (USGS, NPS) — public domain, no auth required.
+ * All URLs are from US government sources (USGS, NPS). Public domain, no auth required.
  */
 export const WEBCAM_FEEDS: WebcamFeed[] = [
   {
     id: "usgs-longmire",
     name: "Longmire View",
     description:
-      "USGS volcanic monitoring camera at Longmire, showing Mt. Rainier's south face up close. One of the best close-up views available — you can see glaciers and weather moving across the peak in real time.",
+      "USGS volcanic monitoring camera at Longmire, showing Rainier's south face up close. One of the best close-up views available. You can see glaciers and weather moving across the peak in real time.",
     location: "Longmire, Mt. Rainier National Park",
     imageUrl: "https://volcview.wr.usgs.gov/ashcam-api/images/webcams/rainier-longmire/current.jpeg",
     sourceUrl: "https://volcview.wr.usgs.gov/ashcam-gui/webcam.html?webcam=rainier-longmire",
@@ -33,7 +33,7 @@ export const WEBCAM_FEEDS: WebcamFeed[] = [
     id: "usgs-mora-west",
     name: "MORA West",
     description:
-      "USGS camera on the west side of Mt. Rainier National Park. Shows the mountain's western glaciers and ridgeline — a dramatic angle most visitors don't get to see.",
+      "USGS camera on the west side of Mt. Rainier National Park. Shows the mountain's western glaciers and ridgeline, an angle most visitors don't get to see.",
     location: "West side, Mt. Rainier National Park",
     imageUrl: "https://volcview.wr.usgs.gov/ashcam-api/images/webcams/rainier-mora-west/current.jpeg",
     sourceUrl: "https://volcview.wr.usgs.gov/ashcam-gui/webcam.html?webcam=rainier-mora-west",

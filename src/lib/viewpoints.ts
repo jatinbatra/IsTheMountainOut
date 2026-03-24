@@ -39,11 +39,11 @@ export const VIEWPOINTS: Viewpoint[] = [
     id: "jose-rizal-bridge",
     name: "Jose Rizal Bridge",
     description:
-      "Stunning south-facing viewpoint in Beacon Hill. The mountain fills the horizon beyond the industrial district and stadiums. One of the most dramatic framings of Rainier.",
+      "South-facing viewpoint in Beacon Hill. The mountain fills the horizon beyond the industrial district and stadiums. One of the best framings of Rainier from the city.",
     distanceMiles: 56,
     direction: "S",
     elevation: 280,
-    bestFor: "Dramatic urban framing & photography",
+    bestFor: "Urban framing & photography",
     lat: 47.5719,
     lon: -122.3189,
     region: "seattle",
@@ -211,11 +211,11 @@ export const VIEWPOINTS: Viewpoint[] = [
     id: "stadium-way-tacoma",
     name: "Stadium Way Viewpoint, Tacoma",
     description:
-      "Elevated viewpoint in Tacoma's Stadium District. The mountain appears massive from here — nearly twice as large as from Seattle. Views across Commencement Bay.",
+      "Elevated viewpoint in Tacoma's Stadium District. The mountain appears massive from here, nearly twice as large as from Seattle. Views across Commencement Bay.",
     distanceMiles: 33,
     direction: "ESE",
     elevation: 250,
-    bestFor: "Dramatic close-up Rainier views",
+    bestFor: "Close-up Rainier views",
     lat: 47.2603,
     lon: -122.4498,
     region: "tacoma",
@@ -228,11 +228,11 @@ export const VIEWPOINTS: Viewpoint[] = [
     id: "bonney-lake",
     name: "Bonney Lake Viewpoint",
     description:
-      "An eastside Tacoma suburb sitting on a plateau. On clear days, Rainier fills the entire eastern sky. Some of the most jaw-dropping casual views anywhere.",
+      "A suburb east of Tacoma sitting on a plateau. On clear days, Rainier fills the entire eastern sky. Easily some of the best casual views of the mountain.",
     distanceMiles: 25,
     direction: "E",
     elevation: 1400,
-    bestFor: "Jaw-dropping close proximity views",
+    bestFor: "Close proximity views",
     lat: 47.1862,
     lon: -122.1862,
     region: "south",
@@ -263,7 +263,7 @@ export const VIEWPOINTS: Viewpoint[] = [
     id: "mt-walker",
     name: "Mt. Walker Viewpoint",
     description:
-      "A drive-up viewpoint on the Olympic Peninsula. From across Puget Sound, you get a stunning panorama of the entire Cascade Range with Rainier as the centerpiece.",
+      "A drive-up viewpoint on the Olympic Peninsula. From across Puget Sound, you get a full panorama of the Cascade Range with Rainier front and center.",
     distanceMiles: 80,
     direction: "ESE",
     elevation: 2804,
@@ -340,29 +340,29 @@ export function getViewpointConfidence(
 function getSkyDescription(score: number, viewpoint: Viewpoint): string {
   if (score >= 85) {
     if (viewpoint.distanceMiles < 40) {
-      return "Crystal clear — the mountain will be massive and stunningly detailed with visible glaciers";
+      return "Wide open skies. The mountain will be massive with visible glaciers and snow detail.";
     }
-    return "Crystal clear skies — sharp definition of the peak and snowfields against deep blue sky";
+    return "Clean skies with sharp definition of the peak and snowfields.";
   }
   if (score >= 70) {
     if (viewpoint.elevation > 500) {
-      return "Clear above the haze layer — crisp views of the upper mountain and snow cap";
+      return "Clear above the haze layer. Crisp views of the upper mountain and snow cap.";
     }
-    return "Mostly clear — good mountain outline with some atmospheric haze softening the base";
+    return "Mostly clear. Good mountain outline with some atmospheric haze softening the base.";
   }
   if (score >= 55) {
     if (viewpoint.elevation > 500) {
-      return "Partly hazy but elevated position helps — mountain visible but with muted colors";
+      return "Partly hazy but the elevation helps. Mountain visible with muted colors.";
     }
-    return "Hazy skies — mountain visible as a faint silhouette, best with binoculars";
+    return "Hazy skies. Mountain visible as a faint silhouette, best with binoculars.";
   }
   if (score >= 40) {
-    return "Significant haze or partial clouds — may catch glimpses but not reliable";
+    return "Significant haze or partial clouds. May catch glimpses but not reliable.";
   }
   if (score >= 25) {
-    return "Mostly obscured — heavy clouds or haze, unlikely to see more than a shadow";
+    return "Mostly obscured. Heavy clouds or haze, unlikely to see more than a shadow.";
   }
-  return "Socked in — clouds or fog blocking all views of the mountain";
+  return "Socked in. Clouds or fog blocking all views of the mountain.";
 }
 
 /**
