@@ -118,7 +118,7 @@ export async function fetchWeatherData(): Promise<WeatherData> {
       fetch(aqUrl.toString(), { next: { revalidate: 900 } }),
     ]);
   } catch {
-    // APIs unreachable (e.g. no internet in dev sandbox) — use mock data
+    // APIs unreachable (e.g. no internet in dev sandbox), use mock data
     console.warn("Weather APIs unreachable, using mock data");
     return getMockWeatherData();
   }

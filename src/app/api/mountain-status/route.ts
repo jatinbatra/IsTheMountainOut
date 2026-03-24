@@ -35,6 +35,8 @@ function buildResponse(
       visibilityMeters: weather.visibility,
       pm25: weather.pm25,
       pm10: weather.pm10,
+      sunrise: weather.sunrise,
+      sunset: weather.sunset,
     },
     viewpoints,
     skyTheme,

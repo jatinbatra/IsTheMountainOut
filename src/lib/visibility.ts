@@ -18,7 +18,7 @@ export interface VisibilityResult {
  * view), good atmospheric visibility, and decent air quality.
  *
  * Scoring weights:
- *   - Low clouds:  40 points (most important — these block the mountain)
+ *   - Low clouds:  40 points (most important, these block the mountain)
  *   - Mid clouds:  20 points (partially obscure, especially when thick)
  *   - Visibility:  20 points (haze, fog, mist)
  *   - Air quality: 10 points (PM2.5 / PM10 haze)
@@ -28,44 +28,44 @@ export function calculateVisibility(weather: WeatherData): VisibilityResult {
   const reasons: string[] = [];
   let score = 0;
 
-  // --- Low clouds (0-2km) — weight: 40 ---
+  // --- Low clouds (0-2km), weight: 40 ---
   const lowScore = Math.round(40 * (1 - weather.currentCloudLow / 100));
   score += lowScore;
   if (weather.currentCloudLow <= 20) {
-    reasons.push("Clear skies at low altitudes — great for mountain views");
+    reasons.push("Clear skies at low altitudes, great for mountain views");
   } else if (weather.currentCloudLow <= 50) {
     reasons.push("Some low clouds may partially obscure the base");
   } else {
     reasons.push("Heavy low cloud cover is blocking the view");
   }
 
-  // --- Mid clouds (2-6km) — weight: 20 ---
+  // --- Mid clouds (2-6km), weight: 20 ---
   const midScore = Math.round(20 * (1 - weather.currentCloudMid / 100));
   score += midScore;
   if (weather.currentCloudMid > 60) {
     reasons.push("Mid-level clouds are reducing visibility of the peak");
   }
 
-  // --- High clouds (6km+) — weight: 10 ---
+  // --- High clouds (6km+), weight: 10 ---
   const highScore = Math.round(10 * (1 - weather.currentCloudHigh / 100));
   score += highScore;
   if (weather.currentCloudHigh > 80) {
     reasons.push("High cirrus clouds creating a hazy sky");
   }
 
-  // --- Visibility distance — weight: 20 ---
+  // --- Visibility distance, weight: 20 ---
   // Mt Rainier is ~90km away. We need at least ~50km visibility ideally.
   const visMiles = weather.visibility / 1609.34;
   const visNorm = Math.min(weather.visibility / 90000, 1); // normalize to 90km
   const visScore = Math.round(20 * visNorm);
   score += visScore;
   if (visMiles < 20) {
-    reasons.push(`Visibility only ${visMiles.toFixed(0)} miles — fog or haze likely`);
+    reasons.push(`Visibility only ${visMiles.toFixed(0)} miles, fog or haze likely`);
   } else if (visMiles >= 40) {
     reasons.push(`Excellent visibility at ${visMiles.toFixed(0)}+ miles`);
   }
 
-  // --- Air quality — weight: 10 ---
+  // --- Air quality, weight: 10 ---
   if (weather.pm25 !== undefined) {
     // WHO guideline: PM2.5 < 15 µg/m³ is good
     const aqNorm = Math.max(0, 1 - weather.pm25 / 50);
@@ -74,10 +74,10 @@ export function calculateVisibility(weather: WeatherData): VisibilityResult {
     if (weather.pm25 > 35) {
       reasons.push("Poor air quality is creating haze");
     } else if (weather.pm25 <= 12) {
-      reasons.push("Clean air — minimal haze");
+      reasons.push("Clean air with minimal haze");
     }
   } else {
-    // No AQ data — assume moderate
+    // No AQ data, assume moderate
     score += 5;
   }
 
@@ -86,7 +86,7 @@ export function calculateVisibility(weather: WeatherData): VisibilityResult {
   // 71-77 snow, 80-82 showers, 85-86 snow showers, 95-99 thunderstorms
   if (weather.weatherCode >= 45 && weather.weatherCode <= 48) {
     score = Math.max(0, score - 25);
-    reasons.push("Fog detected — mountain is not visible");
+    reasons.push("Fog detected, mountain is not visible");
   } else if (weather.weatherCode >= 51 && weather.weatherCode <= 67) {
     score = Math.max(0, score - 15);
     reasons.push("Rain/drizzle reducing visibility");
@@ -95,7 +95,7 @@ export function calculateVisibility(weather: WeatherData): VisibilityResult {
     reasons.push("Snowfall reducing visibility");
   } else if (weather.weatherCode >= 80) {
     score = Math.max(0, score - 20);
-    reasons.push("Showers/storms — mountain is obscured");
+    reasons.push("Showers or storms, mountain is obscured");
   }
 
   score = Math.max(0, Math.min(100, score));

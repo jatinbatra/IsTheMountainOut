@@ -100,10 +100,10 @@ export default function WeatherDetails({ weather, reasons }: Props) {
             value: `${weather.pm25.toFixed(1)}`,
             sub:
               weather.pm25 <= 12
-                ? "Good — PM2.5 µg/m³"
+                ? "Good (PM2.5 µg/m³)"
                 : weather.pm25 <= 35
-                  ? "Moderate — PM2.5 µg/m³"
-                  : "Unhealthy — PM2.5 µg/m³",
+                  ? "Moderate (PM2.5 µg/m³)"
+                  : "Unhealthy (PM2.5 µg/m³)",
             accent: weather.pm25 <= 12 ? "bg-emerald-500/10" : weather.pm25 <= 35 ? "bg-amber-500/10" : "bg-red-500/10",
           },
         ]

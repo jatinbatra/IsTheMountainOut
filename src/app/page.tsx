@@ -7,6 +7,7 @@ import MountainScene from "@/components/MountainScene";
 import WeatherDetails from "@/components/WeatherDetails";
 import ViewpointCard from "@/components/ViewpointCard";
 import LiveWebcams from "@/components/LiveWebcams";
+import NightSky from "@/components/NightSky";
 import { WEBCAM_FEEDS } from "@/lib/webcams";
 
 interface ViewpointData {
@@ -47,6 +48,8 @@ interface MountainData {
     visibilityMeters: number;
     pm25?: number;
     pm10?: number;
+    sunrise?: string;
+    sunset?: string;
   };
   viewpoints: ViewpointData[];
   skyTheme: {
@@ -113,7 +116,7 @@ export default function Home() {
             <Mountain className="w-6 h-6 text-white/20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
           </div>
           <p className="text-white/30 animate-pulse text-sm font-medium tracking-wide">
-            Checking the skies over the Pacific Northwest...
+            Checking the skies...
           </p>
         </div>
       </div>
@@ -153,10 +156,10 @@ export default function Home() {
       : data.viewpoints.filter((vp) => vp.region === regionFilter);
 
   const selectedVp = filteredViewpoints[selectedViewpoint] ?? data.viewpoints[0];
+  const isNight = !data.weather.isDay;
 
   return (
     <main className="flex-1 relative">
-      {/* Ambient background effects */}
       <div className="ambient-bg" />
       <div className="noise-overlay" />
 
@@ -208,6 +211,16 @@ export default function Home() {
             viewpointDistance={selectedVp?.distanceMiles}
           />
         </section>
+
+        {/* Interactive Night Sky (only at night) */}
+        {isNight && (
+          <section className="animate-fade-up delay-300" style={{ opacity: 0, animationFillMode: "forwards" }}>
+            <NightSky
+              sunrise={data.weather.sunrise || ""}
+              isDay={data.weather.isDay}
+            />
+          </section>
+        )}
 
         {/* Live Webcams */}
         <section className="animate-fade-up delay-300" style={{ opacity: 0, animationFillMode: "forwards" }}>
@@ -275,11 +288,12 @@ export default function Home() {
           <h2 className="font-display text-lg font-bold text-white">About</h2>
           <div className="text-sm text-white/35 space-y-3 leading-relaxed">
             <p>
-              <strong className="text-white/55">&quot;Is the mountain out?&quot;</strong> — the quintessential
-              Seattle question. On clear days, Mt. Rainier towering at 14,411 feet above the horizon is one of
-              the most magical sights in the Pacific Northwest. This app uses real-time weather data including
-              cloud layers, atmospheric visibility, air quality (PM2.5), and weather conditions to calculate
-              visibility scores for each viewpoint.
+              If you live in the Pacific Northwest, you know the question. <strong className="text-white/55">&quot;Is the mountain out?&quot;</strong> On
+              clear days, Rainier at 14,411 feet is hard to miss. But with Seattle weather, you never
+              know when you&apos;ll actually get to see it. This app pulls real-time weather data
+              (cloud layers, atmospheric visibility, PM2.5) and scores visibility for each
+              viewpoint based on elevation, distance, and obstructions. No API keys, no cost.
+              Everything runs on free public data from Open-Meteo and government webcam feeds.
             </p>
           </div>
           <div className="flex items-center gap-4 pt-2">
@@ -288,7 +302,7 @@ export default function Home() {
                 JB
               </div>
               <div>
-                <p className="text-sm font-medium text-white/50">Jatin Batra</p>
+                <p className="text-sm font-medium text-white/50">Built by Jatin Batra</p>
                 <a
                   href="https://x.com/jatin_batra1"
                   target="_blank"

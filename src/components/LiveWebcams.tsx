@@ -140,7 +140,7 @@ export default function LiveWebcams({ feeds }: Props) {
             <img
               key={`${currentFeed.id}-${imageTimestamps[currentFeed.id]}`}
               src={getImageSrc(currentFeed)}
-              alt={`Live webcam: ${currentFeed.name} — ${currentFeed.location}`}
+              alt={`Live webcam: ${currentFeed.name}, ${currentFeed.location}`}
               className={`w-full ${expanded ? "h-full object-contain" : "h-full object-cover"} transition-opacity duration-500`}
               onError={() => handleImageError(currentFeed.id)}
             />
