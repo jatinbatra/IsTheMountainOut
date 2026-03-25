@@ -80,7 +80,7 @@ export async function subscribeToPush(
 
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: keyArray.buffer as ArrayBuffer,
+      applicationServerKey: keyArray as unknown as BufferSource,
     });
 
     console.log("[Push] Subscribed:", JSON.stringify(subscription));
