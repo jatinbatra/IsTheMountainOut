@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { SkyTheme } from "@/lib/sky";
 
 interface Props {
@@ -17,6 +17,37 @@ interface Tooltip {
   detail: string;
 }
 
+interface Bird {
+  id: number;
+  x: number;
+  y: number;
+  speed: number;
+  size: number;
+  wingPhase: number;
+  scattered: boolean;
+  scatterAngle: number;
+}
+
+interface Ripple {
+  id: number;
+  x: number;
+  y: number;
+  age: number;
+}
+
+function createBirds(count: number): Bird[] {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    x: Math.random() * 1200 - 100,
+    y: 80 + Math.random() * 120,
+    speed: 0.3 + Math.random() * 0.4,
+    size: 3 + Math.random() * 3,
+    wingPhase: Math.random() * Math.PI * 2,
+    scattered: false,
+    scatterAngle: 0,
+  }));
+}
+
 export default function MountainScene({
   skyTheme,
   isVisible,
@@ -25,7 +56,54 @@ export default function MountainScene({
 }: Props) {
   const [tooltip, setTooltip] = useState<Tooltip | null>(null);
   const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
+  const [birds, setBirds] = useState<Bird[]>(() => createBirds(8));
+  const [ripples, setRipples] = useState<Ripple[]>([]);
+  const [clickFlash, setClickFlash] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const frameRef = useRef<number>(0);
+  const timeRef = useRef(0);
+
+  // Animate birds
+  useEffect(() => {
+    let running = true;
+    const animate = () => {
+      if (!running) return;
+      timeRef.current += 1;
+      setBirds((prev) =>
+        prev.map((b) => {
+          let nx = b.x + b.speed;
+          let ny = b.y;
+          if (b.scattered) {
+            nx += Math.cos(b.scatterAngle) * 4;
+            ny += Math.sin(b.scatterAngle) * 4;
+          }
+          if (nx > 1100) nx = -50;
+          if (ny < -20 || ny > 300) {
+            ny = 80 + Math.random() * 120;
+            return { ...b, x: nx, y: ny, scattered: false };
+          }
+          return {
+            ...b,
+            x: nx,
+            y: ny,
+            wingPhase: b.wingPhase + 0.15,
+          };
+        })
+      );
+      // Age ripples
+      setRipples((prev) =>
+        prev
+          .map((r) => ({ ...r, age: r.age + 1 }))
+          .filter((r) => r.age < 60)
+      );
+      frameRef.current = requestAnimationFrame(animate);
+    };
+    frameRef.current = requestAnimationFrame(animate);
+    return () => {
+      running = false;
+      cancelAnimationFrame(frameRef.current);
+    };
+  }, []);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!containerRef.current) return;
@@ -34,6 +112,40 @@ export default function MountainScene({
     const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
     setMouseOffset({ x: x * 3, y: y * 2 });
   }, []);
+
+  const handleSceneClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const clickX = ((e.clientX - rect.left) / rect.width) * 1000;
+      const clickY = ((e.clientY - rect.top) / rect.height) * 500;
+
+      // Scatter birds near click
+      setBirds((prev) =>
+        prev.map((b) => {
+          const dist = Math.hypot(b.x - clickX, b.y - clickY);
+          if (dist < 200) {
+            const angle = Math.atan2(b.y - clickY, b.x - clickX) + (Math.random() - 0.5) * 0.8;
+            return { ...b, scattered: true, scatterAngle: angle };
+          }
+          return b;
+        })
+      );
+
+      // Water ripple if clicked on water area (bottom portion)
+      if (clickY > 430) {
+        setRipples((prev) => [
+          ...prev,
+          { id: Date.now(), x: clickX, y: clickY, age: 0 },
+        ]);
+      }
+
+      // Flash effect
+      setClickFlash(true);
+      setTimeout(() => setClickFlash(false), 150);
+    },
+    []
+  );
 
   const showTooltip = (e: React.MouseEvent, title: string, detail: string) => {
     if (!containerRef.current) return;
@@ -51,8 +163,9 @@ export default function MountainScene({
   return (
     <div
       ref={containerRef}
-      className="relative w-full overflow-hidden rounded-3xl ring-1 ring-white/[0.08] shadow-2xl shadow-black/40 cursor-crosshair"
+      className="relative w-full overflow-hidden rounded-3xl ring-1 ring-white/[0.08] shadow-2xl shadow-black/40 cursor-crosshair select-none"
       onMouseMove={handleMouseMove}
+      onClick={handleSceneClick}
       onMouseLeave={() => {
         setMouseOffset({ x: 0, y: 0 });
         hideTooltip();
@@ -66,6 +179,11 @@ export default function MountainScene({
             : "shadow-[0_0_80px_-20px_rgba(239,68,68,0.1)]"
         }`}
       />
+
+      {/* Click flash overlay */}
+      {clickFlash && (
+        <div className="absolute inset-0 bg-white/5 rounded-3xl pointer-events-none z-20 transition-opacity" />
+      )}
 
       <svg
         viewBox="0 0 1000 500"
@@ -136,7 +254,7 @@ export default function MountainScene({
           </linearGradient>
         </defs>
 
-        {/* === SKY (parallax layer 0) === */}
+        {/* === SKY === */}
         <foreignObject width="1000" height="500">
           <div
             style={{
@@ -148,7 +266,7 @@ export default function MountainScene({
           />
         </foreignObject>
 
-        {/* === AURORA (parallax layer 1 - slow) === */}
+        {/* === AURORA === */}
         {skyTheme.showStars && (
           <g opacity="0.5" style={{ transform: `translate(${mouseOffset.x * 0.3}px, ${mouseOffset.y * 0.2}px)`, transition: "transform 0.3s ease-out" }}>
             <path
@@ -159,7 +277,7 @@ export default function MountainScene({
           </g>
         )}
 
-        {/* === STARS (parallax layer 1) === */}
+        {/* === STARS === */}
         {skyTheme.showStars && (
           <g
             className="animate-twinkle"
@@ -172,19 +290,12 @@ export default function MountainScene({
               [520, 80, 1], [700, 95, 1.5], [180, 45, 1], [420, 15, 1.3],
               [600, 105, 1], [830, 60, 1.5], [50, 85, 1], [960, 30, 1.3],
             ].map(([cx, cy, r], i) => (
-              <circle
-                key={i}
-                cx={cx}
-                cy={cy}
-                r={r}
-                fill="white"
-                opacity={0.3 + (i % 4) * 0.15}
-              />
+              <circle key={i} cx={cx} cy={cy} r={r} fill="white" opacity={0.3 + (i % 4) * 0.15} />
             ))}
           </g>
         )}
 
-        {/* === SUN (interactive) === */}
+        {/* === SUN === */}
         {skyTheme.showSun && (
           <g
             className="animate-sun-pulse"
@@ -199,7 +310,7 @@ export default function MountainScene({
           </g>
         )}
 
-        {/* === MOON (interactive) === */}
+        {/* === MOON === */}
         {skyTheme.showMoon && (
           <g
             filter="url(#glow)"
@@ -212,7 +323,20 @@ export default function MountainScene({
           </g>
         )}
 
-        {/* === DISTANT MOUNTAINS (parallax layer 2 - medium) === */}
+        {/* === ANIMATED BIRDS === */}
+        <g style={{ transform: `translate(${mouseOffset.x * 0.6}px, ${mouseOffset.y * 0.3}px)`, transition: "transform 0.15s ease-out" }}>
+          {birds.map((b) => {
+            const wingY = Math.sin(b.wingPhase) * b.size * 0.7;
+            return (
+              <g key={b.id} transform={`translate(${b.x}, ${b.y})`} opacity={0.6}>
+                <line x1={-b.size} y1={wingY} x2="0" y2="0" stroke={skyTheme.showStars ? "#aaa" : "#333"} strokeWidth="1.2" strokeLinecap="round" />
+                <line x1={b.size} y1={wingY} x2="0" y2="0" stroke={skyTheme.showStars ? "#aaa" : "#333"} strokeWidth="1.2" strokeLinecap="round" />
+              </g>
+            );
+          })}
+        </g>
+
+        {/* === DISTANT MOUNTAINS === */}
         <g
           opacity={isVisible ? 0.4 : 0.15}
           className="transition-opacity duration-1000"
@@ -223,7 +347,7 @@ export default function MountainScene({
           <path d="M700 340 L740 310 L770 325 L810 290 L840 310 L870 295 L910 315 L950 305 L1000 330 L1000 400 L700 400 Z" fill="#4a5a6a" opacity="0.5" />
         </g>
 
-        {/* === MT. RAINIER (interactive, parallax layer 3 - main) === */}
+        {/* === MT. RAINIER === */}
         <g
           className={isVisible ? "animate-mountain-reveal" : ""}
           style={{
@@ -274,7 +398,7 @@ export default function MountainScene({
           </g>
         </g>
 
-        {/* === CITY SKYLINE (interactive) === */}
+        {/* === CITY SKYLINE === */}
         <g
           opacity="0.7"
           style={{ cursor: "pointer" }}
@@ -313,11 +437,11 @@ export default function MountainScene({
         {/* === FOREGROUND === */}
         <path d="M0 420 Q200 410 400 418 Q600 408 800 415 Q900 412 1000 418 L1000 500 L0 500 Z" fill="#0a1520" />
 
-        {/* === WATER (interactive) === */}
+        {/* === WATER === */}
         <g
           style={{ cursor: "pointer" }}
           onMouseEnter={(e) =>
-            showTooltip(e as unknown as React.MouseEvent, "Puget Sound", "The water reflects mountain views on calm days. Best viewed from waterfront viewpoints.")
+            showTooltip(e as unknown as React.MouseEvent, "Puget Sound", "Click the water to make ripples! Best viewed from waterfront viewpoints.")
           }
           onMouseLeave={hideTooltip}
         >
@@ -332,10 +456,34 @@ export default function MountainScene({
           </g>
         </g>
 
+        {/* === WATER RIPPLES ON CLICK === */}
+        {ripples.map((r) => (
+          <g key={r.id} opacity={Math.max(0, 1 - r.age / 60)}>
+            <ellipse
+              cx={r.x}
+              cy={r.y}
+              rx={r.age * 1.5}
+              ry={r.age * 0.4}
+              fill="none"
+              stroke="rgba(255,255,255,0.3)"
+              strokeWidth="1"
+            />
+            <ellipse
+              cx={r.x}
+              cy={r.y}
+              rx={r.age * 0.8}
+              ry={r.age * 0.2}
+              fill="none"
+              stroke="rgba(255,255,255,0.2)"
+              strokeWidth="0.8"
+            />
+          </g>
+        ))}
+
         {/* === ATMOSPHERIC HAZE === */}
         <rect x="0" y="200" width="1000" height="300" fill="url(#hazeGrad)" opacity={isVisible ? 0.3 : 0.7} />
 
-        {/* === CLOUDS (interactive, parallax) === */}
+        {/* === CLOUDS === */}
         {skyTheme.cloudOpacity > 0.1 && (
           <g
             opacity={skyTheme.cloudOpacity}
@@ -396,6 +544,16 @@ export default function MountainScene({
         <rect x="0" y="0" width="1000" height="500" fill="url(#hazeGrad)" opacity="0.15" />
       </svg>
 
+      {/* PREDICTION BADGE - top center, impossible to miss */}
+      <div className="absolute top-3 left-1/2 -translate-x-1/2 z-30">
+        <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/20 ring-1 ring-amber-400/40 backdrop-blur-xl animate-pulse-slow">
+          <div className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+          <span className="text-[11px] font-bold text-amber-300 uppercase tracking-widest">
+            AI Prediction - Not Live Camera
+          </span>
+        </div>
+      </div>
+
       {/* Tooltip overlay */}
       {tooltip && (
         <div
@@ -433,7 +591,7 @@ export default function MountainScene({
 
       {/* Mountain status badge */}
       <div
-        className={`absolute top-4 left-4 rounded-2xl px-4 py-2.5 backdrop-blur-xl ${
+        className={`absolute top-14 left-4 rounded-2xl px-4 py-2.5 backdrop-blur-xl ${
           isVisible
             ? "bg-emerald-500/15 ring-1 ring-emerald-400/25"
             : "bg-red-500/15 ring-1 ring-red-400/25"
@@ -441,28 +599,20 @@ export default function MountainScene({
       >
         <div className="flex items-center gap-2.5">
           <div className="relative">
-            <div
-              className={`w-2.5 h-2.5 rounded-full ${
-                isVisible ? "bg-emerald-400" : "bg-red-400"
-              }`}
-            />
+            <div className={`w-2.5 h-2.5 rounded-full ${isVisible ? "bg-emerald-400" : "bg-red-400"}`} />
             {isVisible && (
               <div className="absolute inset-0 w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping opacity-75" />
             )}
           </div>
-          <span
-            className={`text-sm font-semibold ${
-              isVisible ? "text-emerald-300" : "text-red-300"
-            }`}
-          >
+          <span className={`text-sm font-semibold ${isVisible ? "text-emerald-300" : "text-red-300"}`}>
             {isVisible ? "Mountain is OUT" : "Hidden"}
           </span>
         </div>
       </div>
 
       {/* Interactive hint */}
-      <div className="absolute bottom-4 right-4 glass-strong rounded-xl px-3 py-1.5 opacity-60 hover:opacity-100 transition-opacity">
-        <span className="text-[10px] text-white/30 font-medium">Hover to explore</span>
+      <div className="absolute bottom-4 right-4 glass-strong rounded-xl px-3 py-1.5 animate-bounce-subtle">
+        <span className="text-[10px] text-white/50 font-medium">Click to interact</span>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { RefreshCw, Mountain, Share2, Check } from "lucide-react";
 import HeroStatus from "@/components/HeroStatus";
 import MountainScene from "@/components/MountainScene";
@@ -158,6 +158,25 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleKey);
   }, [data, regionFilter]);
 
+  // Scroll-triggered reveal
+  const mainRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!mainRef.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("revealed");
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -40px 0px" }
+    );
+    const els = mainRef.current.querySelectorAll(".scroll-reveal");
+    els.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [data]);
+
   if (loading && !data) {
     return (
       <div className="flex-1 flex items-center justify-center min-h-screen">
@@ -212,7 +231,7 @@ export default function Home() {
   const isNight = !data.weather.isDay;
 
   return (
-    <main className="flex-1 relative">
+    <main className="flex-1 relative" ref={mainRef}>
       <div className="ambient-bg" />
       <div className="noise-overlay" />
 
@@ -274,8 +293,8 @@ export default function Home() {
           }}
         />
 
-        {/* Mountain Scene - now interactive */}
-        <section className="animate-fade-up delay-200" style={{ opacity: 0, animationFillMode: "forwards" }}>
+        {/* Mountain Scene - interactive */}
+        <section className="scroll-reveal">
           <MountainScene
             skyTheme={data.skyTheme}
             isVisible={data.visibility.isVisible}
@@ -284,9 +303,9 @@ export default function Home() {
           />
         </section>
 
-        {/* 24-Hour Forecast Timeline - NEW */}
+        {/* 24-Hour Forecast Timeline */}
         {data.hourlyTimeline && data.hourlyTimeline.length > 0 && (
-          <section className="animate-fade-up delay-200" style={{ opacity: 0, animationFillMode: "forwards" }}>
+          <section className="scroll-reveal scroll-reveal-delay-1">
             <ForecastTimeline
               hourlyTimeline={data.hourlyTimeline}
               currentScore={data.visibility.score}
@@ -296,7 +315,7 @@ export default function Home() {
 
         {/* Interactive Night Sky (only at night) */}
         {isNight && (
-          <section className="animate-fade-up delay-300" style={{ opacity: 0, animationFillMode: "forwards" }}>
+          <section className="scroll-reveal scroll-reveal-delay-2">
             <NightSky
               sunrise={data.weather.sunrise || ""}
               isDay={data.weather.isDay}
@@ -305,7 +324,7 @@ export default function Home() {
         )}
 
         {/* Live Webcams */}
-        <section className="animate-fade-up delay-300" style={{ opacity: 0, animationFillMode: "forwards" }}>
+        <section className="scroll-reveal scroll-reveal-delay-2">
           <LiveWebcams feeds={WEBCAM_FEEDS} />
         </section>
 
