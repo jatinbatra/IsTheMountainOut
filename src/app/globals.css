@@ -58,20 +58,39 @@ body {
 }
 
 /* === Dynamic Theme: Clear Sky vs Overcast === */
+
+/* Clear sky: vibrant blues, bright greens, alive */
+.theme-clear {
+  --background: #040d1f;
+}
+
 .theme-clear .ambient-bg::before {
-  background: radial-gradient(circle, rgba(34, 197, 94, 0.08) 0%, transparent 70%);
+  background: radial-gradient(ellipse at 30% 20%, rgba(34, 197, 94, 0.12) 0%, transparent 60%);
 }
 
 .theme-clear .ambient-bg::after {
-  background: radial-gradient(circle, rgba(56, 150, 255, 0.06) 0%, transparent 70%);
+  background: radial-gradient(ellipse at 70% 80%, rgba(56, 150, 255, 0.10) 0%, transparent 60%);
+}
+
+.theme-clear .glass {
+  border-color: rgba(52, 211, 153, 0.06);
+}
+
+/* Overcast: moody grays, muted blues, Seattle vibes */
+.theme-overcast {
+  --background: #080a10;
 }
 
 .theme-overcast .ambient-bg::before {
-  background: radial-gradient(circle, rgba(100, 116, 139, 0.08) 0%, transparent 70%);
+  background: radial-gradient(ellipse at 40% 30%, rgba(100, 116, 139, 0.10) 0%, transparent 60%);
 }
 
 .theme-overcast .ambient-bg::after {
-  background: radial-gradient(circle, rgba(71, 85, 105, 0.06) 0%, transparent 70%);
+  background: radial-gradient(ellipse at 60% 70%, rgba(51, 65, 85, 0.08) 0%, transparent 60%);
+}
+
+.theme-overcast .glass {
+  border-color: rgba(148, 163, 184, 0.05);
 }
 
 /* === Glass Panels === */
