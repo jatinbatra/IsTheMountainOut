@@ -57,6 +57,23 @@ body {
   66% { transform: translate(-3%, -2%) scale(0.97); }
 }
 
+/* === Dynamic Theme: Clear Sky vs Overcast === */
+.theme-clear .ambient-bg::before {
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.08) 0%, transparent 70%);
+}
+
+.theme-clear .ambient-bg::after {
+  background: radial-gradient(circle, rgba(56, 150, 255, 0.06) 0%, transparent 70%);
+}
+
+.theme-overcast .ambient-bg::before {
+  background: radial-gradient(circle, rgba(100, 116, 139, 0.08) 0%, transparent 70%);
+}
+
+.theme-overcast .ambient-bg::after {
+  background: radial-gradient(circle, rgba(71, 85, 105, 0.06) 0%, transparent 70%);
+}
+
 /* === Glass Panels === */
 .glass {
   background: rgba(255, 255, 255, 0.03);
@@ -222,6 +239,42 @@ body {
 .animate-breathe {
   animation: breathe 6s ease-in-out infinite;
 }
+
+/* Slow pulse for prediction badge */
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s ease-in-out infinite;
+}
+
+/* Subtle bounce for click hints */
+@keyframes bounce-subtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 2s ease-in-out infinite;
+}
+
+/* Scroll-triggered reveal */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+
+.scroll-reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-reveal-delay-1 { transition-delay: 100ms; }
+.scroll-reveal-delay-2 { transition-delay: 200ms; }
+.scroll-reveal-delay-3 { transition-delay: 300ms; }
 
 /* Staggered animation delays */
 .delay-100 { animation-delay: 100ms; }

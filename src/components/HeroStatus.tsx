@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, EyeOff, TrendingUp, TrendingDown, ChevronDown, ChevronUp } from "lucide-react";
+import { Eye, EyeOff, TrendingUp, TrendingDown, ChevronDown, ChevronUp, AlertTriangle } from "lucide-react";
 
 interface Props {
   isVisible: boolean;
@@ -58,6 +58,22 @@ export default function HeroStatus({
 
   return (
     <div className="relative text-center animate-fade-up">
+      {/* === GIANT PREDICTION BANNER === */}
+      <div className="mb-8 flex justify-center">
+        <div className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-amber-500/10 ring-2 ring-amber-400/30 backdrop-blur-sm">
+          <AlertTriangle className="w-5 h-5 text-amber-400 animate-pulse" />
+          <div className="text-left">
+            <div className="text-sm font-bold text-amber-300 uppercase tracking-wide">
+              This is a prediction
+            </div>
+            <div className="text-xs text-amber-200/50">
+              Based on real-time weather data, not a live camera feed
+            </div>
+          </div>
+          <AlertTriangle className="w-5 h-5 text-amber-400 animate-pulse" />
+        </div>
+      </div>
+
       {/* Radial glow behind the hero text */}
       <div
         className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full blur-3xl animate-hero-glow pointer-events-none ${
@@ -84,7 +100,7 @@ export default function HeroStatus({
           </h1>
         </div>
 
-        {/* Score pill - now clickable */}
+        {/* Score pill - clickable */}
         <div className="flex flex-col items-center gap-4">
           <button
             onClick={() => scoreBreakdown && setShowBreakdown(!showBreakdown)}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { RefreshCw, Mountain, Share2, Check } from "lucide-react";
 import HeroStatus from "@/components/HeroStatus";
 import MountainScene from "@/components/MountainScene";
@@ -9,7 +9,11 @@ import ViewpointCard from "@/components/ViewpointCard";
 import LiveWebcams from "@/components/LiveWebcams";
 import NightSky from "@/components/NightSky";
 import ForecastTimeline from "@/components/ForecastTimeline";
+import FeaturedWebcam from "@/components/FeaturedWebcam";
+import VisibilityHistory from "@/components/VisibilityHistory";
+import OutdoorWidget from "@/components/OutdoorWidget";
 import { WEBCAM_FEEDS } from "@/lib/webcams";
+import { registerSW, requestNotificationPermission, getNotificationPermission } from "@/lib/notifications";
 
 interface ViewpointData {
   id: string;
@@ -99,6 +103,18 @@ export default function Home() {
   const [selectedViewpoint, setSelectedViewpoint] = useState(0);
   const [regionFilter, setRegionFilter] = useState("all");
   const [shared, setShared] = useState(false);
+  const [notifPermission, setNotifPermission] = useState<string>("default");
+
+  // Register service worker on mount
+  useEffect(() => {
+    registerSW();
+    setNotifPermission(getNotificationPermission());
+  }, []);
+
+  const handleEnableNotifications = async () => {
+    const granted = await requestNotificationPermission();
+    setNotifPermission(granted ? "granted" : "denied");
+  };
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -158,6 +174,25 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleKey);
   }, [data, regionFilter]);
 
+  // Scroll-triggered reveal
+  const mainRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!mainRef.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("revealed");
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -40px 0px" }
+    );
+    const els = mainRef.current.querySelectorAll(".scroll-reveal");
+    els.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [data]);
+
   if (loading && !data) {
     return (
       <div className="flex-1 flex items-center justify-center min-h-screen">
@@ -212,7 +247,12 @@ export default function Home() {
   const isNight = !data.weather.isDay;
 
   return (
-    <main className="flex-1 relative">
+    <main
+      className={`flex-1 relative transition-colors duration-1000 ${
+        data.visibility.isVisible ? "theme-clear" : "theme-overcast"
+      }`}
+      ref={mainRef}
+    >
       <div className="ambient-bg" />
       <div className="noise-overlay" />
 
@@ -274,8 +314,13 @@ export default function Home() {
           }}
         />
 
-        {/* Mountain Scene - now interactive */}
-        <section className="animate-fade-up delay-200" style={{ opacity: 0, animationFillMode: "forwards" }}>
+        {/* Featured Webcam — directly below hero status */}
+        <section className="scroll-reveal">
+          <FeaturedWebcam />
+        </section>
+
+        {/* Mountain Scene - interactive */}
+        <section className="scroll-reveal">
           <MountainScene
             skyTheme={data.skyTheme}
             isVisible={data.visibility.isVisible}
@@ -284,9 +329,9 @@ export default function Home() {
           />
         </section>
 
-        {/* 24-Hour Forecast Timeline - NEW */}
+        {/* 24-Hour Forecast Timeline */}
         {data.hourlyTimeline && data.hourlyTimeline.length > 0 && (
-          <section className="animate-fade-up delay-200" style={{ opacity: 0, animationFillMode: "forwards" }}>
+          <section className="scroll-reveal scroll-reveal-delay-1">
             <ForecastTimeline
               hourlyTimeline={data.hourlyTimeline}
               currentScore={data.visibility.score}
@@ -296,7 +341,7 @@ export default function Home() {
 
         {/* Interactive Night Sky (only at night) */}
         {isNight && (
-          <section className="animate-fade-up delay-300" style={{ opacity: 0, animationFillMode: "forwards" }}>
+          <section className="scroll-reveal scroll-reveal-delay-2">
             <NightSky
               sunrise={data.weather.sunrise || ""}
               isDay={data.weather.isDay}
@@ -304,8 +349,39 @@ export default function Home() {
           </section>
         )}
 
+        {/* 7-Day Visibility History Chart */}
+        <section className="scroll-reveal scroll-reveal-delay-1">
+          <VisibilityHistory isVisible={data.visibility.isVisible} />
+        </section>
+
+        {/* Outdoor Widget — only shows when mountain is visible */}
+        <section className="scroll-reveal scroll-reveal-delay-2">
+          <OutdoorWidget
+            isVisible={data.visibility.isVisible}
+            sunset={data.weather.sunset}
+          />
+        </section>
+
+        {/* Notification Prompt */}
+        {notifPermission === "default" && (
+          <section className="scroll-reveal scroll-reveal-delay-2">
+            <div className="glass rounded-3xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold text-white">Get notified when the mountain comes out</p>
+                <p className="text-xs text-white/30 mt-0.5">We&apos;ll send a push notification when visibility changes</p>
+              </div>
+              <button
+                onClick={handleEnableNotifications}
+                className="px-5 py-2.5 rounded-xl bg-blue-500/15 text-blue-300 ring-1 ring-blue-400/25 text-sm font-medium hover:bg-blue-500/25 transition-colors shrink-0"
+              >
+                Enable Notifications
+              </button>
+            </div>
+          </section>
+        )}
+
         {/* Live Webcams */}
-        <section className="animate-fade-up delay-300" style={{ opacity: 0, animationFillMode: "forwards" }}>
+        <section className="scroll-reveal scroll-reveal-delay-2">
           <LiveWebcams feeds={WEBCAM_FEEDS} />
         </section>
 
