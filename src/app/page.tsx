@@ -35,41 +35,39 @@ async function getMountainData(): Promise<MountainData> {
     };
   });
 
-  // Optional: AI Vision check if API key is configured
+  // Optional: AI Vision check via Google Gemini (free tier)
   let aiVision: MountainData["aiVision"] = undefined;
-  if (process.env.ANTHROPIC_API_KEY) {
+  const geminiKey = process.env.GEMINI_API_KEY;
+  if (geminiKey) {
     try {
       const webcamUrl = "https://volcanoes.usgs.gov/observatories/cvo/cams/MOWest_prior.jpg";
       const imgRes = await fetch(webcamUrl, { signal: AbortSignal.timeout(10000) });
       if (imgRes.ok) {
         const imgBuffer = await imgRes.arrayBuffer();
         const base64 = Buffer.from(imgBuffer).toString("base64");
-        const mediaType = imgRes.headers.get("content-type") || "image/jpeg";
+        const mimeType = imgRes.headers.get("content-type") || "image/jpeg";
 
-        const anthropicRes = await fetch("https://api.anthropic.com/v1/messages", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": process.env.ANTHROPIC_API_KEY,
-            "anthropic-version": "2023-06-01",
-          },
-          body: JSON.stringify({
-            model: "claude-sonnet-4-20250514",
-            max_tokens: 10,
-            messages: [{
-              role: "user",
-              content: [
-                { type: "image", source: { type: "base64", media_type: mediaType, data: base64 } },
-                { type: "text", text: "Is Mt. Rainier clearly visible in this image? Reply with only YES or NO." },
-              ],
-            }],
-          }),
-          signal: AbortSignal.timeout(30000),
-        });
+        const geminiRes = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              contents: [{
+                parts: [
+                  { inlineData: { mimeType, data: base64 } },
+                  { text: "Is Mt. Rainier clearly visible in this image? Reply with only YES or NO." },
+                ],
+              }],
+              generationConfig: { maxOutputTokens: 10 },
+            }),
+            signal: AbortSignal.timeout(30000),
+          }
+        );
 
-        if (anthropicRes.ok) {
-          const result = await anthropicRes.json();
-          const rawText = result.content?.[0]?.text?.trim() || "";
+        if (geminiRes.ok) {
+          const result = await geminiRes.json();
+          const rawText = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
           aiVision = {
             isVisible: rawText.toUpperCase().startsWith("YES"),
             raw: rawText,
