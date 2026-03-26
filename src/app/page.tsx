@@ -42,7 +42,10 @@ async function getMountainData(): Promise<MountainData> {
     try {
       const webcamUrl = "https://volcanoes.usgs.gov/observatories/cvo/cams/MOWest_prior.jpg";
       const imgRes = await fetch(webcamUrl, { signal: AbortSignal.timeout(10000) });
-      if (imgRes.ok) {
+
+      if (!imgRes.ok) {
+        console.warn(`[AI Vision] Webcam fetch failed: ${imgRes.status}`);
+      } else {
         const imgBuffer = await imgRes.arrayBuffer();
         const base64 = Buffer.from(imgBuffer).toString("base64");
         const mimeType = imgRes.headers.get("content-type") || "image/jpeg";
@@ -65,18 +68,26 @@ async function getMountainData(): Promise<MountainData> {
           }
         );
 
-        if (geminiRes.ok) {
+        if (!geminiRes.ok) {
+          const errText = await geminiRes.text().catch(() => "");
+          console.warn(`[AI Vision] Gemini API error ${geminiRes.status}: ${errText}`);
+        } else {
           const result = await geminiRes.json();
           const rawText = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
-          aiVision = {
-            isVisible: rawText.toUpperCase().startsWith("YES"),
-            raw: rawText,
-            timestamp: new Date().toISOString(),
-          };
+          if (rawText) {
+            aiVision = {
+              isVisible: rawText.toUpperCase().startsWith("YES"),
+              raw: rawText,
+              timestamp: new Date().toISOString(),
+            };
+            console.log(`[AI Vision] Gemini says: ${rawText}`);
+          } else {
+            console.warn("[AI Vision] Empty response from Gemini:", JSON.stringify(result).slice(0, 200));
+          }
         }
       }
-    } catch {
-      // AI vision is optional — fail silently
+    } catch (err) {
+      console.warn("[AI Vision] Failed:", err instanceof Error ? err.message : String(err));
     }
   }
 

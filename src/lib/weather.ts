@@ -43,7 +43,11 @@ const SEATTLE_LON = -122.3321;
  */
 function getMockWeatherData(): WeatherData {
   const now = new Date();
-  const hour = now.getHours();
+  // Use Pacific Time for correct day/night in Seattle
+  const seattleHour = parseInt(
+    now.toLocaleString("en-US", { hour: "numeric", hour12: false, timeZone: "America/Los_Angeles" })
+  );
+  const hour = seattleHour;
   const isDay = hour >= 6 && hour < 20;
   const today = now.toISOString().split("T")[0];
 

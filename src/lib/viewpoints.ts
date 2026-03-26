@@ -389,6 +389,12 @@ export function rankViewpoints(
     };
   });
 
-  // Sort by location-specific score (best first)
-  return scored.sort((a, b) => b.locationScore - a.locationScore);
+  // Sort by location-specific score, with region tiebreaker
+  // When scores are within 5 points, prefer iconic Seattle viewpoints
+  const regionPriority: Record<string, number> = { seattle: 3, eastside: 2, north: 1, tacoma: 1, south: 0 };
+  return scored.sort((a, b) => {
+    const diff = b.locationScore - a.locationScore;
+    if (Math.abs(diff) > 5) return diff;
+    return (regionPriority[b.region] ?? 0) - (regionPriority[a.region] ?? 0);
+  });
 }
