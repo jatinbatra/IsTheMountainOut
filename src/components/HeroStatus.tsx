@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, EyeOff, TrendingUp, TrendingDown, ChevronDown, ChevronUp, AlertTriangle } from "lucide-react";
+import { TrendingUp, TrendingDown, ChevronDown, AlertTriangle } from "lucide-react";
 
 interface Props {
   isVisible: boolean;
@@ -36,15 +36,81 @@ function getScoreComponents(breakdown: NonNullable<Props["scoreBreakdown"]>) {
   else if (breakdown.weatherCode >= 80) weatherPenalty = -20;
 
   return [
-    { label: "Low Clouds", score: lowScore, max: 40, detail: `${breakdown.cloudLow}% coverage` },
-    { label: "Mid Clouds", score: midScore, max: 20, detail: `${breakdown.cloudMid}% coverage` },
-    { label: "High Clouds", score: highScore, max: 10, detail: `${breakdown.cloudHigh}% coverage` },
-    { label: "Visibility", score: visScore, max: 20, detail: `${(breakdown.visibilityMeters / 1609.34).toFixed(0)} miles` },
-    { label: "Air Quality", score: aqScore, max: 10, detail: breakdown.pm25 !== undefined ? `PM2.5: ${breakdown.pm25.toFixed(1)}` : "No data" },
+    { label: "Low Clouds", score: lowScore, max: 40, detail: `${breakdown.cloudLow}%`, color: "emerald" as const },
+    { label: "Mid Clouds", score: midScore, max: 20, detail: `${breakdown.cloudMid}%`, color: "blue" as const },
+    { label: "High Clouds", score: highScore, max: 10, detail: `${breakdown.cloudHigh}%`, color: "violet" as const },
+    { label: "Visibility", score: visScore, max: 20, detail: `${(breakdown.visibilityMeters / 1609.34).toFixed(0)}mi`, color: "cyan" as const },
+    { label: "Air Quality", score: aqScore, max: 10, detail: breakdown.pm25 !== undefined ? `${breakdown.pm25.toFixed(0)}` : "N/A", color: "amber" as const },
     ...(weatherPenalty !== 0
-      ? [{ label: "Weather Penalty", score: weatherPenalty, max: 0, detail: "Active precipitation" }]
+      ? [{ label: "Precip", score: weatherPenalty, max: 0, detail: "Active", color: "red" as const }]
       : []),
   ];
+}
+
+/** Circular SVG gauge for a single score component */
+function ScoreGauge({ label, score, max, detail, color }: {
+  label: string;
+  score: number;
+  max: number;
+  detail: string;
+  color: "emerald" | "blue" | "violet" | "cyan" | "amber" | "red";
+}) {
+  const pct = max > 0 ? Math.max(0, score / max) : 0;
+  const radius = 28;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference * (1 - pct);
+
+  const colorMap = {
+    emerald: { stroke: "#34d399", bg: "rgba(52,211,153,0.08)" },
+    blue: { stroke: "#60a5fa", bg: "rgba(96,165,250,0.08)" },
+    violet: { stroke: "#a78bfa", bg: "rgba(167,139,250,0.08)" },
+    cyan: { stroke: "#22d3ee", bg: "rgba(34,211,238,0.08)" },
+    amber: { stroke: "#fbbf24", bg: "rgba(251,191,36,0.08)" },
+    red: { stroke: "#f87171", bg: "rgba(248,113,113,0.08)" },
+  };
+
+  const c = colorMap[color];
+
+  if (max === 0) {
+    // Weather penalty — show as negative badge
+    return (
+      <div className="flex flex-col items-center gap-1.5">
+        <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: c.bg }}>
+          <span className="font-display text-lg font-bold" style={{ color: c.stroke }}>{score}</span>
+        </div>
+        <span className="text-[10px] text-white/30 font-medium">{label}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-1.5">
+      <div className="relative w-16 h-16">
+        <svg viewBox="0 0 64 64" className="w-full h-full -rotate-90">
+          <circle cx="32" cy="32" r={radius} fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3.5" />
+          <circle
+            cx="32" cy="32" r={radius}
+            fill="none"
+            stroke={c.stroke}
+            strokeWidth="3.5"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            className="transition-all duration-1000"
+            opacity="0.8"
+          />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="font-display text-sm font-bold text-white">{score}</span>
+          <span className="text-[8px] text-white/20">/{max}</span>
+        </div>
+      </div>
+      <div className="text-center">
+        <span className="text-[10px] text-white/30 font-medium block">{label}</span>
+        <span className="text-[9px] text-white/15">{detail}</span>
+      </div>
+    </div>
+  );
 }
 
 export default function HeroStatus({
@@ -57,183 +123,117 @@ export default function HeroStatus({
   const [showBreakdown, setShowBreakdown] = useState(false);
 
   return (
-    <div className="relative text-center animate-fade-up">
-      {/* === GIANT PREDICTION BANNER === */}
-      <div className="mb-8 flex justify-center">
-        <div className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-amber-500/10 ring-2 ring-amber-400/30 backdrop-blur-sm">
-          <AlertTriangle className="w-5 h-5 text-amber-400 animate-pulse" />
-          <div className="text-left">
-            <div className="text-sm font-bold text-amber-300 uppercase tracking-wide">
-              This is a prediction
-            </div>
-            <div className="text-xs text-amber-200/50">
-              Based on real-time weather data, not a live camera feed
-            </div>
-          </div>
-          <AlertTriangle className="w-5 h-5 text-amber-400 animate-pulse" />
+    <div className="relative animate-fade-up">
+      {/* Prediction notice — subtle, not screaming */}
+      <div className="flex justify-center mb-10">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] ring-1 ring-white/[0.06]">
+          <AlertTriangle className="w-3.5 h-3.5 text-amber-400/60" />
+          <span className="text-[11px] text-white/30 font-medium">
+            Weather-based prediction, not a live camera
+          </span>
         </div>
       </div>
 
-      {/* Radial glow behind the hero text */}
+      {/* Atmospheric glow — tied to score intensity */}
       <div
-        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full blur-3xl animate-hero-glow pointer-events-none ${
-          isVisible
-            ? "bg-gradient-to-br from-emerald-500/20 via-blue-500/10 to-transparent"
-            : "bg-gradient-to-br from-red-500/15 via-orange-500/8 to-transparent"
-        }`}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] rounded-full blur-[100px] pointer-events-none"
+        style={{
+          opacity: 0.15 + (score / 100) * 0.25,
+          background: isVisible
+            ? `radial-gradient(circle, rgba(52,211,153,${0.15 + score / 400}) 0%, rgba(59,130,246,0.05) 50%, transparent 70%)`
+            : `radial-gradient(circle, rgba(248,113,113,0.12) 0%, rgba(251,146,60,0.04) 50%, transparent 70%)`,
+        }}
       />
 
-      <div className="relative space-y-8">
-        {/* Question */}
-        <p className="font-display text-sm font-medium tracking-[0.3em] uppercase text-white/40">
+      <div className="relative text-center space-y-10">
+        {/* The question — editorial, understated */}
+        <p className="font-display text-xs font-medium tracking-[0.4em] uppercase text-white/25">
           Is the Mountain Out?
         </p>
 
-        {/* Giant YES/NO */}
-        <div className="relative">
+        {/* THE ANSWER — massive editorial typography */}
+        <div className="relative py-4">
           <h1
-            className={`font-display text-[8rem] sm:text-[12rem] lg:text-[14rem] font-black leading-[0.85] tracking-tighter ${
+            className={`font-display font-black leading-[0.8] tracking-[-0.06em] ${
               isVisible ? "gradient-text" : "gradient-text-red"
             }`}
+            style={{ fontSize: "clamp(7rem, 22vw, 16rem)" }}
           >
             {isVisible ? "YES" : "NO"}
           </h1>
         </div>
 
-        {/* Score pill - clickable */}
-        <div className="flex flex-col items-center gap-4">
-          <button
-            onClick={() => scoreBreakdown && setShowBreakdown(!showBreakdown)}
-            className={`flex items-center justify-center gap-6 transition-all duration-300 ${
-              scoreBreakdown
-                ? "cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
-                : ""
-            }`}
-            title={scoreBreakdown ? "Click to see score breakdown" : undefined}
-          >
-            <div
-              className={`p-3.5 rounded-2xl ${
-                isVisible
-                  ? "bg-emerald-500/10 ring-1 ring-emerald-400/20 animate-pulse-glow"
-                  : "bg-red-500/10 ring-1 ring-red-400/20 animate-pulse-glow-red"
-              }`}
-            >
-              {isVisible ? (
-                <Eye className="w-7 h-7 text-emerald-400" />
-              ) : (
-                <EyeOff className="w-7 h-7 text-red-400" />
-              )}
+        {/* Score — clean, no boxy containers */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-center gap-4">
+            <span className="font-display text-5xl font-black text-white tracking-tight">{score}</span>
+            <div className="text-left">
+              <span className="text-white/15 text-lg font-light block leading-none">/100</span>
+              <span
+                className={`text-[10px] font-bold uppercase tracking-widest ${
+                  confidence === "high"
+                    ? "text-emerald-400/60"
+                    : confidence === "moderate"
+                      ? "text-amber-400/60"
+                      : "text-red-400/60"
+                }`}
+              >
+                {confidence}
+              </span>
             </div>
+          </div>
 
-            <div className="text-left space-y-2">
-              <div className="flex items-baseline gap-3">
-                <span className="font-display text-4xl font-bold text-white">{score}</span>
-                <span className="text-white/25 text-lg font-light">/100</span>
-                <span
-                  className={`text-xs font-medium px-2.5 py-1 rounded-full tracking-wide uppercase ${
-                    confidence === "high"
-                      ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/20"
-                      : confidence === "moderate"
-                        ? "bg-amber-500/15 text-amber-300 ring-1 ring-amber-400/20"
-                        : "bg-red-500/15 text-red-300 ring-1 ring-red-400/20"
-                  }`}
-                >
-                  {confidence}
-                </span>
-              </div>
-
-              {/* Score bar */}
-              <div className="w-56 h-2.5 rounded-full bg-white/[0.06] overflow-hidden ring-1 ring-white/[0.04]">
-                <div
-                  className={`h-full rounded-full animate-score-fill transition-colors ${
-                    score >= 70
-                      ? "bg-gradient-to-r from-emerald-500 to-emerald-400"
-                      : score >= 50
-                        ? "bg-gradient-to-r from-amber-500 to-yellow-400"
-                        : "bg-gradient-to-r from-red-500 to-orange-400"
-                  }`}
-                  style={{ width: `${score}%` }}
-                />
-              </div>
+          {/* Thin score line — no box, just a line */}
+          <div className="max-w-xs mx-auto">
+            <div className="w-full h-[3px] rounded-full bg-white/[0.04] overflow-hidden">
+              <div
+                className={`h-full rounded-full animate-score-fill ${
+                  score >= 70
+                    ? "bg-emerald-400/70"
+                    : score >= 50
+                      ? "bg-amber-400/70"
+                      : "bg-red-400/60"
+                }`}
+                style={{ width: `${score}%` }}
+              />
             </div>
-
-            {scoreBreakdown && (
-              <div className="ml-2 p-1.5 rounded-lg bg-white/[0.04]">
-                {showBreakdown ? (
-                  <ChevronUp className="w-4 h-4 text-white/30" />
-                ) : (
-                  <ChevronDown className="w-4 h-4 text-white/30" />
-                )}
-              </div>
-            )}
-          </button>
-
-          {/* Score breakdown panel */}
-          <div
-            className={`w-full max-w-md overflow-hidden transition-all duration-400 ease-in-out ${
-              showBreakdown && scoreBreakdown
-                ? "max-h-[500px] opacity-100"
-                : "max-h-0 opacity-0"
-            }`}
-          >
-            {scoreBreakdown && (
-              <div className="glass rounded-2xl p-5 space-y-3 text-left">
-                <h3 className="font-display text-xs font-semibold text-white/40 tracking-wide uppercase">
-                  Score Breakdown
-                </h3>
-                {getScoreComponents(scoreBreakdown).map((comp) => (
-                  <div key={comp.label} className="space-y-1.5">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-white/50 font-medium">{comp.label}</span>
-                      <span className="text-white/30">
-                        {comp.detail}
-                        <span className="ml-2 font-display font-bold text-white/70">
-                          {comp.score > 0 ? "+" : ""}{comp.score}
-                          {comp.max > 0 && <span className="text-white/20">/{comp.max}</span>}
-                        </span>
-                      </span>
-                    </div>
-                    {comp.max > 0 && (
-                      <div className="w-full h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
-                        <div
-                          className={`h-full rounded-full transition-all duration-500 ${
-                            comp.score / comp.max >= 0.7
-                              ? "bg-emerald-400/70"
-                              : comp.score / comp.max >= 0.4
-                                ? "bg-amber-400/70"
-                                : "bg-red-400/70"
-                          }`}
-                          style={{ width: `${(comp.score / comp.max) * 100}%` }}
-                        />
-                      </div>
-                    )}
-                    {comp.max === 0 && (
-                      <div className="w-full h-1.5 rounded-full bg-red-500/20" />
-                    )}
-                  </div>
-                ))}
-                <p className="text-[10px] text-white/15 pt-2">
-                  Low clouds matter most because they sit between you and the mountain.
-                </p>
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Duration message */}
-        <div className="flex items-center justify-center gap-3 max-w-lg mx-auto">
-          <div
-            className={`p-1.5 rounded-lg ${
-              isVisible ? "bg-emerald-500/10" : "bg-red-500/10"
-            }`}
-          >
-            {isVisible ? (
-              <TrendingUp className="w-4 h-4 text-emerald-400/70" />
-            ) : (
-              <TrendingDown className="w-4 h-4 text-red-400/70" />
-            )}
+        {/* Score breakdown — circular gauges, no card */}
+        {scoreBreakdown && (
+          <div>
+            <button
+              onClick={() => setShowBreakdown(!showBreakdown)}
+              className="inline-flex items-center gap-2 text-xs text-white/20 hover:text-white/35 transition-colors font-medium"
+            >
+              <span>Score breakdown</span>
+              <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${showBreakdown ? "rotate-180" : ""}`} />
+            </button>
+
+            <div className={`overflow-hidden transition-all duration-500 ease-in-out ${
+              showBreakdown ? "max-h-[300px] opacity-100 mt-6" : "max-h-0 opacity-0"
+            }`}>
+              <div className="flex items-start justify-center gap-6 flex-wrap">
+                {getScoreComponents(scoreBreakdown).map((comp) => (
+                  <ScoreGauge key={comp.label} {...comp} />
+                ))}
+              </div>
+              <p className="text-[10px] text-white/10 mt-5">
+                Low clouds matter most — they sit directly between you and the mountain
+              </p>
+            </div>
           </div>
-          <p className="text-white/50 text-base leading-relaxed">
+        )}
+
+        {/* Duration — clean text, no container */}
+        <div className="flex items-center justify-center gap-2.5 pt-2">
+          {isVisible ? (
+            <TrendingUp className="w-4 h-4 text-emerald-400/40" />
+          ) : (
+            <TrendingDown className="w-4 h-4 text-red-400/40" />
+          )}
+          <p className="text-white/35 text-sm leading-relaxed">
             {durationMessage}
           </p>
         </div>

@@ -371,16 +371,16 @@ export default function Dashboard({ initialData }: Props) {
         {/* Notification Prompt */}
         {notifPermission === "default" && (
           <section className="scroll-reveal scroll-reveal-delay-2">
-            <div className="glass rounded-3xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center justify-between py-4 border-y border-white/[0.04]">
               <div>
-                <p className="text-sm font-semibold text-white">Get notified when the mountain comes out</p>
-                <p className="text-xs text-white/30 mt-0.5">We&apos;ll send a push notification when visibility changes</p>
+                <p className="text-sm font-medium text-white/50">Get notified when the mountain comes out</p>
+                <p className="text-[11px] text-white/20 mt-0.5">Push notification when visibility changes</p>
               </div>
               <button
                 onClick={handleEnableNotifications}
-                className="px-5 py-2.5 rounded-xl bg-blue-500/15 text-blue-300 ring-1 ring-blue-400/25 text-sm font-medium hover:bg-blue-500/25 transition-colors shrink-0"
+                className="text-xs text-blue-400/50 hover:text-blue-300 transition-colors font-medium shrink-0"
               >
-                Enable Notifications
+                Enable
               </button>
             </div>
           </section>
@@ -394,23 +394,18 @@ export default function Dashboard({ initialData }: Props) {
         {/* Two column layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* Viewpoints */}
-          <section className="space-y-5">
+          <section className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-xl font-bold text-white">
                 {adjustedIsVisible ? "Best Viewpoints" : "Viewpoints"}
               </h2>
-              <div className="flex items-center gap-3">
-                <span className="text-[10px] text-white/15 font-medium hidden sm:inline">
-                  Arrow keys to browse
-                </span>
-                <span className="text-xs text-white/20 font-medium">
-                  {filteredViewpoints.length} locations
-                </span>
-              </div>
+              <span className="text-[10px] text-white/15 font-medium">
+                {filteredViewpoints.length} locations
+              </span>
             </div>
 
-            {/* Region filter */}
-            <div className="flex flex-wrap gap-1.5">
+            {/* Region filter — pill style, no boxes */}
+            <div className="flex items-center gap-1">
               {REGIONS.map((r) => (
                 <button
                   key={r.key}
@@ -418,10 +413,10 @@ export default function Dashboard({ initialData }: Props) {
                     setRegionFilter(r.key);
                     setSelectedViewpoint(0);
                   }}
-                  className={`text-xs font-medium px-3.5 py-1.5 rounded-xl transition-all ${
+                  className={`text-[11px] font-medium px-3 py-1 rounded-full transition-all ${
                     regionFilter === r.key
-                      ? "bg-blue-500/15 text-blue-300 ring-1 ring-blue-400/25"
-                      : "text-white/30 hover:text-white/45 hover:bg-white/[0.04]"
+                      ? "bg-white/[0.08] text-white/60"
+                      : "text-white/20 hover:text-white/35"
                   }`}
                 >
                   {r.label}
@@ -429,7 +424,8 @@ export default function Dashboard({ initialData }: Props) {
               ))}
             </div>
 
-            <div className="space-y-3 max-h-[700px] overflow-y-auto pr-1 scrollbar-thin">
+            {/* Viewpoint list — no gaps between items, dividers instead */}
+            <div className="divide-y divide-white/[0.04] max-h-[700px] overflow-y-auto scrollbar-thin">
               {filteredViewpoints.map((vp, i) => (
                 <ViewpointCard
                   key={vp.id}
@@ -452,35 +448,28 @@ export default function Dashboard({ initialData }: Props) {
           </section>
         </div>
 
-        {/* About */}
-        <section className="glass rounded-3xl p-8 space-y-5">
-          <h2 className="font-display text-lg font-bold text-white">About</h2>
-          <div className="text-sm text-white/35 space-y-3 leading-relaxed">
-            <p>
-              If you live in the Pacific Northwest, you know the question. <strong className="text-white/55">&quot;Is the mountain out?&quot;</strong> On
-              clear days, Rainier at 14,411 feet is hard to miss. But with Seattle weather, you never
-              know when you&apos;ll actually get to see it. This app pulls real-time weather data
-              (cloud layers, atmospheric visibility, PM2.5) and scores visibility for each
-              viewpoint based on elevation, distance, and obstructions. No API keys, no cost.
-              Everything runs on free public data from Open-Meteo and government webcam feeds.
-            </p>
-          </div>
-          <div className="flex items-center gap-4 pt-2">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-400/70 to-violet-500/70 flex items-center justify-center text-xs font-bold text-white ring-1 ring-white/10">
-                JB
-              </div>
-              <div>
-                <p className="text-sm font-medium text-white/50">Built by Jatin Batra</p>
-                <a
-                  href="https://x.com/jatin_batra1"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-blue-400/50 hover:text-blue-300 transition-colors font-medium"
-                >
-                  @jatin_batra1
-                </a>
-              </div>
+        {/* About — no glass card, just text */}
+        <section className="space-y-4 pt-4 border-t border-white/[0.04]">
+          <p className="text-xs text-white/20 leading-relaxed max-w-2xl">
+            If you live in the Pacific Northwest, you know the question: <span className="text-white/35">&quot;Is the mountain out?&quot;</span> This
+            app scores Mt. Rainier visibility using real-time cloud layers, atmospheric visibility, and PM2.5 data.
+            Everything runs on free public data from Open-Meteo and government webcam feeds.
+          </p>
+          <div className="flex items-center gap-3">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-400/50 to-violet-500/50 flex items-center justify-center text-[9px] font-bold text-white/70 ring-1 ring-white/[0.06]">
+              JB
+            </div>
+            <div>
+              <span className="text-xs text-white/30 font-medium">Jatin Batra</span>
+              <span className="text-white/10 mx-2">&middot;</span>
+              <a
+                href="https://x.com/jatin_batra1"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-blue-400/30 hover:text-blue-300 transition-colors"
+              >
+                @jatin_batra1
+              </a>
             </div>
           </div>
         </section>
