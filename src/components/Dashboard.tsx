@@ -34,6 +34,21 @@ interface ViewpointData {
   skyDescription: string;
 }
 
+export interface WeeklyForecastDay {
+  date: string;
+  dayLabel: string;
+  score: number;
+  isVisible: boolean;
+  cloudLow: number;
+  cloudMid: number;
+  cloudHigh: number;
+  visibility: number;
+  weatherCode: number;
+  tempHigh: number;
+  tempLow: number;
+  humidity: number;
+}
+
 interface HourlyTimelineData {
   time: string;
   score: number;
@@ -86,6 +101,7 @@ export interface MountainData {
     label: string;
   };
   hourlyTimeline: HourlyTimelineData[];
+  weeklyForecast?: WeeklyForecastDay[];
   lastUpdated: string;
   aiVision?: {
     isVisible: boolean;
@@ -355,9 +371,12 @@ export default function Dashboard({ initialData }: Props) {
           </section>
         )}
 
-        {/* 7-Day Visibility History */}
+        {/* 7-Day Visibility Predictions */}
         <section className="scroll-reveal scroll-reveal-delay-1">
-          <VisibilityHistory isVisible={adjustedIsVisible} />
+          <VisibilityHistory
+            isVisible={adjustedIsVisible}
+            weeklyForecast={data.weeklyForecast}
+          />
         </section>
 
         {/* Outdoor Widget */}
