@@ -122,7 +122,7 @@ function getMockWeatherData(): WeatherData {
   };
 }
 
-export async function fetchWeatherData(): Promise<WeatherData> {
+export async function fetchWeatherData(options?: { noCache?: boolean }): Promise<WeatherData> {
   const now = new Date();
   const today = now.toISOString().split("T")[0];
 
@@ -152,10 +152,14 @@ export async function fetchWeatherData(): Promise<WeatherData> {
   let weatherRes: Response;
   let aqRes: Response;
 
+  const fetchOpts = options?.noCache
+    ? { cache: "no-store" as RequestCache }
+    : { next: { revalidate: 900 } };
+
   try {
     [weatherRes, aqRes] = await Promise.all([
-      fetch(weatherUrl.toString(), { next: { revalidate: 900 } }),
-      fetch(aqUrl.toString(), { next: { revalidate: 900 } }),
+      fetch(weatherUrl.toString(), fetchOpts),
+      fetch(aqUrl.toString(), fetchOpts),
     ]);
   } catch {
     // APIs unreachable (e.g. no internet in dev sandbox), use mock data

@@ -85,12 +85,12 @@ export async function subscribeToPush(
 
     console.log("[Push] Subscribed:", JSON.stringify(subscription));
 
-    // TODO: Send subscription to your backend
-    // await fetch("/api/push-subscribe", {
-    //   method: "POST",
-    //   body: JSON.stringify(subscription),
-    //   headers: { "Content-Type": "application/json" },
-    // });
+    // Send subscription to backend for server-side push
+    await fetch("/api/subscribe/push", {
+      method: "POST",
+      body: JSON.stringify({ subscription: subscription.toJSON() }),
+      headers: { "Content-Type": "application/json" },
+    });
 
     return subscription;
   } catch (err) {
