@@ -298,6 +298,8 @@ export default function Dashboard({ initialData }: Props) {
           score={neighborhoodAdjustedScore}
           confidence={data.visibility.confidence}
           durationMessage={data.visibility.durationMessage}
+          isNight={isNight}
+          sunrise={data.weather.sunrise}
           scoreBreakdown={{
             cloudLow: data.weather.cloudLow,
             cloudMid: data.weather.cloudMid,

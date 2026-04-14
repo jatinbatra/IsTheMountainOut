@@ -8,6 +8,8 @@ interface Props {
   score: number;
   confidence: string;
   durationMessage: string;
+  isNight?: boolean;
+  sunrise?: string;
   scoreBreakdown?: {
     cloudLow: number;
     cloudMid: number;
@@ -118,8 +120,20 @@ export default function HeroStatus({
   score,
   confidence,
   durationMessage,
+  isNight,
+  sunrise,
   scoreBreakdown,
 }: Props) {
+  // At night, even clear skies don't mean you can see the mountain
+  const nightWithClearSkies = isNight && isVisible;
+
+  const sunriseStr = sunrise
+    ? new Date(sunrise).toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        timeZone: "America/Los_Angeles",
+      })
+    : "sunrise";
   const [showBreakdown, setShowBreakdown] = useState(false);
 
   return (
@@ -153,14 +167,28 @@ export default function HeroStatus({
 
         {/* THE ANSWER — massive editorial typography */}
         <div className="relative py-4">
-          <h1
-            className={`font-display font-black leading-[0.8] tracking-[-0.06em] ${
-              isVisible ? "gradient-text" : "gradient-text-red"
-            }`}
-            style={{ fontSize: "clamp(7rem, 22vw, 16rem)" }}
-          >
-            {isVisible ? "YES" : "NO"}
-          </h1>
+          {nightWithClearSkies ? (
+            <>
+              <h1
+                className="font-display font-black leading-[0.8] tracking-[-0.06em] gradient-text"
+                style={{ fontSize: "clamp(4rem, 14vw, 10rem)" }}
+              >
+                CLEAR
+              </h1>
+              <p className="text-white/25 text-sm mt-4 font-medium">
+                Clear skies tonight — check at {sunriseStr}
+              </p>
+            </>
+          ) : (
+            <h1
+              className={`font-display font-black leading-[0.8] tracking-[-0.06em] ${
+                isVisible ? "gradient-text" : "gradient-text-red"
+              }`}
+              style={{ fontSize: "clamp(7rem, 22vw, 16rem)" }}
+            >
+              {isVisible ? "YES" : "NO"}
+            </h1>
+          )}
         </div>
 
         {/* Score — clean, no boxy containers */}
@@ -228,14 +256,24 @@ export default function HeroStatus({
 
         {/* Duration — clean text, no container */}
         <div className="flex items-center justify-center gap-2.5 pt-2">
-          {isVisible ? (
-            <TrendingUp className="w-4 h-4 text-emerald-400/40" />
+          {nightWithClearSkies ? (
+            <>
+              <TrendingUp className="w-4 h-4 text-emerald-400/40" />
+              <p className="text-white/35 text-sm leading-relaxed">
+                Conditions are clear. If this holds, the mountain should be visible at {sunriseStr}.
+              </p>
+            </>
+          ) : isVisible ? (
+            <>
+              <TrendingUp className="w-4 h-4 text-emerald-400/40" />
+              <p className="text-white/35 text-sm leading-relaxed">{durationMessage}</p>
+            </>
           ) : (
-            <TrendingDown className="w-4 h-4 text-red-400/40" />
+            <>
+              <TrendingDown className="w-4 h-4 text-red-400/40" />
+              <p className="text-white/35 text-sm leading-relaxed">{durationMessage}</p>
+            </>
           )}
-          <p className="text-white/35 text-sm leading-relaxed">
-            {durationMessage}
-          </p>
         </div>
       </div>
     </div>
