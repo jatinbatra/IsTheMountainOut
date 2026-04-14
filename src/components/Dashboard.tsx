@@ -14,8 +14,9 @@ import VisibilityHistory from "@/components/VisibilityHistory";
 import OutdoorWidget from "@/components/OutdoorWidget";
 import NeighborhoodSelector from "@/components/NeighborhoodSelector";
 import CommunityVote from "@/components/CommunityVote";
+import AlertSignup from "@/components/AlertSignup";
 import { WEBCAM_FEEDS } from "@/lib/webcams";
-import { registerSW, requestNotificationPermission, getNotificationPermission } from "@/lib/notifications";
+import { registerSW, getNotificationPermission } from "@/lib/notifications";
 
 interface ViewpointData {
   id: string;
@@ -32,6 +33,21 @@ interface ViewpointData {
   locationScore: number;
   locationConfidence: string;
   skyDescription: string;
+}
+
+export interface WeeklyForecastDay {
+  date: string;
+  dayLabel: string;
+  score: number;
+  isVisible: boolean;
+  cloudLow: number;
+  cloudMid: number;
+  cloudHigh: number;
+  visibility: number;
+  weatherCode: number;
+  tempHigh: number;
+  tempLow: number;
+  humidity: number;
 }
 
 interface HourlyTimelineData {
@@ -86,6 +102,7 @@ export interface MountainData {
     label: string;
   };
   hourlyTimeline: HourlyTimelineData[];
+  weeklyForecast?: WeeklyForecastDay[];
   lastUpdated: string;
   aiVision?: {
     isVisible: boolean;
@@ -113,19 +130,12 @@ export default function Dashboard({ initialData }: Props) {
   const [selectedViewpoint, setSelectedViewpoint] = useState(0);
   const [regionFilter, setRegionFilter] = useState("all");
   const [shared, setShared] = useState(false);
-  const [notifPermission, setNotifPermission] = useState<string>("default");
   const [neighborhood, setNeighborhood] = useState<string | null>(null);
 
   // Register service worker on mount
   useEffect(() => {
     registerSW();
-    setNotifPermission(getNotificationPermission());
   }, []);
-
-  const handleEnableNotifications = async () => {
-    const granted = await requestNotificationPermission();
-    setNotifPermission(granted ? "granted" : "denied");
-  };
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -355,9 +365,12 @@ export default function Dashboard({ initialData }: Props) {
           </section>
         )}
 
-        {/* 7-Day Visibility History */}
+        {/* 7-Day Visibility Predictions */}
         <section className="scroll-reveal scroll-reveal-delay-1">
-          <VisibilityHistory isVisible={adjustedIsVisible} />
+          <VisibilityHistory
+            isVisible={adjustedIsVisible}
+            weeklyForecast={data.weeklyForecast}
+          />
         </section>
 
         {/* Outdoor Widget */}
@@ -368,23 +381,10 @@ export default function Dashboard({ initialData }: Props) {
           />
         </section>
 
-        {/* Notification Prompt */}
-        {notifPermission === "default" && (
-          <section className="scroll-reveal scroll-reveal-delay-2">
-            <div className="flex items-center justify-between py-4 border-y border-white/[0.04]">
-              <div>
-                <p className="text-sm font-medium text-white/50">Get notified when the mountain comes out</p>
-                <p className="text-[11px] text-white/20 mt-0.5">Push notification when visibility changes</p>
-              </div>
-              <button
-                onClick={handleEnableNotifications}
-                className="text-xs text-blue-400/50 hover:text-blue-300 transition-colors font-medium shrink-0"
-              >
-                Enable
-              </button>
-            </div>
-          </section>
-        )}
+        {/* Alert Signup — Email + Push */}
+        <section className="scroll-reveal scroll-reveal-delay-1">
+          <AlertSignup />
+        </section>
 
         {/* Live Webcams */}
         <section className="scroll-reveal scroll-reveal-delay-2">

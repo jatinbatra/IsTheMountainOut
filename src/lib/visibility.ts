@@ -1,4 +1,4 @@
-import { WeatherData, HourlyForecast } from "./weather";
+import { WeatherData, HourlyForecast, DailyForecast } from "./weather";
 
 export interface VisibilityResult {
   isVisible: boolean;
@@ -143,6 +143,25 @@ function scoreHour(h: HourlyForecast): number {
  */
 export function scoreHourForTimeline(h: HourlyForecast): { score: number; isVisible: boolean } {
   const score = scoreHour(h);
+  return { score, isVisible: score >= 50 };
+}
+
+/**
+ * Score a daily forecast for the 7-day prediction view.
+ * Uses the same weight system as hourly scoring.
+ */
+export function scoreDailyForecast(d: DailyForecast): { score: number; isVisible: boolean } {
+  let s = 0;
+  s += 40 * (1 - d.cloudLow / 100);
+  s += 20 * (1 - d.cloudMid / 100);
+  s += 10 * (1 - d.cloudHigh / 100);
+  s += 20 * Math.min(d.visibility / 90000, 1);
+  s += 5; // assume moderate AQ
+  if (d.weatherCode >= 45 && d.weatherCode <= 48) s -= 25;
+  else if (d.weatherCode >= 51 && d.weatherCode <= 67) s -= 15;
+  else if (d.weatherCode >= 71 && d.weatherCode <= 77) s -= 15;
+  else if (d.weatherCode >= 80) s -= 20;
+  const score = Math.max(0, Math.min(100, Math.round(s)));
   return { score, isVisible: score >= 50 };
 }
 

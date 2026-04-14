@@ -1,5 +1,5 @@
 import { fetchWeatherData } from "@/lib/weather";
-import { calculateVisibility, scoreHourForTimeline } from "@/lib/visibility";
+import { calculateVisibility, scoreHourForTimeline, scoreDailyForecast } from "@/lib/visibility";
 import { rankViewpoints } from "@/lib/viewpoints";
 import { getSkyTheme } from "@/lib/sky";
 import Dashboard from "@/components/Dashboard";
@@ -32,6 +32,25 @@ async function getMountainData(): Promise<MountainData> {
       humidity: h.humidity,
       visibility: h.visibility,
       weatherCode: h.weatherCode,
+    };
+  });
+
+  // Build 7-day weekly forecast from daily data
+  const weeklyForecast = weather.dailyForecast.map((d) => {
+    const dayScore = scoreDailyForecast(d);
+    return {
+      date: d.date,
+      dayLabel: d.dayLabel,
+      score: dayScore.score,
+      isVisible: dayScore.isVisible,
+      cloudLow: d.cloudLow,
+      cloudMid: d.cloudMid,
+      cloudHigh: d.cloudHigh,
+      visibility: d.visibility,
+      weatherCode: d.weatherCode,
+      tempHigh: d.tempHigh,
+      tempLow: d.tempLow,
+      humidity: d.humidity,
     };
   });
 
@@ -111,6 +130,7 @@ async function getMountainData(): Promise<MountainData> {
     viewpoints,
     skyTheme,
     hourlyTimeline,
+    weeklyForecast,
     lastUpdated: new Date().toISOString(),
     aiVision,
   };

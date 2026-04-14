@@ -13,6 +13,7 @@ export interface WeatherData {
   weatherCode: number;         // WMO weather code
   isDay: boolean;
   hourlyForecast: HourlyForecast[];
+  dailyForecast: DailyForecast[];
   sunrise: string;
   sunset: string;
   pm25?: number;               // µg/m³ air quality
@@ -28,6 +29,19 @@ export interface HourlyForecast {
   weatherCode: number;
   temperature: number;
   humidity: number;
+}
+
+export interface DailyForecast {
+  date: string;           // YYYY-MM-DD
+  dayLabel: string;       // "Mon", "Tue", etc.
+  cloudLow: number;       // avg 0-100
+  cloudMid: number;
+  cloudHigh: number;
+  visibility: number;     // avg meters
+  weatherCode: number;    // worst (max) code for the day
+  tempHigh: number;
+  tempLow: number;
+  humidity: number;       // avg
 }
 
 // Midpoint between Seattle and Mt Rainier for representative atmospheric conditions
@@ -66,6 +80,29 @@ function getMockWeatherData(): WeatherData {
     };
   });
 
+  // Generate 7-day mock daily forecast
+  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const dailyForecast: DailyForecast[] = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(now);
+    d.setDate(d.getDate() + i);
+    const dateStr = d.toISOString().split("T")[0];
+    // Vary conditions across the week
+    const patterns = [15, 65, 80, 30, 10, 45, 25]; // cloud cover pattern
+    const cl = patterns[i] + Math.round(Math.random() * 10 - 5);
+    return {
+      date: dateStr,
+      dayLabel: dayNames[d.getDay()],
+      cloudLow: Math.max(0, Math.min(100, cl)),
+      cloudMid: Math.max(0, Math.min(100, Math.round(cl * 0.6))),
+      cloudHigh: Math.max(0, Math.min(100, Math.round(cl * 0.3))),
+      visibility: cl < 40 ? 60000 + Math.round(Math.random() * 20000) : 25000 + Math.round(Math.random() * 15000),
+      weatherCode: cl > 60 ? 3 : cl > 40 ? 2 : 0,
+      tempHigh: 12 + Math.round(Math.random() * 6),
+      tempLow: 5 + Math.round(Math.random() * 4),
+      humidity: 50 + Math.round(cl * 0.3),
+    };
+  });
+
   return {
     currentCloudLow: hourlyForecast[hour]?.cloudLow ?? 15,
     currentCloudMid: hourlyForecast[hour]?.cloudMid ?? 10,
@@ -77,6 +114,7 @@ function getMockWeatherData(): WeatherData {
     weatherCode: hourlyForecast[hour]?.weatherCode ?? 0,
     isDay,
     hourlyForecast,
+    dailyForecast,
     sunrise: `${today}T06:30`,
     sunset: `${today}T19:45`,
     pm25: 8.2,
@@ -84,7 +122,7 @@ function getMockWeatherData(): WeatherData {
   };
 }
 
-export async function fetchWeatherData(): Promise<WeatherData> {
+export async function fetchWeatherData(options?: { noCache?: boolean }): Promise<WeatherData> {
   const now = new Date();
   const today = now.toISOString().split("T")[0];
 
@@ -100,11 +138,9 @@ export async function fetchWeatherData(): Promise<WeatherData> {
     "hourly",
     "cloud_cover_low,cloud_cover_mid,cloud_cover_high,visibility,weather_code,temperature_2m,relative_humidity_2m"
   );
-  weatherUrl.searchParams.set("daily", "sunrise,sunset");
+  weatherUrl.searchParams.set("daily", "sunrise,sunset,weather_code,temperature_2m_max,temperature_2m_min");
   weatherUrl.searchParams.set("timezone", "America/Los_Angeles");
-  weatherUrl.searchParams.set("start_date", today);
-  weatherUrl.searchParams.set("end_date", today);
-  weatherUrl.searchParams.set("forecast_days", "1");
+  weatherUrl.searchParams.set("forecast_days", "7");
 
   // Fetch air quality from Open-Meteo Air Quality API
   const aqUrl = new URL("https://air-quality-api.open-meteo.com/v1/air-quality");
@@ -116,10 +152,14 @@ export async function fetchWeatherData(): Promise<WeatherData> {
   let weatherRes: Response;
   let aqRes: Response;
 
+  const fetchOpts = options?.noCache
+    ? { cache: "no-store" as RequestCache }
+    : { next: { revalidate: 900 } };
+
   try {
     [weatherRes, aqRes] = await Promise.all([
-      fetch(weatherUrl.toString(), { next: { revalidate: 900 } }),
-      fetch(aqUrl.toString(), { next: { revalidate: 900 } }),
+      fetch(weatherUrl.toString(), fetchOpts),
+      fetch(aqUrl.toString(), fetchOpts),
     ]);
   } catch {
     // APIs unreachable (e.g. no internet in dev sandbox), use mock data
@@ -142,7 +182,7 @@ export async function fetchWeatherData(): Promise<WeatherData> {
     pm10 = aq.current?.pm10;
   }
 
-  const hourlyForecast: HourlyForecast[] = (weather.hourly?.time ?? []).map(
+  const allHourly: HourlyForecast[] = (weather.hourly?.time ?? []).map(
     (time: string, i: number) => ({
       time,
       cloudLow: weather.hourly.cloud_cover_low[i] ?? 0,
@@ -155,6 +195,30 @@ export async function fetchWeatherData(): Promise<WeatherData> {
     })
   );
 
+  // Today's hourly forecast (first 24 hours)
+  const hourlyForecast = allHourly.slice(0, 24);
+
+  // Aggregate hourly data into daily forecasts
+  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const dailyDates = weather.daily?.time ?? [];
+  const dailyForecast: DailyForecast[] = dailyDates.map((date: string, dayIdx: number) => {
+    const dayHours = allHourly.filter((h) => h.time.startsWith(date));
+    const avg = (arr: number[]) => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+    const d = new Date(date + "T12:00:00");
+    return {
+      date,
+      dayLabel: dayNames[d.getDay()],
+      cloudLow: Math.round(avg(dayHours.map((h) => h.cloudLow))),
+      cloudMid: Math.round(avg(dayHours.map((h) => h.cloudMid))),
+      cloudHigh: Math.round(avg(dayHours.map((h) => h.cloudHigh))),
+      visibility: Math.round(avg(dayHours.map((h) => h.visibility))),
+      weatherCode: weather.daily?.weather_code?.[dayIdx] ?? Math.max(...dayHours.map((h) => h.weatherCode), 0),
+      tempHigh: weather.daily?.temperature_2m_max?.[dayIdx] ?? Math.max(...dayHours.map((h) => h.temperature)),
+      tempLow: weather.daily?.temperature_2m_min?.[dayIdx] ?? Math.min(...dayHours.map((h) => h.temperature)),
+      humidity: Math.round(avg(dayHours.map((h) => h.humidity))),
+    };
+  });
+
   return {
     currentCloudLow: weather.current?.cloud_cover_low ?? 0,
     currentCloudMid: weather.current?.cloud_cover_mid ?? 0,
@@ -166,6 +230,7 @@ export async function fetchWeatherData(): Promise<WeatherData> {
     weatherCode: weather.current?.weather_code ?? 0,
     isDay: weather.current?.is_day === 1,
     hourlyForecast,
+    dailyForecast,
     sunrise: weather.daily?.sunrise?.[0] ?? "",
     sunset: weather.daily?.sunset?.[0] ?? "",
     pm25,
