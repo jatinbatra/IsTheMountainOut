@@ -457,6 +457,17 @@ export default function Dashboard({ initialData }: Props) {
             app scores Mt. Rainier visibility using real-time cloud layers, atmospheric visibility, and PM2.5 data.
             Everything runs on free public data from Open-Meteo and government webcam feeds.
           </p>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[10px] text-white/15">
+            <span>No cookies</span>
+            <span className="text-white/[0.06]">&middot;</span>
+            <span>No analytics</span>
+            <span className="text-white/[0.06]">&middot;</span>
+            <span>No tracking</span>
+            <span className="text-white/[0.06]">&middot;</span>
+            <span>No login required</span>
+            <span className="text-white/[0.06]">&middot;</span>
+            <span>100% free</span>
+          </div>
           <div className="flex items-center gap-3">
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-400/50 to-violet-500/50 flex items-center justify-center text-[9px] font-bold text-white/70 ring-1 ring-white/[0.06]">
               JB
