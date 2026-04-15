@@ -66,7 +66,8 @@ export default function LiveWebcams({ feeds }: Props) {
 
   const getImageSrc = (feed: WebcamFeed) => {
     const ts = imageTimestamps[feed.id] || Date.now();
-    return `/api/webcam/${feed.id}?t=${ts}`;
+    // Load directly from government URL — server proxy gets blocked by USGS/NPS
+    return `${feed.imageUrl}?t=${ts}`;
   };
 
   const goNext = () => setSelectedCam((prev) => (prev + 1) % feeds.length);
