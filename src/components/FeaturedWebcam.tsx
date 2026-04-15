@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { RefreshCw, ExternalLink, AlertCircle } from "lucide-react";
 
-const WEBCAM_URL = "/api/webcam/usgs-longmire";
+// Load directly from USGS — server proxy gets blocked from cloud IPs
+const WEBCAM_URL = "https://volcview.wr.usgs.gov/ashcam-api/images/webcams/rainier-longmire/current.jpeg";
 const WEBCAM_SOURCE = "https://www.usgs.gov/volcanoes/mount-rainier/webcams";
 
 export default function FeaturedWebcam() {
