@@ -8,7 +8,7 @@ export interface MountainState {
 }
 
 export interface StateTransition {
-  type: "mountain_emerged" | "sunset_prime" | "no_change";
+  type: "mountain_emerged" | "sunset_prime" | "golden_hour" | "no_change";
   shouldNotify: boolean;
   message: string;
   score: number;
@@ -120,6 +120,20 @@ export async function evaluateTransition(
           score: currentScore,
         };
       }
+    }
+  }
+
+  // --- Trigger C: Golden Hour — score crosses 80 from below ---
+  if (currentScore >= 80 && previousState && previousState.score < 80) {
+    const onCooldown = await isCooldownActive("golden_hour");
+    if (!onCooldown) {
+      await setCooldown("golden_hour");
+      return {
+        type: "golden_hour",
+        shouldNotify: true,
+        message: `Mt. Rainier just hit ${currentScore}/100 — crystal clear visibility right now. Get outside!`,
+        score: currentScore,
+      };
     }
   }
 

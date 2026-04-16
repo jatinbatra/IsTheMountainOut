@@ -80,7 +80,7 @@ function ScoreGauge({ label, score, max, detail, color }: {
         <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: c.bg }}>
           <span className="font-display text-lg font-bold" style={{ color: c.stroke }}>{score}</span>
         </div>
-        <span className="text-[10px] text-white/40 font-medium">{label}</span>
+        <span className="text-[10px] text-slate-400 font-medium">{label}</span>
       </div>
     );
   }
@@ -104,12 +104,12 @@ function ScoreGauge({ label, score, max, detail, color }: {
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="font-display text-sm font-bold text-white">{score}</span>
-          <span className="text-[8px] text-white/30">/{max}</span>
+          <span className="text-[8px] text-slate-600">/{max}</span>
         </div>
       </div>
       <div className="text-center">
-        <span className="text-[10px] text-white/40 font-medium block">{label}</span>
-        <span className="text-[9px] text-white/25">{detail}</span>
+        <span className="text-[10px] text-slate-400 font-medium block">{label}</span>
+        <span className="text-[9px] text-slate-600">{detail}</span>
       </div>
     </div>
   );
@@ -137,21 +137,20 @@ export default function HeroStatus({
 
   return (
     <div className="relative animate-fade-up" role="region" aria-label="Mountain visibility status">
-      {/* Prediction notice */}
-      <div className="flex justify-center mb-10">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] ring-1 ring-white/[0.06]">
-          <AlertTriangle className="w-3.5 h-3.5 text-amber-400/60" aria-hidden="true" />
-          <span className="text-[11px] text-white/40 font-medium">
-            Weather-based prediction, not a live camera
+      {/* Prediction notice — compact */}
+      <div className="flex justify-center mb-6">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] ring-1 ring-white/[0.06]">
+          <AlertTriangle className="w-3 h-3 text-amber-400/60" aria-hidden="true" />
+          <span className="text-[10px] text-white/35 font-medium">
+            Weather-based prediction
           </span>
         </div>
       </div>
 
-      {/* Atmospheric glow — lightweight radial gradient, NO blur filter */}
+      {/* Atmospheric glow — lightweight radial gradient with breathing animation */}
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] rounded-full pointer-events-none"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] rounded-full pointer-events-none animate-hero-glow"
         style={{
-          opacity: 0.15 + (score / 100) * 0.25,
           background: isVisible
             ? `radial-gradient(ellipse, rgba(52,211,153,${0.15 + score / 400}) 0%, rgba(59,130,246,0.03) 40%, transparent 65%)`
             : `radial-gradient(ellipse, rgba(248,113,113,0.10) 0%, rgba(251,146,60,0.03) 40%, transparent 65%)`,
@@ -159,9 +158,9 @@ export default function HeroStatus({
         aria-hidden="true"
       />
 
-      <div className="relative text-center space-y-10">
+      <div className="relative text-center space-y-6">
         {/* The question */}
-        <p className="font-display text-xs font-medium tracking-[0.4em] uppercase text-white/35">
+        <p className="font-display text-[11px] font-semibold tracking-[0.35em] uppercase text-slate-500">
           Is the Mountain Out?
         </p>
 
@@ -194,11 +193,11 @@ export default function HeroStatus({
         </div>
 
         {/* Score */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           <div className="flex items-center justify-center gap-4">
             <span className="font-display text-5xl font-black text-white tracking-tight" aria-label={`Score: ${score} out of 100`}>{score}</span>
             <div className="text-left">
-              <span className="text-white/25 text-lg font-light block leading-none">/100</span>
+              <span className="text-slate-600 text-lg font-light block leading-none">/100</span>
               <span
                 className={`text-[10px] font-bold uppercase tracking-widest ${
                   confidence === "high"
@@ -235,7 +234,7 @@ export default function HeroStatus({
           <div>
             <button
               onClick={() => setShowBreakdown(!showBreakdown)}
-              className="inline-flex items-center gap-2 text-xs text-white/30 hover:text-white/50 transition-colors font-medium"
+              className="inline-flex items-center gap-2 text-xs text-slate-500 hover:text-slate-300 transition-colors font-medium"
               aria-expanded={showBreakdown}
               aria-controls="score-breakdown"
             >
@@ -254,7 +253,7 @@ export default function HeroStatus({
                   <ScoreGauge key={comp.label} {...comp} />
                 ))}
               </div>
-              <p className="text-[10px] text-white/20 mt-5">
+              <p className="text-[10px] text-slate-600 mt-5 tracking-wide">
                 Low clouds matter most — they sit directly between you and the mountain
               </p>
             </div>

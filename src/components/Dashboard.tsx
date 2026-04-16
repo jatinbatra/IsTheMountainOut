@@ -3,7 +3,8 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import useSWR from "swr";
-import { RefreshCw, Mountain, Share2, Check, BarChart3, Camera, MapPin, Trophy } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { RefreshCw, Mountain, Share2, Check, BarChart3, Camera, MapPin, Trophy, Sparkles } from "lucide-react";
 import HeroStatus from "@/components/HeroStatus";
 import MountainScene from "@/components/MountainScene";
 import WeatherDetails from "@/components/WeatherDetails";
@@ -278,7 +279,7 @@ export default function Dashboard({ initialData }: Props) {
     >
       <div className="ambient-bg" aria-hidden="true" />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-14 space-y-14">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-8">
         {/* ── Header ── */}
         <header className="flex items-center justify-between animate-fade-up">
           <div className="flex items-center gap-3.5">
@@ -289,24 +290,13 @@ export default function Dashboard({ initialData }: Props) {
               <h1 className="font-display font-bold text-white text-base leading-tight">
                 IsTheMountainOut
               </h1>
-              <p className="text-[11px] text-white/35 font-medium">
+              <p className="text-[11px] text-slate-500 font-medium tracking-wide">
                 Mt. Rainier &middot; 14,411 ft
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[11px] text-white/30 font-medium hidden sm:inline">{timeStr} PT</span>
-            <button
-              onClick={handleShare}
-              className="p-2.5 rounded-xl glass hover:bg-white/[0.06] transition-all"
-              aria-label="Share mountain status"
-            >
-              {shared ? (
-                <Check className="w-4 h-4 text-emerald-400" />
-              ) : (
-                <Share2 className="w-4 h-4 text-white/40" />
-              )}
-            </button>
+            <span className="text-[11px] text-slate-500 font-medium tracking-wide hidden sm:inline">{timeStr} PT</span>
             <button
               onClick={() => mutate()}
               disabled={isValidating}
@@ -345,7 +335,52 @@ export default function Dashboard({ initialData }: Props) {
           }}
         />
 
-        {/* AI Vision — streams in async, never blocks page */}
+        {/* Photo Drop — always visible, not gated on mountain visibility */}
+        <section className="animate-fade-up">
+          <PhotoDrop neighborhood={neighborhood} />
+        </section>
+
+        {/* Contextual share CTA — replaces the tiny header Share2 icon */}
+        <section className="animate-fade-up flex justify-center">
+          <button
+            onClick={handleShare}
+            className={`group relative inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-display font-bold text-base transition-all ${
+              adjustedIsVisible
+                ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/25 hover:bg-emerald-500/25 hover:ring-emerald-400/40"
+                : "bg-white/[0.06] text-white/60 ring-1 ring-white/[0.08] hover:bg-white/[0.10] hover:ring-white/15"
+            }`}
+            aria-label="Share mountain status"
+          >
+            {shared ? (
+              <>
+                <Check className="w-5 h-5" />
+                <span>Copied!</span>
+              </>
+            ) : (
+              <>
+                {adjustedIsVisible ? (
+                  <Sparkles className="w-5 h-5 text-emerald-400" />
+                ) : (
+                  <Share2 className="w-5 h-5" />
+                )}
+                <span>
+                  {neighborhood && NEIGHBORHOOD_LABELS[neighborhood]
+                    ? `Flex the ${NEIGHBORHOOD_LABELS[neighborhood]} View`
+                    : adjustedIsVisible
+                      ? "Flex the View"
+                      : "Share Status"
+                  }
+                </span>
+              </>
+            )}
+            {/* Glow ring on hover when mountain is out */}
+            {adjustedIsVisible && (
+              <div className="absolute inset-0 rounded-2xl bg-emerald-400/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" aria-hidden="true" />
+            )}
+          </button>
+        </section>
+
+        {/* AI Vision — async-loaded, positioned below fold */}
         {aiVision && aiVision.raw && (
           <div className="flex justify-center animate-fade-up">
             <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium ${
@@ -357,13 +392,6 @@ export default function Dashboard({ initialData }: Props) {
               AI Vision says: {aiVision.raw}
             </div>
           </div>
-        )}
-
-        {/* Photo Drop — user-generated proof */}
-        {adjustedIsVisible && (
-          <section className="animate-fade-up">
-            <PhotoDrop neighborhood={neighborhood} />
-          </section>
         )}
 
         {/* Alert signup — immediately under hero for maximum visibility */}
@@ -387,7 +415,7 @@ export default function Dashboard({ initialData }: Props) {
               <h2 className="font-display text-base font-bold text-white">
                 Neighborhood Leaderboard
               </h2>
-              <p className="text-[11px] text-white/35 font-medium mt-0.5">
+              <p className="text-[11px] text-slate-500 font-medium tracking-wide mt-0.5">
                 Best visibility right now
               </p>
             </div>
@@ -404,7 +432,7 @@ export default function Dashboard({ initialData }: Props) {
                     : "bg-white/[0.03] text-white/50 ring-1 ring-white/[0.06] hover:bg-white/[0.06]"
                 }`}
               >
-                <span className={`font-mono text-[10px] font-bold ${i === 0 ? "text-amber-400" : "text-white/25"}`}>
+                <span className={`font-mono text-[10px] font-bold ${i === 0 ? "text-amber-400" : "text-slate-600"}`}>
                   #{i + 1}
                 </span>
                 <span>{NEIGHBORHOOD_LABELS[entry.id] || entry.id}</span>
@@ -451,8 +479,8 @@ export default function Dashboard({ initialData }: Props) {
                   aria-controls={`panel-${tab.key}`}
                   className={`flex items-center gap-2 px-5 py-3 text-sm font-medium transition-all border-b-2 -mb-[1px] ${
                     activeTab === tab.key
-                      ? "border-blue-400 text-white/80"
-                      : "border-transparent text-white/30 hover:text-white/50"
+                      ? "border-blue-400 text-slate-200"
+                      : "border-transparent text-slate-500 hover:text-slate-400"
                   }`}
                 >
                   <Icon className="w-4 h-4" aria-hidden="true" />
@@ -462,118 +490,141 @@ export default function Dashboard({ initialData }: Props) {
             })}
           </div>
 
-          {/* Tab panels */}
-          <div
-            id="panel-data"
-            role="tabpanel"
-            aria-labelledby="tab-data"
-            className={activeTab === "data" ? "space-y-14" : "hidden"}
-          >
-            <MountainScene
-              skyTheme={data.skyTheme}
-              isVisible={adjustedIsVisible}
-              viewpointName={selectedVp?.name}
-              viewpointDistance={selectedVp?.distanceMiles}
-            />
-
-            {data.hourlyTimeline?.length > 0 && (
-              <ForecastTimeline
-                hourlyTimeline={data.hourlyTimeline}
-                currentScore={data.visibility.score}
-              />
-            )}
-
-            {isNight && (
-              <NightSky
-                sunrise={data.weather.sunrise || ""}
-                isDay={data.weather.isDay}
-              />
-            )}
-
-            <VisibilityHistory
-              isVisible={adjustedIsVisible}
-              weeklyForecast={data.weeklyForecast}
-            />
-
-            <OutdoorWidget
-              isVisible={adjustedIsVisible}
-              sunset={data.weather.sunset}
-            />
-
-            <WeatherDetails
-              weather={data.weather}
-              reasons={data.visibility.reasons}
-            />
-          </div>
-
-          <div
-            id="panel-webcams"
-            role="tabpanel"
-            aria-labelledby="tab-webcams"
-            className={activeTab === "webcams" ? "space-y-10" : "hidden"}
-          >
-            <LiveWebcams feeds={WEBCAM_FEEDS} />
-          </div>
-
-          <div
-            id="panel-viewpoints"
-            role="tabpanel"
-            aria-labelledby="tab-viewpoints"
-            className={activeTab === "viewpoints" ? "space-y-6" : "hidden"}
-          >
-            <div className="flex items-center justify-between">
-              <h2 className="font-display text-xl font-bold text-white">
-                {adjustedIsVisible ? "Best Viewpoints" : "Viewpoints"}
-              </h2>
-              <span className="text-[11px] text-white/25 font-medium">
-                {filteredViewpoints.length} locations
-              </span>
-            </div>
-
-            <div className="flex items-center gap-1" role="radiogroup" aria-label="Filter by region">
-              {REGIONS.map((r) => (
-                <button
-                  key={r.key}
-                  onClick={() => {
-                    setRegionFilter(r.key);
-                    setSelectedViewpoint(0);
-                  }}
-                  role="radio"
-                  aria-checked={regionFilter === r.key}
-                  className={`text-[11px] font-medium px-3 py-1 rounded-full transition-all ${
-                    regionFilter === r.key
-                      ? "bg-white/[0.08] text-white/60"
-                      : "text-white/30 hover:text-white/45"
-                  }`}
-                >
-                  {r.label}
-                </button>
-              ))}
-            </div>
-
-            <div className="divide-y divide-white/[0.04] max-h-[700px] overflow-y-auto scrollbar-thin" role="list">
-              {filteredViewpoints.map((vp, i) => (
-                <ViewpointCard
-                  key={vp.id}
-                  viewpoint={vp}
-                  rank={i + 1}
+          {/* Tab panels with AnimatePresence */}
+          <AnimatePresence mode="wait">
+            {activeTab === "data" && (
+              <motion.div
+                key="panel-data"
+                id="panel-data"
+                role="tabpanel"
+                aria-labelledby="tab-data"
+                className="space-y-14"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2, ease: "easeInOut" }}
+              >
+                <MountainScene
+                  skyTheme={data.skyTheme}
                   isVisible={adjustedIsVisible}
-                  isSelected={selectedViewpoint === i}
-                  onSelect={() => setSelectedViewpoint(i)}
+                  viewpointName={selectedVp?.name}
+                  viewpointDistance={selectedVp?.distanceMiles}
                 />
-              ))}
-            </div>
-          </div>
+
+                {data.hourlyTimeline?.length > 0 && (
+                  <ForecastTimeline
+                    hourlyTimeline={data.hourlyTimeline}
+                    currentScore={data.visibility.score}
+                  />
+                )}
+
+                {isNight && (
+                  <NightSky
+                    sunrise={data.weather.sunrise || ""}
+                    isDay={data.weather.isDay}
+                  />
+                )}
+
+                <VisibilityHistory
+                  isVisible={adjustedIsVisible}
+                  weeklyForecast={data.weeklyForecast}
+                />
+
+                <OutdoorWidget
+                  isVisible={adjustedIsVisible}
+                  sunset={data.weather.sunset}
+                />
+
+                <WeatherDetails
+                  weather={data.weather}
+                  reasons={data.visibility.reasons}
+                />
+              </motion.div>
+            )}
+
+            {activeTab === "webcams" && (
+              <motion.div
+                key="panel-webcams"
+                id="panel-webcams"
+                role="tabpanel"
+                aria-labelledby="tab-webcams"
+                className="space-y-10"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2, ease: "easeInOut" }}
+              >
+                <LiveWebcams feeds={WEBCAM_FEEDS} />
+              </motion.div>
+            )}
+
+            {activeTab === "viewpoints" && (
+              <motion.div
+                key="panel-viewpoints"
+                id="panel-viewpoints"
+                role="tabpanel"
+                aria-labelledby="tab-viewpoints"
+                className="space-y-6"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2, ease: "easeInOut" }}
+              >
+                <div className="flex items-center justify-between">
+                  <h2 className="font-display text-xl font-bold text-white">
+                    {adjustedIsVisible ? "Best Viewpoints" : "Viewpoints"}
+                  </h2>
+                  <span className="text-[11px] text-slate-500 font-medium tracking-wide">
+                    {filteredViewpoints.length} locations
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-1" role="radiogroup" aria-label="Filter by region">
+                  {REGIONS.map((r) => (
+                    <button
+                      key={r.key}
+                      onClick={() => {
+                        setRegionFilter(r.key);
+                        setSelectedViewpoint(0);
+                      }}
+                      role="radio"
+                      aria-checked={regionFilter === r.key}
+                      className={`text-[11px] font-medium px-3 py-1 rounded-full transition-all ${
+                        regionFilter === r.key
+                          ? "bg-white/[0.08] text-slate-300"
+                          : "text-slate-500 hover:text-slate-400"
+                      }`}
+                    >
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="divide-y divide-white/[0.04] max-h-[700px] overflow-y-auto scrollbar-thin" role="list">
+                  {filteredViewpoints.map((vp, i) => (
+                    <ViewpointCard
+                      key={vp.id}
+                      viewpoint={vp}
+                      rank={i + 1}
+                      isVisible={adjustedIsVisible}
+                      isSelected={selectedViewpoint === i}
+                      onSelect={() => setSelectedViewpoint(i)}
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </section>
 
         {/* ── About ── */}
         <section className="space-y-4 pt-4 border-t border-white/[0.06]">
-          <p className="text-xs text-white/30 leading-relaxed max-w-2xl">
-            If you live in the Pacific Northwest, you know the question: <span className="text-white/50">&quot;Is the mountain out?&quot;</span> This
+          <p className="text-xs text-slate-500 leading-relaxed max-w-2xl">
+            If you live in the Pacific Northwest, you know the question: <span className="text-slate-400">&quot;Is the mountain out?&quot;</span> This
             app scores Mt. Rainier visibility using real-time cloud layers, atmospheric visibility, and PM2.5 data.
             Everything runs on free public data from Open-Meteo and government webcam feeds.
           </p>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[10px] text-white/25">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[10px] text-slate-600 tracking-wide uppercase font-medium">
             <span>No cookies</span>
             <span className="text-white/[0.08]" aria-hidden="true">&middot;</span>
             <span>No analytics</span>
@@ -589,8 +640,8 @@ export default function Dashboard({ initialData }: Props) {
               JB
             </div>
             <div>
-              <span className="text-xs text-white/40 font-medium">Jatin Batra</span>
-              <span className="text-white/15 mx-2" aria-hidden="true">&middot;</span>
+              <span className="text-xs text-slate-400 font-medium">Jatin Batra</span>
+              <span className="text-slate-700 mx-2" aria-hidden="true">&middot;</span>
               <a
                 href="https://x.com/jatin_batra1"
                 target="_blank"
@@ -604,7 +655,7 @@ export default function Dashboard({ initialData }: Props) {
         </section>
 
         {/* ── Footer ── */}
-        <footer className="text-center text-[11px] text-white/25 py-10 border-t border-white/[0.06] space-y-1.5 font-medium">
+        <footer className="text-center text-[11px] text-slate-600 py-10 border-t border-white/[0.06] space-y-1.5 font-medium tracking-wide">
           <p>
             Weather data from{" "}
             <a
