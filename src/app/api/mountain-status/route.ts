@@ -3,6 +3,7 @@ import { fetchWeatherData } from "@/lib/weather";
 import { calculateVisibility, scoreHourForTimeline, scoreDailyForecast } from "@/lib/visibility";
 import { rankViewpoints } from "@/lib/viewpoints";
 import { getSkyTheme } from "@/lib/sky";
+import { predictAlpenglow } from "@/lib/alpenglow";
 
 // Cache the result for 15 minutes
 let cachedResult: { data: ReturnType<typeof buildResponse>; timestamp: number } | null =
@@ -57,6 +58,17 @@ function buildResponse(
     };
   });
 
+  // Alpenglow prediction
+  const alpenglowData = weather.sunset
+    ? predictAlpenglow(
+        weather.currentCloudLow,
+        weather.currentCloudMid,
+        weather.currentCloudHigh,
+        weather.sunset,
+        visibility.score
+      )
+    : null;
+
   return {
     visibility,
     weather: {
@@ -78,6 +90,13 @@ function buildResponse(
     skyTheme,
     hourlyTimeline,
     weeklyForecast,
+    alpenglow: alpenglowData
+      ? {
+          probability: alpenglowData.probability,
+          isLikely: alpenglowData.isLikely,
+          minutesToSunset: alpenglowData.minutesToSunset,
+        }
+      : undefined,
     lastUpdated: new Date().toISOString(),
   };
 }

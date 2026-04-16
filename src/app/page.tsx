@@ -7,6 +7,7 @@ import {
   getNeighborhoodAdjustedScore,
   NEIGHBORHOOD_LABELS,
 } from "@/lib/visibility";
+import { predictAlpenglow } from "@/lib/alpenglow";
 import { rankViewpoints } from "@/lib/viewpoints";
 import { getSkyTheme } from "@/lib/sky";
 import Dashboard from "@/components/Dashboard";
@@ -63,6 +64,17 @@ async function getMountainData(): Promise<MountainData> {
     };
   });
 
+  // Alpenglow prediction
+  const alpenglowData = weather.sunset
+    ? predictAlpenglow(
+        weather.currentCloudLow,
+        weather.currentCloudMid,
+        weather.currentCloudHigh,
+        weather.sunset,
+        visibility.score
+      )
+    : null;
+
   return {
     visibility,
     weather: {
@@ -84,6 +96,13 @@ async function getMountainData(): Promise<MountainData> {
     skyTheme,
     hourlyTimeline,
     weeklyForecast,
+    alpenglow: alpenglowData
+      ? {
+          probability: alpenglowData.probability,
+          isLikely: alpenglowData.isLikely,
+          minutesToSunset: alpenglowData.minutesToSunset,
+        }
+      : undefined,
     lastUpdated: new Date().toISOString(),
   };
 }
