@@ -4,7 +4,7 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import { AnimatePresence, motion } from "framer-motion";
-import { RefreshCw, Mountain, Share2, Check, BarChart3, Camera, MapPin, Trophy, Sparkles } from "lucide-react";
+import { RefreshCw, Mountain, Share2, Check, BarChart3, Camera, MapPin, Trophy, Sparkles, Sunset } from "lucide-react";
 import HeroStatus from "@/components/HeroStatus";
 import MountainScene from "@/components/MountainScene";
 import WeatherDetails from "@/components/WeatherDetails";
@@ -116,6 +116,11 @@ export interface MountainData {
   };
   hourlyTimeline: HourlyTimelineData[];
   weeklyForecast?: WeeklyForecastDay[];
+  alpenglow?: {
+    probability: number;
+    isLikely: boolean;
+    minutesToSunset: number;
+  };
   lastUpdated: string;
   aiVision?: {
     isVisible: boolean;
@@ -334,6 +339,53 @@ export default function Dashboard({ initialData }: Props) {
             weatherCode: data.weather.weatherCode,
           }}
         />
+
+        {/* Alpenglow Alert Banner */}
+        {data.alpenglow && data.alpenglow.probability >= 40 && data.alpenglow.minutesToSunset > 0 && data.alpenglow.minutesToSunset <= 60 && (
+          <section className="animate-fade-up">
+            <div className="relative overflow-hidden rounded-2xl ring-1 ring-orange-400/20 bg-gradient-to-r from-orange-500/10 via-pink-500/10 to-violet-500/10 px-6 py-5">
+              {/* Animated glow */}
+              <div className="absolute inset-0 bg-gradient-to-r from-orange-400/5 via-pink-400/5 to-transparent animate-shimmer pointer-events-none" aria-hidden="true" />
+              <div className="relative flex items-center gap-4">
+                <div className="flex-shrink-0 p-2.5 rounded-xl bg-orange-500/15 ring-1 ring-orange-400/20">
+                  <Sunset className="w-5 h-5 text-orange-400" aria-hidden="true" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-display font-bold text-orange-300 text-sm">
+                      Alpenglow Alert
+                    </h3>
+                    <span className="font-display font-bold text-orange-400/80 text-xs tabular-nums">
+                      {data.alpenglow.probability}%
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                    {data.alpenglow.isLikely
+                      ? `High probability of Alpenglow in ~${data.alpenglow.minutesToSunset}min. Clear sightline + high cirrus = the mountain could turn pink. Get a camera.`
+                      : `Moderate Alpenglow chance (~${data.alpenglow.minutesToSunset}min to sunset). Conditions are favorable — keep watching.`
+                    }
+                  </p>
+                </div>
+                {/* Probability ring */}
+                <div className="flex-shrink-0 hidden sm:block">
+                  <svg viewBox="0 0 48 48" className="w-12 h-12 -rotate-90" aria-label={`${data.alpenglow.probability}% probability`}>
+                    <circle cx="24" cy="24" r="20" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3" />
+                    <circle
+                      cx="24" cy="24" r="20"
+                      fill="none"
+                      stroke={data.alpenglow.isLikely ? "#fb923c" : "#a78bfa"}
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeDasharray={`${2 * Math.PI * 20}`}
+                      strokeDashoffset={`${2 * Math.PI * 20 * (1 - data.alpenglow.probability / 100)}`}
+                      opacity="0.7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Photo Drop — always visible, not gated on mountain visibility */}
         <section className="animate-fade-up">

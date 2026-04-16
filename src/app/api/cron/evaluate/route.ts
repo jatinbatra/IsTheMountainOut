@@ -44,12 +44,17 @@ export async function GET(request: Request) {
     // 3. Load previous state
     const previousState = await getMountainState();
 
-    // 4. Evaluate transitions
+    // 4. Evaluate transitions (pass cloud data for Alpenglow detection)
     const transition = await evaluateTransition(
       visibility.score,
       visibility.isVisible,
       weather.sunset,
-      previousState
+      previousState,
+      {
+        cloudLow: weather.currentCloudLow,
+        cloudMid: weather.currentCloudMid,
+        cloudHigh: weather.currentCloudHigh,
+      }
     );
 
     // 5. Save new state
@@ -61,11 +66,13 @@ export async function GET(request: Request) {
 
     if (transition.shouldNotify) {
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://isthemountainout.com";
-      const title = transition.type === "mountain_emerged"
-        ? "The Mountain is OUT!"
-        : transition.type === "golden_hour"
-          ? "Crystal Clear — Score 80+"
-          : "Prime Sunset Viewing";
+      const titleMap: Record<string, string> = {
+        mountain_emerged: "The Mountain is OUT!",
+        sunset_prime: "Prime Sunset Viewing",
+        golden_hour: "Crystal Clear — Score 80+",
+        alpenglow_alert: "Alpenglow Alert — Get a Camera!",
+      };
+      const title = titleMap[transition.type] || "Mountain Alert";
 
       // Fire all channels in parallel
       const [tweetResult, pushResult, emailResult] = await Promise.allSettled([

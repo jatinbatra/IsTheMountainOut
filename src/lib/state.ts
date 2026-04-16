@@ -1,4 +1,5 @@
 import { kv } from "@vercel/kv";
+import { predictAlpenglow } from "@/lib/alpenglow";
 
 export interface MountainState {
   score: number;
@@ -8,11 +9,12 @@ export interface MountainState {
 }
 
 export interface StateTransition {
-  type: "mountain_emerged" | "sunset_prime" | "golden_hour" | "no_change";
+  type: "mountain_emerged" | "sunset_prime" | "golden_hour" | "alpenglow_alert" | "no_change";
   shouldNotify: boolean;
   message: string;
   score: number;
   hiddenHours?: number;
+  alpenglowProbability?: number;
 }
 
 const STATE_KEY = "mountain:state";
@@ -71,13 +73,16 @@ async function setCooldown(type: string): Promise<void> {
  * Evaluate whether a state transition has occurred that warrants a notification.
  *
  * Trigger A (The Reveal): Mountain hidden for >6h, score crosses 70
- * Trigger B (Golden Hour): Within 90min of sunset, score >80
+ * Trigger B (Sunset Prime): Within 90min of sunset, score >80
+ * Trigger C (Golden Hour): Score crosses 80 from below
+ * Trigger D (Alpenglow): High cirrus + clear low/mid + near sunset = alpenglow likely
  */
 export async function evaluateTransition(
   currentScore: number,
   currentIsVisible: boolean,
   sunset: string | undefined,
-  previousState: MountainState | null
+  previousState: MountainState | null,
+  cloudData?: { cloudLow: number; cloudMid: number; cloudHigh: number }
 ): Promise<StateTransition> {
   const now = new Date();
 
@@ -118,6 +123,36 @@ export async function evaluateTransition(
           shouldNotify: true,
           message: `Prime sunset viewing tonight! Mt. Rainier is crystal clear with a score of ${currentScore}/100. Sunset in ${Math.round(minsToSunset)} minutes.`,
           score: currentScore,
+        };
+      }
+    }
+  }
+
+  // --- Trigger D: Alpenglow Alert ---
+  if (sunset && cloudData) {
+    const alpenglow = predictAlpenglow(
+      cloudData.cloudLow,
+      cloudData.cloudMid,
+      cloudData.cloudHigh,
+      sunset,
+      currentScore
+    );
+
+    if (alpenglow.isLikely && alpenglow.minutesToSunset > 0 && alpenglow.minutesToSunset <= 45) {
+      const onCooldown = await isCooldownActive("alpenglow_alert");
+      if (!onCooldown) {
+        await setCooldown("alpenglow_alert");
+        const sunsetStr = new Date(sunset).toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+          timeZone: "America/Los_Angeles",
+        });
+        return {
+          type: "alpenglow_alert",
+          shouldNotify: true,
+          message: `High probability of Alpenglow tonight (${alpenglow.probability}%). Clear skies + high cirrus = Mt. Rainier could turn pink. Sunset at ${sunsetStr}. Get a camera.`,
+          score: currentScore,
+          alpenglowProbability: alpenglow.probability,
         };
       }
     }
