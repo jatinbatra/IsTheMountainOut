@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import { RefreshCw, Mountain, Share2, Check, BarChart3, Camera, MapPin, Trophy } from "lucide-react";
 import HeroStatus from "@/components/HeroStatus";
@@ -16,12 +17,16 @@ import OutdoorWidget from "@/components/OutdoorWidget";
 import NeighborhoodSelector from "@/components/NeighborhoodSelector";
 import CommunityVote from "@/components/CommunityVote";
 import AlertSignup from "@/components/AlertSignup";
+import PhotoDrop from "@/components/PhotoDrop";
 import { WEBCAM_FEEDS } from "@/lib/webcams";
 import { registerSW } from "@/lib/notifications";
-import { getNeighborhoodAdjustedScore, getAllNeighborhoodScores } from "@/lib/visibility";
+import {
+  getNeighborhoodAdjustedScore,
+  getAllNeighborhoodScores,
+  NEIGHBORHOOD_LABELS,
+} from "@/lib/visibility";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { useKeyboardNavigation } from "@/hooks/useKeyboardNavigation";
-import { useEffect } from "react";
 
 // ── Type Definitions ────────────────────────────────────────────────
 
@@ -141,23 +146,6 @@ const TABS = [
 
 type TabKey = (typeof TABS)[number]["key"];
 
-const NEIGHBORHOOD_LABELS: Record<string, string> = {
-  "capitol-hill": "Capitol Hill",
-  "queen-anne": "Queen Anne",
-  "ballard": "Ballard",
-  "fremont": "Fremont",
-  "downtown": "Downtown",
-  "beacon-hill": "Beacon Hill",
-  "west-seattle": "West Seattle",
-  "columbia-city": "Columbia City",
-  "greenwood": "Greenwood",
-  "u-district": "U-District",
-  "bellevue": "Bellevue",
-  "kirkland": "Kirkland",
-  "tacoma": "Tacoma",
-  "renton": "Renton",
-};
-
 // ── SWR Fetcher ─────────────────────────────────────────────────────
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
@@ -165,6 +153,9 @@ const fetcher = (url: string) => fetch(url).then((r) => r.json());
 // ── Component ───────────────────────────────────────────────────────
 
 export default function Dashboard({ initialData }: Props) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   // SWR replaces manual setInterval polling
   const { data: swrData, isValidating, mutate } = useSWR<MountainData>(
     "/api/mountain-status",
@@ -176,7 +167,7 @@ export default function Dashboard({ initialData }: Props) {
       revalidateOnReconnect: true,
     }
   );
-  const data = swrData!; // always defined due to fallbackData
+  const data = swrData!;
 
   // AI Vision — async client-side fetch, doesn't block page load
   const { data: aiVision } = useSWR<MountainData["aiVision"]>(
@@ -185,24 +176,58 @@ export default function Dashboard({ initialData }: Props) {
     { revalidateOnFocus: false, errorRetryCount: 1 }
   );
 
+  // Read neighborhood from URL on mount
+  const [neighborhood, setNeighborhoodState] = useState<string | null>(
+    searchParams.get("hood") || null
+  );
   const [selectedViewpoint, setSelectedViewpoint] = useState(0);
   const [regionFilter, setRegionFilter] = useState("all");
   const [shared, setShared] = useState(false);
-  const [neighborhood, setNeighborhood] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabKey>("data");
+
+  // Sync neighborhood selection to URL
+  const setNeighborhood = useCallback(
+    (hood: string | null) => {
+      setNeighborhoodState(hood);
+      if (hood) {
+        router.push(`?hood=${encodeURIComponent(hood)}`, { scroll: false });
+      } else {
+        router.push("/", { scroll: false });
+      }
+    },
+    [router]
+  );
 
   // Register service worker on mount
   useEffect(() => { registerSW(); }, []);
 
   // Scroll reveal (React state driven, not classList)
-  const sectionCount = 8; // approximate number of reveal sections
+  const sectionCount = 8;
   const { containerRef, isRevealed } = useScrollReveal(sectionCount);
 
-  // Filtered viewpoints
-  const filteredViewpoints =
-    regionFilter === "all"
-      ? data.viewpoints
-      : data.viewpoints.filter((vp) => vp.region === regionFilter);
+  // ── Memoized expensive computations ──────────────────────────────
+  const filteredViewpoints = useMemo(
+    () =>
+      regionFilter === "all"
+        ? data.viewpoints
+        : data.viewpoints.filter((vp) => vp.region === regionFilter),
+    [data.viewpoints, regionFilter]
+  );
+
+  const neighborhoodAdjustedScore = useMemo(
+    () =>
+      neighborhood
+        ? getNeighborhoodAdjustedScore(data.visibility.score, neighborhood, data.weather.humidity)
+        : data.visibility.score,
+    [data.visibility.score, neighborhood, data.weather.humidity]
+  );
+
+  const adjustedIsVisible = neighborhoodAdjustedScore >= 50;
+
+  const leaderboard = useMemo(
+    () => getAllNeighborhoodScores(data.visibility.score, data.weather.humidity).slice(0, 5),
+    [data.visibility.score, data.weather.humidity]
+  );
 
   // Keyboard navigation for viewpoints
   useKeyboardNavigation(
@@ -212,19 +237,25 @@ export default function Dashboard({ initialData }: Props) {
   );
 
   const handleShare = useCallback(async () => {
-    const text = `Mt. Rainier is ${data.visibility.isVisible ? "OUT" : "hiding"}! Score: ${data.visibility.score}/100. ${data.visibility.durationMessage}`;
+    const hoodLabel = neighborhood ? NEIGHBORHOOD_LABELS[neighborhood] : null;
+    const location = hoodLabel ? ` from ${hoodLabel}` : "";
+    const text = `Mt. Rainier is ${data.visibility.isVisible ? "OUT" : "hiding"}${location}! Score: ${neighborhoodAdjustedScore}/100. ${data.visibility.durationMessage}`;
+    const shareUrl = neighborhood
+      ? `${window.location.origin}?hood=${encodeURIComponent(neighborhood)}`
+      : window.location.origin;
+
     try {
       if (navigator.share) {
-        await navigator.share({ title: "Is The Mountain Out?", text, url: window.location.href });
+        await navigator.share({ title: "Is The Mountain Out?", text, url: shareUrl });
       } else {
-        await navigator.clipboard.writeText(`${text}\n${window.location.href}`);
+        await navigator.clipboard.writeText(`${text}\n${shareUrl}`);
       }
       setShared(true);
       setTimeout(() => setShared(false), 2000);
     } catch {
       // User cancelled
     }
-  }, [data]);
+  }, [data, neighborhood, neighborhoodAdjustedScore]);
 
   const lastUpdate = new Date(data.lastUpdated);
   const timeStr = lastUpdate.toLocaleTimeString("en-US", {
@@ -235,15 +266,6 @@ export default function Dashboard({ initialData }: Props) {
 
   const selectedVp = filteredViewpoints[selectedViewpoint] ?? data.viewpoints[0];
   const isNight = !data.weather.isDay;
-
-  // Neighborhood-adjusted score
-  const neighborhoodAdjustedScore = neighborhood
-    ? getNeighborhoodAdjustedScore(data.visibility.score, neighborhood, data.weather.humidity)
-    : data.visibility.score;
-  const adjustedIsVisible = neighborhoodAdjustedScore >= 50;
-
-  // Neighborhood leaderboard
-  const leaderboard = getAllNeighborhoodScores(data.visibility.score, data.weather.humidity).slice(0, 5);
 
   return (
     <main
@@ -335,6 +357,13 @@ export default function Dashboard({ initialData }: Props) {
               AI Vision says: {aiVision.raw}
             </div>
           </div>
+        )}
+
+        {/* Photo Drop — user-generated proof */}
+        {adjustedIsVisible && (
+          <section className="animate-fade-up">
+            <PhotoDrop neighborhood={neighborhood} />
+          </section>
         )}
 
         {/* Alert signup — immediately under hero for maximum visibility */}
@@ -440,7 +469,6 @@ export default function Dashboard({ initialData }: Props) {
             aria-labelledby="tab-data"
             className={activeTab === "data" ? "space-y-14" : "hidden"}
           >
-            {/* Mountain Scene */}
             <MountainScene
               skyTheme={data.skyTheme}
               isVisible={adjustedIsVisible}
@@ -448,7 +476,6 @@ export default function Dashboard({ initialData }: Props) {
               viewpointDistance={selectedVp?.distanceMiles}
             />
 
-            {/* 24-Hour Timeline */}
             {data.hourlyTimeline?.length > 0 && (
               <ForecastTimeline
                 hourlyTimeline={data.hourlyTimeline}
@@ -456,7 +483,6 @@ export default function Dashboard({ initialData }: Props) {
               />
             )}
 
-            {/* Night Sky */}
             {isNight && (
               <NightSky
                 sunrise={data.weather.sunrise || ""}
@@ -464,19 +490,16 @@ export default function Dashboard({ initialData }: Props) {
               />
             )}
 
-            {/* 7-Day Forecast */}
             <VisibilityHistory
               isVisible={adjustedIsVisible}
               weeklyForecast={data.weeklyForecast}
             />
 
-            {/* Outdoor Widget */}
             <OutdoorWidget
               isVisible={adjustedIsVisible}
               sunset={data.weather.sunset}
             />
 
-            {/* Weather Details */}
             <WeatherDetails
               weather={data.weather}
               reasons={data.visibility.reasons}
@@ -507,7 +530,6 @@ export default function Dashboard({ initialData }: Props) {
               </span>
             </div>
 
-            {/* Region filter */}
             <div className="flex items-center gap-1" role="radiogroup" aria-label="Filter by region">
               {REGIONS.map((r) => (
                 <button
@@ -529,7 +551,6 @@ export default function Dashboard({ initialData }: Props) {
               ))}
             </div>
 
-            {/* Viewpoint list */}
             <div className="divide-y divide-white/[0.04] max-h-[700px] overflow-y-auto scrollbar-thin" role="list">
               {filteredViewpoints.map((vp, i) => (
                 <ViewpointCard
