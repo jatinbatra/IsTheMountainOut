@@ -93,7 +93,24 @@ export interface VisibilityResult {
   nextChangeHour: string | null;
 }
 
-// ── Neighborhood Scoring ────────────────────────────────────────────
+// ── Neighborhood Labels & Scoring ───────────────────────────────────
+export const NEIGHBORHOOD_LABELS: Record<string, string> = {
+  "capitol-hill": "Capitol Hill",
+  "queen-anne": "Queen Anne",
+  "ballard": "Ballard",
+  "fremont": "Fremont",
+  "downtown": "Downtown",
+  "beacon-hill": "Beacon Hill",
+  "west-seattle": "West Seattle",
+  "columbia-city": "Columbia City",
+  "greenwood": "Greenwood",
+  "u-district": "U-District",
+  "bellevue": "Bellevue",
+  "kirkland": "Kirkland",
+  "tacoma": "Tacoma",
+  "renton": "Renton",
+};
+
 interface NeighborhoodModifiers {
   elevationBonus: number;
   fogPenalty: number;

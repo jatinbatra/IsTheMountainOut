@@ -1,17 +1,38 @@
 import { ImageResponse } from "next/og";
-import { fetchWeatherData } from "@/lib/weather";
-import { calculateVisibility } from "@/lib/visibility";
+import { type NextRequest } from "next/server";
 
-export const revalidate = 900; // match page ISR
+// This route is purely param-driven. No API fetches.
+// Crawlers (iMessage, Slack, X) hit this on every link unfurl — if we
+// fetched weather data here, a viral share would DDoS the Open-Meteo API.
 
-export async function GET() {
-  const weather = await fetchWeatherData();
-  const { score, isVisible } = calculateVisibility(weather);
+const NEIGHBORHOOD_LABELS: Record<string, string> = {
+  "capitol-hill": "Capitol Hill",
+  "queen-anne": "Queen Anne",
+  "ballard": "Ballard",
+  "fremont": "Fremont",
+  "downtown": "Downtown",
+  "beacon-hill": "Beacon Hill",
+  "west-seattle": "West Seattle",
+  "columbia-city": "Columbia City",
+  "greenwood": "Greenwood",
+  "u-district": "U-District",
+  "bellevue": "Bellevue",
+  "kirkland": "Kirkland",
+  "tacoma": "Tacoma",
+  "renton": "Renton",
+};
 
+export async function GET(request: NextRequest) {
+  const { searchParams } = request.nextUrl;
+  const score = Number(searchParams.get("score") || "50");
+  const isVisible = searchParams.get("visible") !== "false";
+  const hood = searchParams.get("hood") || "";
+
+  const hoodLabel = NEIGHBORHOOD_LABELS[hood];
   const label = isVisible ? "YES" : "NO";
-  const subtitle = isVisible
-    ? "The mountain is out!"
-    : "The mountain is hiding.";
+  const subtitle = hoodLabel
+    ? `The mountain is ${isVisible ? "out" : "hiding"} from ${hoodLabel}.`
+    : `The mountain is ${isVisible ? "out!" : "hiding."}`;
   const bgGradient = isVisible
     ? "linear-gradient(135deg, #030b1a 0%, #064e3b 50%, #0c4a6e 100%)"
     : "linear-gradient(135deg, #07090e 0%, #1e293b 50%, #0f172a 100%)";
@@ -63,7 +84,7 @@ export async function GET() {
             marginBottom: 20,
           }}
         >
-          Is the Mountain Out?
+          {hoodLabel ? `Is the Mountain Out from ${hoodLabel}?` : "Is the Mountain Out?"}
         </div>
 
         {/* Answer */}
