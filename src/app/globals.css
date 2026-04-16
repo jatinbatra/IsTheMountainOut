@@ -35,8 +35,9 @@ body {
   width: 70%;
   height: 70%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(56, 100, 220, 0.08) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--ambient-primary, rgba(56, 100, 220, 0.08)) 0%, transparent 70%);
   animation: ambient-drift 25s ease-in-out infinite;
+  transition: background 3s ease-in-out;
 }
 
 .ambient-bg::after {
@@ -47,8 +48,9 @@ body {
   width: 60%;
   height: 60%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(120, 50, 200, 0.06) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--ambient-secondary, rgba(120, 50, 200, 0.06)) 0%, transparent 70%);
   animation: ambient-drift 30s ease-in-out infinite reverse;
+  transition: background 3s ease-in-out;
 }
 
 @keyframes ambient-drift {
