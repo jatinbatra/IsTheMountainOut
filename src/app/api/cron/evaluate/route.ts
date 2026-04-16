@@ -7,9 +7,6 @@ import {
   evaluateTransition,
   buildNewState,
 } from "@/lib/state";
-import { postTweet } from "@/lib/channels/twitter";
-import { sendPushToAll } from "@/lib/channels/push";
-import { sendAlertEmails } from "@/lib/channels/email";
 
 /**
  * Cron evaluation endpoint.
@@ -61,37 +58,12 @@ export async function GET(request: Request) {
     const newState = buildNewState(visibility.score, visibility.isVisible, previousState);
     await saveMountainState(newState);
 
-    // 6. Dispatch notifications if needed
-    const results: Record<string, unknown> = {};
-
-    if (transition.shouldNotify) {
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://isthemountainout.com";
-      const titleMap: Record<string, string> = {
-        mountain_emerged: "The Mountain is OUT!",
-        sunset_prime: "Prime Sunset Viewing",
-        golden_hour: "Crystal Clear — Score 80+",
-        alpenglow_alert: "Alpenglow Alert — Get a Camera!",
-      };
-      const title = titleMap[transition.type] || "Mountain Alert";
-
-      // Fire all channels in parallel
-      const [tweetResult, pushResult, emailResult] = await Promise.allSettled([
-        postTweet(transition.message + ` ${siteUrl}`),
-        sendPushToAll(title, transition.message),
-        sendAlertEmails(title, transition.message, siteUrl),
-      ]);
-
-      results.twitter = tweetResult.status === "fulfilled" ? tweetResult.value : "failed";
-      results.push = pushResult.status === "fulfilled" ? pushResult.value : "failed";
-      results.email = emailResult.status === "fulfilled" ? emailResult.value : "failed";
-    }
-
     return NextResponse.json({
       score: visibility.score,
       isVisible: visibility.isVisible,
       transition: transition.type,
-      notified: transition.shouldNotify,
-      results,
+      shouldNotify: transition.shouldNotify,
+      message: transition.message,
       timestamp: new Date().toISOString(),
     });
   } catch (err) {

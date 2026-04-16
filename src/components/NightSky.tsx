@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { Sunrise, Moon, Star } from "lucide-react";
+import { getLunarPhase } from "@/lib/lunar";
 
 interface Props {
   sunrise: string;
@@ -71,9 +72,27 @@ const CONSTELLATIONS = [
 export default function NightSky({ sunrise, isDay }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
-  const [stars] = useState(() => generateStars(120));
+  const [scrollOffset, setScrollOffset] = useState(0);
+  const [stars] = useState(() => generateStars(150));
   const [showConstellation, setShowConstellation] = useState<number | null>(null);
   const [timeToSunrise, setTimeToSunrise] = useState("");
+
+  // Lunar phase — pure math, no API
+  const lunar = useMemo(() => getLunarPhase(), []);
+
+  // Scroll-based parallax — three star layers move at different speeds
+  useEffect(() => {
+    function handleScroll() {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      // Normalize: 0 when element enters viewport, 1 when it leaves
+      const progress = 1 - (rect.bottom / (viewportHeight + rect.height));
+      setScrollOffset(progress * 30); // max 30px of parallax travel
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Calculate time to sunrise
   useEffect(() => {
@@ -165,28 +184,58 @@ export default function NightSky({ sunrise, isDay }: Props) {
           }}
         />
 
-        {/* Background stars (parallax layer 1 - slow) */}
+        {/* Deep stars (parallax layer 1 - slowest, scroll + mouse) */}
         <svg
           className="absolute inset-0 w-full h-full pointer-events-none"
           viewBox="0 0 100 100"
           preserveAspectRatio="none"
           style={{
-            transform: `translate(${parallaxX * 0.3}%, ${parallaxY * 0.3}%)`,
-            transition: "transform 0.4s ease-out",
+            transform: `translate(${parallaxX * 0.2}%, ${parallaxY * 0.2 + scrollOffset * 0.1}%)`,
+            transition: "transform 0.5s ease-out",
           }}
         >
-          {stars.slice(0, 60).map((star, i) => (
+          {stars.slice(0, 50).map((star, i) => (
             <circle
-              key={`bg-${i}`}
+              key={`deep-${i}`}
               cx={star.x}
               cy={star.y}
-              r={star.size * 0.4}
+              r={star.size * 0.3}
               fill="white"
-              opacity={star.brightness * 0.4}
+              opacity={star.brightness * 0.3}
             >
               <animate
                 attributeName="opacity"
-                values={`${star.brightness * 0.2};${star.brightness * 0.5};${star.brightness * 0.2}`}
+                values={`${star.brightness * 0.15};${star.brightness * 0.4};${star.brightness * 0.15}`}
+                dur={`${star.twinkleSpeed * 1.5}s`}
+                begin={`${star.twinkleOffset}s`}
+                repeatCount="indefinite"
+              />
+            </circle>
+          ))}
+        </svg>
+
+        {/* Mid stars (parallax layer 2 - medium speed) */}
+        <svg
+          className="absolute inset-0 w-full h-full pointer-events-none"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          style={{
+            transform: `translate(${parallaxX * 0.5}%, ${parallaxY * 0.5 + scrollOffset * 0.3}%)`,
+            transition: "transform 0.4s ease-out",
+          }}
+        >
+          {stars.slice(50, 100).map((star, i) => (
+            <circle
+              key={`mid-${i}`}
+              cx={star.x}
+              cy={star.y}
+              r={star.size * 0.45}
+              fill="white"
+              opacity={star.brightness * 0.5}
+            >
+              <animate
+                attributeName="opacity"
+                values={`${star.brightness * 0.25};${star.brightness * 0.6};${star.brightness * 0.25}`}
                 dur={`${star.twinkleSpeed}s`}
                 begin={`${star.twinkleOffset}s`}
                 repeatCount="indefinite"
@@ -195,35 +244,48 @@ export default function NightSky({ sunrise, isDay }: Props) {
           ))}
         </svg>
 
-        {/* Foreground stars (parallax layer 2 - faster) */}
+        {/* Near stars (parallax layer 3 - fastest, most movement) */}
         <svg
           className="absolute inset-0 w-full h-full pointer-events-none"
           viewBox="0 0 100 100"
           preserveAspectRatio="none"
           style={{
-            transform: `translate(${parallaxX * 0.8}%, ${parallaxY * 0.8}%)`,
+            transform: `translate(${parallaxX * 1.0}%, ${parallaxY * 1.0 + scrollOffset * 0.6}%)`,
             transition: "transform 0.3s ease-out",
           }}
         >
-          {stars.slice(60).map((star, i) => (
+          {stars.slice(100).map((star, i) => (
             <circle
-              key={`fg-${i}`}
+              key={`near-${i}`}
               cx={star.x}
               cy={star.y}
-              r={star.size * 0.6}
+              r={star.size * 0.65}
               fill="white"
-              opacity={star.brightness * 0.7}
+              opacity={star.brightness * 0.75}
             >
               <animate
                 attributeName="opacity"
-                values={`${star.brightness * 0.4};${star.brightness * 0.8};${star.brightness * 0.4}`}
-                dur={`${star.twinkleSpeed}s`}
+                values={`${star.brightness * 0.4};${star.brightness * 0.9};${star.brightness * 0.4}`}
+                dur={`${star.twinkleSpeed * 0.8}s`}
                 begin={`${star.twinkleOffset}s`}
                 repeatCount="indefinite"
               />
             </circle>
           ))}
         </svg>
+
+        {/* Moon phase — positioned in upper right */}
+        <div
+          className="absolute top-6 right-6 flex flex-col items-center gap-1.5 pointer-events-none z-10"
+          style={{
+            transform: `translate(${parallaxX * 0.4}%, ${parallaxY * 0.4}%)`,
+            transition: "transform 0.4s ease-out",
+          }}
+        >
+          <span className="text-3xl drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">{lunar.emoji}</span>
+          <span className="font-display text-[9px] font-semibold text-white/50 tracking-wide uppercase">{lunar.name}</span>
+          <span className="font-mono text-[8px] text-white/30">{lunar.illumination}% lit</span>
+        </div>
 
         {/* Constellations (interactive layer) */}
         <svg

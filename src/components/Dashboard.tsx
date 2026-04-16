@@ -4,7 +4,7 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import { AnimatePresence, motion } from "framer-motion";
-import { RefreshCw, Mountain, Share2, Check, BarChart3, Camera, MapPin, Trophy, Sparkles, Sunset } from "lucide-react";
+import { RefreshCw, Mountain, Share2, Check, BarChart3, Camera, MapPin, Trophy, Sparkles, Sunset, Volume2, VolumeX } from "lucide-react";
 import HeroStatus from "@/components/HeroStatus";
 import MountainScene from "@/components/MountainScene";
 import WeatherDetails from "@/components/WeatherDetails";
@@ -17,8 +17,6 @@ import VisibilityHistory from "@/components/VisibilityHistory";
 import OutdoorWidget from "@/components/OutdoorWidget";
 import NeighborhoodSelector from "@/components/NeighborhoodSelector";
 import CommunityVote from "@/components/CommunityVote";
-import AlertSignup from "@/components/AlertSignup";
-import PhotoDrop from "@/components/PhotoDrop";
 import { WEBCAM_FEEDS } from "@/lib/webcams";
 import { registerSW } from "@/lib/notifications";
 import {
@@ -28,6 +26,9 @@ import {
 } from "@/lib/visibility";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { useKeyboardNavigation } from "@/hooks/useKeyboardNavigation";
+import { useAutoLocation } from "@/hooks/useAutoLocation";
+import { useAmbientColor } from "@/hooks/useAmbientColor";
+import { useAmbientAudio } from "@/hooks/useAmbientAudio";
 
 // ── Type Definitions ────────────────────────────────────────────────
 
@@ -207,6 +208,16 @@ export default function Dashboard({ initialData }: Props) {
   // Register service worker on mount
   useEffect(() => { registerSW(); }, []);
 
+  // Zero-click auto geolocation — snap to nearest neighborhood
+  useAutoLocation(neighborhood, setNeighborhood);
+
+  // Live ambient color extraction from webcam feed
+  const webcamColorUrl = data.weather.isDay ? "/api/webcam/usgs-longmire" : null;
+  const ambientColors = useAmbientColor(webcamColorUrl);
+
+  // Weather-synced ambient audio
+  const { isPlaying: audioPlaying, toggle: toggleAudio, ambienceType } = useAmbientAudio(data.weather.weatherCode);
+
   // Scroll reveal (React state driven, not classList)
   const sectionCount = 8;
   const { containerRef, isRevealed } = useScrollReveal(sectionCount);
@@ -282,7 +293,14 @@ export default function Dashboard({ initialData }: Props) {
       role="main"
       aria-label="Mountain visibility dashboard"
     >
-      <div className="ambient-bg" aria-hidden="true" />
+      {/* Ambient background — colors extracted from live webcam when available */}
+      <div className="ambient-bg" aria-hidden="true"
+        style={{
+          "--ambient-primary": ambientColors.dominant,
+          "--ambient-secondary": ambientColors.secondary,
+          "--ambient-accent": ambientColors.accent,
+        } as React.CSSProperties}
+      />
 
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-8">
         {/* ── Header ── */}
@@ -302,6 +320,18 @@ export default function Dashboard({ initialData }: Props) {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-[11px] text-slate-500 font-medium tracking-wide hidden sm:inline">{timeStr} PT</span>
+            <button
+              onClick={toggleAudio}
+              className={`p-2.5 rounded-xl glass hover:bg-white/[0.06] transition-all ${audioPlaying ? "ring-1 ring-blue-400/20" : ""}`}
+              aria-label={audioPlaying ? "Mute ambiance" : "Play ambient sounds"}
+              title={ambienceType === "clear" ? "Clear skies — no ambient sounds" : `Play ${ambienceType} ambiance`}
+            >
+              {audioPlaying ? (
+                <Volume2 className="w-4 h-4 text-blue-400/70" />
+              ) : (
+                <VolumeX className="w-4 h-4 text-white/40" />
+              )}
+            </button>
             <button
               onClick={() => mutate()}
               disabled={isValidating}
@@ -387,12 +417,7 @@ export default function Dashboard({ initialData }: Props) {
           </section>
         )}
 
-        {/* Photo Drop — always visible, not gated on mountain visibility */}
-        <section className="animate-fade-up">
-          <PhotoDrop neighborhood={neighborhood} />
-        </section>
-
-        {/* Contextual share CTA — replaces the tiny header Share2 icon */}
+        {/* Contextual share CTA */}
         <section className="animate-fade-up flex justify-center">
           <button
             onClick={handleShare}
@@ -445,14 +470,6 @@ export default function Dashboard({ initialData }: Props) {
             </div>
           </div>
         )}
-
-        {/* Alert signup — immediately under hero for maximum visibility */}
-        <section
-          data-reveal-index="0"
-          className={`transition-all duration-700 ${isRevealed(0) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
-        >
-          <AlertSignup />
-        </section>
 
         {/* Neighborhood Leaderboard */}
         <section
