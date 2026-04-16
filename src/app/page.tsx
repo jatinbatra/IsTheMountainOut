@@ -35,7 +35,6 @@ async function getMountainData(): Promise<MountainData> {
     };
   });
 
-  // Build 7-day weekly forecast from daily data
   const weeklyForecast = weather.dailyForecast.map((d) => {
     const dayScore = scoreDailyForecast(d);
     return {
@@ -54,61 +53,8 @@ async function getMountainData(): Promise<MountainData> {
     };
   });
 
-  // Optional: AI Vision check via Google Gemini (free tier)
-  let aiVision: MountainData["aiVision"] = undefined;
-  const geminiKey = process.env.GEMINI_API_KEY;
-  if (geminiKey) {
-    try {
-      const webcamUrl = "https://volcanoes.usgs.gov/observatories/cvo/cams/MOWest_prior.jpg";
-      const imgRes = await fetch(webcamUrl, { signal: AbortSignal.timeout(10000) });
-
-      if (!imgRes.ok) {
-        console.warn(`[AI Vision] Webcam fetch failed: ${imgRes.status}`);
-      } else {
-        const imgBuffer = await imgRes.arrayBuffer();
-        const base64 = Buffer.from(imgBuffer).toString("base64");
-        const mimeType = imgRes.headers.get("content-type") || "image/jpeg";
-
-        const geminiRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              contents: [{
-                parts: [
-                  { inlineData: { mimeType, data: base64 } },
-                  { text: "Is Mt. Rainier clearly visible in this image? Reply with only YES or NO." },
-                ],
-              }],
-              generationConfig: { maxOutputTokens: 10 },
-            }),
-            signal: AbortSignal.timeout(30000),
-          }
-        );
-
-        if (!geminiRes.ok) {
-          const errText = await geminiRes.text().catch(() => "");
-          console.warn(`[AI Vision] Gemini API error ${geminiRes.status}: ${errText}`);
-        } else {
-          const result = await geminiRes.json();
-          const rawText = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
-          if (rawText) {
-            aiVision = {
-              isVisible: rawText.toUpperCase().startsWith("YES"),
-              raw: rawText,
-              timestamp: new Date().toISOString(),
-            };
-            console.log(`[AI Vision] Gemini says: ${rawText}`);
-          } else {
-            console.warn("[AI Vision] Empty response from Gemini:", JSON.stringify(result).slice(0, 200));
-          }
-        }
-      }
-    } catch (err) {
-      console.warn("[AI Vision] Failed:", err instanceof Error ? err.message : String(err));
-    }
-  }
+  // AI Vision is now fetched client-side via SWR (/api/ai-vision)
+  // to avoid blocking TTFB with a 30s Gemini timeout.
 
   return {
     visibility,
@@ -132,7 +78,6 @@ async function getMountainData(): Promise<MountainData> {
     hourlyTimeline,
     weeklyForecast,
     lastUpdated: new Date().toISOString(),
-    aiVision,
   };
 }
 

@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
-import { RefreshCw, Mountain, Share2, Check } from "lucide-react";
+import { useState, useCallback } from "react";
+import useSWR from "swr";
+import { RefreshCw, Mountain, Share2, Check, BarChart3, Camera, MapPin, Trophy } from "lucide-react";
 import HeroStatus from "@/components/HeroStatus";
 import MountainScene from "@/components/MountainScene";
 import WeatherDetails from "@/components/WeatherDetails";
@@ -16,7 +17,13 @@ import NeighborhoodSelector from "@/components/NeighborhoodSelector";
 import CommunityVote from "@/components/CommunityVote";
 import AlertSignup from "@/components/AlertSignup";
 import { WEBCAM_FEEDS } from "@/lib/webcams";
-import { registerSW, getNotificationPermission } from "@/lib/notifications";
+import { registerSW } from "@/lib/notifications";
+import { getNeighborhoodAdjustedScore, getAllNeighborhoodScores } from "@/lib/visibility";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { useKeyboardNavigation } from "@/hooks/useKeyboardNavigation";
+import { useEffect } from "react";
+
+// ── Type Definitions ────────────────────────────────────────────────
 
 interface ViewpointData {
   id: string;
@@ -115,6 +122,8 @@ interface Props {
   initialData: MountainData;
 }
 
+// ── Constants ───────────────────────────────────────────────────────
+
 const REGIONS = [
   { key: "all", label: "All" },
   { key: "seattle", label: "Seattle" },
@@ -122,93 +131,99 @@ const REGIONS = [
   { key: "tacoma", label: "Tacoma" },
   { key: "south", label: "South" },
   { key: "north", label: "North" },
-];
+] as const;
+
+const TABS = [
+  { key: "data", label: "The Data", icon: BarChart3 },
+  { key: "webcams", label: "Webcams", icon: Camera },
+  { key: "viewpoints", label: "Viewpoints", icon: MapPin },
+] as const;
+
+type TabKey = (typeof TABS)[number]["key"];
+
+const NEIGHBORHOOD_LABELS: Record<string, string> = {
+  "capitol-hill": "Capitol Hill",
+  "queen-anne": "Queen Anne",
+  "ballard": "Ballard",
+  "fremont": "Fremont",
+  "downtown": "Downtown",
+  "beacon-hill": "Beacon Hill",
+  "west-seattle": "West Seattle",
+  "columbia-city": "Columbia City",
+  "greenwood": "Greenwood",
+  "u-district": "U-District",
+  "bellevue": "Bellevue",
+  "kirkland": "Kirkland",
+  "tacoma": "Tacoma",
+  "renton": "Renton",
+};
+
+// ── SWR Fetcher ─────────────────────────────────────────────────────
+
+const fetcher = (url: string) => fetch(url).then((r) => r.json());
+
+// ── Component ───────────────────────────────────────────────────────
 
 export default function Dashboard({ initialData }: Props) {
-  const [data, setData] = useState<MountainData>(initialData);
-  const [loading, setLoading] = useState(false);
+  // SWR replaces manual setInterval polling
+  const { data: swrData, isValidating, mutate } = useSWR<MountainData>(
+    "/api/mountain-status",
+    fetcher,
+    {
+      fallbackData: initialData,
+      refreshInterval: 15 * 60 * 1000,
+      revalidateOnFocus: true,
+      revalidateOnReconnect: true,
+    }
+  );
+  const data = swrData!; // always defined due to fallbackData
+
+  // AI Vision — async client-side fetch, doesn't block page load
+  const { data: aiVision } = useSWR<MountainData["aiVision"]>(
+    "/api/ai-vision",
+    fetcher,
+    { revalidateOnFocus: false, errorRetryCount: 1 }
+  );
+
   const [selectedViewpoint, setSelectedViewpoint] = useState(0);
   const [regionFilter, setRegionFilter] = useState("all");
   const [shared, setShared] = useState(false);
   const [neighborhood, setNeighborhood] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<TabKey>("data");
 
   // Register service worker on mount
-  useEffect(() => {
-    registerSW();
-  }, []);
+  useEffect(() => { registerSW(); }, []);
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/mountain-status");
-      if (!res.ok) throw new Error("Failed to fetch");
-      const json = await res.json();
-      setData(json);
-    } catch {
-      // Keep showing existing data on refresh failure
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  // Scroll reveal (React state driven, not classList)
+  const sectionCount = 8; // approximate number of reveal sections
+  const { containerRef, isRevealed } = useScrollReveal(sectionCount);
 
-  // Auto-refresh every 15 minutes
-  useEffect(() => {
-    const interval = setInterval(fetchData, 15 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, [fetchData]);
+  // Filtered viewpoints
+  const filteredViewpoints =
+    regionFilter === "all"
+      ? data.viewpoints
+      : data.viewpoints.filter((vp) => vp.region === regionFilter);
 
-  const handleShare = async () => {
+  // Keyboard navigation for viewpoints
+  useKeyboardNavigation(
+    filteredViewpoints.length,
+    selectedViewpoint,
+    setSelectedViewpoint
+  );
+
+  const handleShare = useCallback(async () => {
     const text = `Mt. Rainier is ${data.visibility.isVisible ? "OUT" : "hiding"}! Score: ${data.visibility.score}/100. ${data.visibility.durationMessage}`;
     try {
       if (navigator.share) {
-        await navigator.share({ title: "Is The Mountain Out?", text });
+        await navigator.share({ title: "Is The Mountain Out?", text, url: window.location.href });
       } else {
-        await navigator.clipboard.writeText(text);
+        await navigator.clipboard.writeText(`${text}\n${window.location.href}`);
       }
       setShared(true);
       setTimeout(() => setShared(false), 2000);
     } catch {
-      // User cancelled share
+      // User cancelled
     }
-  };
-
-  // Keyboard navigation for viewpoints
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      const filtered =
-        regionFilter === "all"
-          ? data.viewpoints
-          : data.viewpoints.filter((vp) => vp.region === regionFilter);
-
-      if (e.key === "ArrowDown" || e.key === "j") {
-        e.preventDefault();
-        setSelectedViewpoint((prev) => Math.min(prev + 1, filtered.length - 1));
-      } else if (e.key === "ArrowUp" || e.key === "k") {
-        e.preventDefault();
-        setSelectedViewpoint((prev) => Math.max(prev - 1, 0));
-      }
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [data, regionFilter]);
-
-  // Scroll-triggered reveal
-  const mainRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!mainRef.current) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("revealed");
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: "0px 0px -40px 0px" }
-    );
-    const els = mainRef.current.querySelectorAll(".scroll-reveal");
-    els.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
   }, [data]);
 
   const lastUpdate = new Date(data.lastUpdated);
@@ -218,52 +233,51 @@ export default function Dashboard({ initialData }: Props) {
     timeZone: "America/Los_Angeles",
   });
 
-  const filteredViewpoints =
-    regionFilter === "all"
-      ? data.viewpoints
-      : data.viewpoints.filter((vp) => vp.region === regionFilter);
-
   const selectedVp = filteredViewpoints[selectedViewpoint] ?? data.viewpoints[0];
   const isNight = !data.weather.isDay;
 
-  // Compute neighborhood-adjusted score
+  // Neighborhood-adjusted score
   const neighborhoodAdjustedScore = neighborhood
-    ? getNeighborhoodAdjustedScore(data.visibility.score, neighborhood, data.weather)
+    ? getNeighborhoodAdjustedScore(data.visibility.score, neighborhood, data.weather.humidity)
     : data.visibility.score;
   const adjustedIsVisible = neighborhoodAdjustedScore >= 50;
+
+  // Neighborhood leaderboard
+  const leaderboard = getAllNeighborhoodScores(data.visibility.score, data.weather.humidity).slice(0, 5);
 
   return (
     <main
       className={`flex-1 relative transition-colors duration-1000 ${
         adjustedIsVisible ? "theme-clear" : "theme-overcast"
       }`}
-      ref={mainRef}
+      ref={containerRef}
+      role="main"
+      aria-label="Mountain visibility dashboard"
     >
-      <div className="ambient-bg" />
-      <div className="noise-overlay" />
+      <div className="ambient-bg" aria-hidden="true" />
 
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-14 space-y-14">
-        {/* Header */}
+        {/* ── Header ── */}
         <header className="flex items-center justify-between animate-fade-up">
           <div className="flex items-center gap-3.5">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500/80 to-violet-600/80 flex items-center justify-center shadow-lg shadow-blue-500/15 ring-1 ring-white/10">
-              <Mountain className="w-5 h-5 text-white" />
+              <Mountain className="w-5 h-5 text-white" aria-hidden="true" />
             </div>
             <div>
-              <h2 className="font-display font-bold text-white text-base leading-tight">
+              <h1 className="font-display font-bold text-white text-base leading-tight">
                 IsTheMountainOut
-              </h2>
-              <p className="text-[11px] text-white/25 font-medium">
+              </h1>
+              <p className="text-[11px] text-white/35 font-medium">
                 Mt. Rainier &middot; 14,411 ft
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[11px] text-white/20 font-medium hidden sm:inline">{timeStr} PT</span>
+            <span className="text-[11px] text-white/30 font-medium hidden sm:inline">{timeStr} PT</span>
             <button
               onClick={handleShare}
               className="p-2.5 rounded-xl glass hover:bg-white/[0.06] transition-all"
-              title="Share status"
+              aria-label="Share mountain status"
             >
               {shared ? (
                 <Check className="w-4 h-4 text-emerald-400" />
@@ -272,19 +286,19 @@ export default function Dashboard({ initialData }: Props) {
               )}
             </button>
             <button
-              onClick={fetchData}
-              disabled={loading}
+              onClick={() => mutate()}
+              disabled={isValidating}
               className="p-2.5 rounded-xl glass hover:bg-white/[0.06] transition-all disabled:opacity-50"
-              title="Refresh"
+              aria-label="Refresh data"
             >
               <RefreshCw
-                className={`w-4 h-4 text-white/40 ${loading ? "animate-spin" : ""}`}
+                className={`w-4 h-4 text-white/40 ${isValidating ? "animate-spin" : ""}`}
               />
             </button>
           </div>
         </header>
 
-        {/* Neighborhood Selector */}
+        {/* ── Above the fold: Hero + Alert + Share ── */}
         <section className="animate-fade-up">
           <NeighborhoodSelector
             selected={neighborhood}
@@ -292,7 +306,6 @@ export default function Dashboard({ initialData }: Props) {
           />
         </section>
 
-        {/* Hero Status */}
         <HeroStatus
           isVisible={adjustedIsVisible}
           score={neighborhoodAdjustedScore}
@@ -310,22 +323,73 @@ export default function Dashboard({ initialData }: Props) {
           }}
         />
 
-        {/* AI Vision badge if available */}
-        {data.aiVision && (
+        {/* AI Vision — streams in async, never blocks page */}
+        {aiVision && aiVision.raw && (
           <div className="flex justify-center animate-fade-up">
             <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium ${
-              data.aiVision.isVisible
-                ? "bg-emerald-500/10 text-emerald-300 ring-1 ring-emerald-400/20"
-                : "bg-red-500/10 text-red-300 ring-1 ring-red-400/20"
-            }`}>
-              <span className="w-2 h-2 rounded-full bg-violet-400" />
-              AI Vision says: {data.aiVision.raw}
+              aiVision.isVisible
+                ? "bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-400/20"
+                : "bg-red-500/10 text-red-400 ring-1 ring-red-400/20"
+            }`} role="status">
+              <span className="w-2 h-2 rounded-full bg-violet-400" aria-hidden="true" />
+              AI Vision says: {aiVision.raw}
             </div>
           </div>
         )}
 
+        {/* Alert signup — immediately under hero for maximum visibility */}
+        <section
+          data-reveal-index="0"
+          className={`transition-all duration-700 ${isRevealed(0) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+        >
+          <AlertSignup />
+        </section>
+
+        {/* Neighborhood Leaderboard */}
+        <section
+          data-reveal-index="1"
+          className={`transition-all duration-700 delay-100 ${isRevealed(1) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-xl bg-amber-500/10 ring-1 ring-amber-400/15">
+              <Trophy className="w-4 h-4 text-amber-400" aria-hidden="true" />
+            </div>
+            <div>
+              <h2 className="font-display text-base font-bold text-white">
+                Neighborhood Leaderboard
+              </h2>
+              <p className="text-[11px] text-white/35 font-medium mt-0.5">
+                Best visibility right now
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2" role="list" aria-label="Neighborhood visibility rankings">
+            {leaderboard.map((entry, i) => (
+              <button
+                key={entry.id}
+                onClick={() => setNeighborhood(entry.id)}
+                role="listitem"
+                className={`flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-medium transition-all ${
+                  neighborhood === entry.id
+                    ? "bg-amber-500/15 text-amber-300 ring-1 ring-amber-400/25"
+                    : "bg-white/[0.03] text-white/50 ring-1 ring-white/[0.06] hover:bg-white/[0.06]"
+                }`}
+              >
+                <span className={`font-mono text-[10px] font-bold ${i === 0 ? "text-amber-400" : "text-white/25"}`}>
+                  #{i + 1}
+                </span>
+                <span>{NEIGHBORHOOD_LABELS[entry.id] || entry.id}</span>
+                <span className="font-display font-bold">{entry.score}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+
         {/* Community Vote */}
-        <section className="scroll-reveal">
+        <section
+          data-reveal-index="2"
+          className={`transition-all duration-700 delay-200 ${isRevealed(2) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+        >
           <CommunityVote
             currentScore={neighborhoodAdjustedScore}
             isVisible={adjustedIsVisible}
@@ -333,81 +397,118 @@ export default function Dashboard({ initialData }: Props) {
         </section>
 
         {/* Featured Webcam */}
-        <section className="scroll-reveal">
+        <section
+          data-reveal-index="3"
+          className={`transition-all duration-700 ${isRevealed(3) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+        >
           <FeaturedWebcam />
         </section>
 
-        {/* Mountain Scene */}
-        <section className="scroll-reveal">
-          <MountainScene
-            skyTheme={data.skyTheme}
-            isVisible={adjustedIsVisible}
-            viewpointName={selectedVp?.name}
-            viewpointDistance={selectedVp?.distanceMiles}
-          />
-        </section>
+        {/* ── Tabbed Interface: Data / Webcams / Viewpoints ── */}
+        <section
+          data-reveal-index="4"
+          className={`transition-all duration-700 ${isRevealed(4) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+        >
+          {/* Tab bar */}
+          <div className="flex items-center gap-1 mb-8 border-b border-white/[0.06] pb-0" role="tablist" aria-label="Dashboard sections">
+            {TABS.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  role="tab"
+                  aria-selected={activeTab === tab.key}
+                  aria-controls={`panel-${tab.key}`}
+                  className={`flex items-center gap-2 px-5 py-3 text-sm font-medium transition-all border-b-2 -mb-[1px] ${
+                    activeTab === tab.key
+                      ? "border-blue-400 text-white/80"
+                      : "border-transparent text-white/30 hover:text-white/50"
+                  }`}
+                >
+                  <Icon className="w-4 h-4" aria-hidden="true" />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
 
-        {/* 24-Hour Forecast Timeline */}
-        {data.hourlyTimeline && data.hourlyTimeline.length > 0 && (
-          <section className="scroll-reveal scroll-reveal-delay-1">
-            <ForecastTimeline
-              hourlyTimeline={data.hourlyTimeline}
-              currentScore={data.visibility.score}
+          {/* Tab panels */}
+          <div
+            id="panel-data"
+            role="tabpanel"
+            aria-labelledby="tab-data"
+            className={activeTab === "data" ? "space-y-14" : "hidden"}
+          >
+            {/* Mountain Scene */}
+            <MountainScene
+              skyTheme={data.skyTheme}
+              isVisible={adjustedIsVisible}
+              viewpointName={selectedVp?.name}
+              viewpointDistance={selectedVp?.distanceMiles}
             />
-          </section>
-        )}
 
-        {/* Night Sky */}
-        {isNight && (
-          <section className="scroll-reveal scroll-reveal-delay-2">
-            <NightSky
-              sunrise={data.weather.sunrise || ""}
-              isDay={data.weather.isDay}
+            {/* 24-Hour Timeline */}
+            {data.hourlyTimeline?.length > 0 && (
+              <ForecastTimeline
+                hourlyTimeline={data.hourlyTimeline}
+                currentScore={data.visibility.score}
+              />
+            )}
+
+            {/* Night Sky */}
+            {isNight && (
+              <NightSky
+                sunrise={data.weather.sunrise || ""}
+                isDay={data.weather.isDay}
+              />
+            )}
+
+            {/* 7-Day Forecast */}
+            <VisibilityHistory
+              isVisible={adjustedIsVisible}
+              weeklyForecast={data.weeklyForecast}
             />
-          </section>
-        )}
 
-        {/* 7-Day Visibility Predictions */}
-        <section className="scroll-reveal scroll-reveal-delay-1">
-          <VisibilityHistory
-            isVisible={adjustedIsVisible}
-            weeklyForecast={data.weeklyForecast}
-          />
-        </section>
+            {/* Outdoor Widget */}
+            <OutdoorWidget
+              isVisible={adjustedIsVisible}
+              sunset={data.weather.sunset}
+            />
 
-        {/* Outdoor Widget */}
-        <section className="scroll-reveal scroll-reveal-delay-2">
-          <OutdoorWidget
-            isVisible={adjustedIsVisible}
-            sunset={data.weather.sunset}
-          />
-        </section>
+            {/* Weather Details */}
+            <WeatherDetails
+              weather={data.weather}
+              reasons={data.visibility.reasons}
+            />
+          </div>
 
-        {/* Alert Signup — Email + Push */}
-        <section className="scroll-reveal scroll-reveal-delay-1">
-          <AlertSignup />
-        </section>
+          <div
+            id="panel-webcams"
+            role="tabpanel"
+            aria-labelledby="tab-webcams"
+            className={activeTab === "webcams" ? "space-y-10" : "hidden"}
+          >
+            <LiveWebcams feeds={WEBCAM_FEEDS} />
+          </div>
 
-        {/* Live Webcams */}
-        <section className="scroll-reveal scroll-reveal-delay-2">
-          <LiveWebcams feeds={WEBCAM_FEEDS} />
-        </section>
-
-        {/* Two column layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          {/* Viewpoints */}
-          <section className="space-y-4">
+          <div
+            id="panel-viewpoints"
+            role="tabpanel"
+            aria-labelledby="tab-viewpoints"
+            className={activeTab === "viewpoints" ? "space-y-6" : "hidden"}
+          >
             <div className="flex items-center justify-between">
               <h2 className="font-display text-xl font-bold text-white">
                 {adjustedIsVisible ? "Best Viewpoints" : "Viewpoints"}
               </h2>
-              <span className="text-[10px] text-white/15 font-medium">
+              <span className="text-[11px] text-white/25 font-medium">
                 {filteredViewpoints.length} locations
               </span>
             </div>
 
-            {/* Region filter — pill style, no boxes */}
-            <div className="flex items-center gap-1">
+            {/* Region filter */}
+            <div className="flex items-center gap-1" role="radiogroup" aria-label="Filter by region">
               {REGIONS.map((r) => (
                 <button
                   key={r.key}
@@ -415,10 +516,12 @@ export default function Dashboard({ initialData }: Props) {
                     setRegionFilter(r.key);
                     setSelectedViewpoint(0);
                   }}
+                  role="radio"
+                  aria-checked={regionFilter === r.key}
                   className={`text-[11px] font-medium px-3 py-1 rounded-full transition-all ${
                     regionFilter === r.key
                       ? "bg-white/[0.08] text-white/60"
-                      : "text-white/20 hover:text-white/35"
+                      : "text-white/30 hover:text-white/45"
                   }`}
                 >
                   {r.label}
@@ -426,8 +529,8 @@ export default function Dashboard({ initialData }: Props) {
               ))}
             </div>
 
-            {/* Viewpoint list — no gaps between items, dividers instead */}
-            <div className="divide-y divide-white/[0.04] max-h-[700px] overflow-y-auto scrollbar-thin">
+            {/* Viewpoint list */}
+            <div className="divide-y divide-white/[0.04] max-h-[700px] overflow-y-auto scrollbar-thin" role="list">
               {filteredViewpoints.map((vp, i) => (
                 <ViewpointCard
                   key={vp.id}
@@ -439,33 +542,25 @@ export default function Dashboard({ initialData }: Props) {
                 />
               ))}
             </div>
-          </section>
+          </div>
+        </section>
 
-          {/* Weather details */}
-          <section>
-            <WeatherDetails
-              weather={data.weather}
-              reasons={data.visibility.reasons}
-            />
-          </section>
-        </div>
-
-        {/* About — no glass card, just text */}
-        <section className="space-y-4 pt-4 border-t border-white/[0.04]">
-          <p className="text-xs text-white/20 leading-relaxed max-w-2xl">
-            If you live in the Pacific Northwest, you know the question: <span className="text-white/35">&quot;Is the mountain out?&quot;</span> This
+        {/* ── About ── */}
+        <section className="space-y-4 pt-4 border-t border-white/[0.06]">
+          <p className="text-xs text-white/30 leading-relaxed max-w-2xl">
+            If you live in the Pacific Northwest, you know the question: <span className="text-white/50">&quot;Is the mountain out?&quot;</span> This
             app scores Mt. Rainier visibility using real-time cloud layers, atmospheric visibility, and PM2.5 data.
             Everything runs on free public data from Open-Meteo and government webcam feeds.
           </p>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[10px] text-white/15">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[10px] text-white/25">
             <span>No cookies</span>
-            <span className="text-white/[0.06]">&middot;</span>
+            <span className="text-white/[0.08]" aria-hidden="true">&middot;</span>
             <span>No analytics</span>
-            <span className="text-white/[0.06]">&middot;</span>
+            <span className="text-white/[0.08]" aria-hidden="true">&middot;</span>
             <span>No tracking</span>
-            <span className="text-white/[0.06]">&middot;</span>
+            <span className="text-white/[0.08]" aria-hidden="true">&middot;</span>
             <span>No login required</span>
-            <span className="text-white/[0.06]">&middot;</span>
+            <span className="text-white/[0.08]" aria-hidden="true">&middot;</span>
             <span>100% free</span>
           </div>
           <div className="flex items-center gap-3">
@@ -473,13 +568,13 @@ export default function Dashboard({ initialData }: Props) {
               JB
             </div>
             <div>
-              <span className="text-xs text-white/30 font-medium">Jatin Batra</span>
-              <span className="text-white/10 mx-2">&middot;</span>
+              <span className="text-xs text-white/40 font-medium">Jatin Batra</span>
+              <span className="text-white/15 mx-2" aria-hidden="true">&middot;</span>
               <a
                 href="https://x.com/jatin_batra1"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-blue-400/30 hover:text-blue-300 transition-colors"
+                className="text-xs text-blue-400/40 hover:text-blue-300 transition-colors"
               >
                 @jatin_batra1
               </a>
@@ -487,13 +582,13 @@ export default function Dashboard({ initialData }: Props) {
           </div>
         </section>
 
-        {/* Footer */}
-        <footer className="text-center text-[11px] text-white/15 py-10 border-t border-white/[0.04] space-y-1.5 font-medium">
+        {/* ── Footer ── */}
+        <footer className="text-center text-[11px] text-white/25 py-10 border-t border-white/[0.06] space-y-1.5 font-medium">
           <p>
             Weather data from{" "}
             <a
               href="https://open-meteo.com/"
-              className="underline hover:text-white/30 transition-colors"
+              className="underline hover:text-white/40 transition-colors"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -508,44 +603,4 @@ export default function Dashboard({ initialData }: Props) {
       </div>
     </main>
   );
-}
-
-/**
- * Adjusts the base visibility score based on the user's selected neighborhood.
- * Different areas have different microclimates and elevations that affect views.
- */
-function getNeighborhoodAdjustedScore(
-  baseScore: number,
-  neighborhood: string,
-  weather: MountainData["weather"]
-): number {
-  // Neighborhood modifiers based on elevation, fog exposure, and typical obstructions
-  const modifiers: Record<string, { elevationBonus: number; fogPenalty: number; obstructionPenalty: number }> = {
-    "capitol-hill": { elevationBonus: 3, fogPenalty: -5, obstructionPenalty: -8 },
-    "queen-anne": { elevationBonus: 8, fogPenalty: -2, obstructionPenalty: -3 },
-    "ballard": { elevationBonus: 0, fogPenalty: -8, obstructionPenalty: -5 },
-    "fremont": { elevationBonus: 1, fogPenalty: -6, obstructionPenalty: -6 },
-    "downtown": { elevationBonus: 2, fogPenalty: -4, obstructionPenalty: -10 },
-    "beacon-hill": { elevationBonus: 6, fogPenalty: -3, obstructionPenalty: -2 },
-    "west-seattle": { elevationBonus: 5, fogPenalty: -4, obstructionPenalty: -1 },
-    "columbia-city": { elevationBonus: 4, fogPenalty: -5, obstructionPenalty: -4 },
-    "greenwood": { elevationBonus: 2, fogPenalty: -7, obstructionPenalty: -5 },
-    "u-district": { elevationBonus: 1, fogPenalty: -6, obstructionPenalty: -7 },
-    "bellevue": { elevationBonus: 4, fogPenalty: -3, obstructionPenalty: -5 },
-    "kirkland": { elevationBonus: 2, fogPenalty: -5, obstructionPenalty: -6 },
-    "tacoma": { elevationBonus: 1, fogPenalty: -4, obstructionPenalty: 0 },
-    "renton": { elevationBonus: 3, fogPenalty: -5, obstructionPenalty: -3 },
-  };
-
-  const mod = modifiers[neighborhood];
-  if (!mod) return baseScore;
-
-  let adjusted = baseScore + mod.elevationBonus + mod.obstructionPenalty;
-
-  // Apply fog penalty only when humidity is high (foggy conditions)
-  if (weather.humidity > 85) {
-    adjusted += mod.fogPenalty;
-  }
-
-  return Math.max(0, Math.min(100, Math.round(adjusted)));
 }

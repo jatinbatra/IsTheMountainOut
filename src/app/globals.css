@@ -284,18 +284,7 @@ body {
   animation: bounce-subtle 2s ease-in-out infinite;
 }
 
-/* Scroll-triggered reveal */
-.scroll-reveal {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
-}
-
-.scroll-reveal.revealed {
-  opacity: 1;
-  transform: translateY(0);
-}
-
+/* Legacy scroll-reveal classes preserved for any remaining usage */
 .scroll-reveal-delay-1 { transition-delay: 100ms; }
 .scroll-reveal-delay-2 { transition-delay: 200ms; }
 .scroll-reveal-delay-3 { transition-delay: 300ms; }
@@ -348,12 +337,7 @@ body {
   animation: gradient-shift 4s ease-in-out infinite;
 }
 
-/* Noise texture overlay */
+/* Noise overlay — kept minimal to avoid visual mudiness */
 .noise-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  opacity: 0.015;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  display: none;
 }

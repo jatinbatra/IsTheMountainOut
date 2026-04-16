@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { fetchWeatherData } from "@/lib/weather";
-import { calculateVisibility, scoreHourForTimeline } from "@/lib/visibility";
+import { calculateVisibility, scoreHourForTimeline, scoreDailyForecast } from "@/lib/visibility";
 import { rankViewpoints } from "@/lib/viewpoints";
 import { getSkyTheme } from "@/lib/sky";
 
@@ -38,6 +38,25 @@ function buildResponse(
     };
   });
 
+  // Build 7-day weekly forecast from daily data
+  const weeklyForecast = weather.dailyForecast.map((d) => {
+    const dayScore = scoreDailyForecast(d);
+    return {
+      date: d.date,
+      dayLabel: d.dayLabel,
+      score: dayScore.score,
+      isVisible: dayScore.isVisible,
+      cloudLow: d.cloudLow,
+      cloudMid: d.cloudMid,
+      cloudHigh: d.cloudHigh,
+      visibility: d.visibility,
+      weatherCode: d.weatherCode,
+      tempHigh: d.tempHigh,
+      tempLow: d.tempLow,
+      humidity: d.humidity,
+    };
+  });
+
   return {
     visibility,
     weather: {
@@ -58,6 +77,7 @@ function buildResponse(
     viewpoints,
     skyTheme,
     hourlyTimeline,
+    weeklyForecast,
     lastUpdated: new Date().toISOString(),
   };
 }
