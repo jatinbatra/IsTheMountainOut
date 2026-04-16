@@ -63,7 +63,9 @@ export async function GET(request: Request) {
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://isthemountainout.com";
       const title = transition.type === "mountain_emerged"
         ? "The Mountain is OUT!"
-        : "Prime Sunset Viewing";
+        : transition.type === "golden_hour"
+          ? "Crystal Clear — Score 80+"
+          : "Prime Sunset Viewing";
 
       // Fire all channels in parallel
       const [tweetResult, pushResult, emailResult] = await Promise.allSettled([

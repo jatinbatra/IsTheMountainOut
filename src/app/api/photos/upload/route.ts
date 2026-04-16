@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 import { kv } from "@vercel/kv";
+import { moderatePhoto } from "@/lib/moderation";
 
 const PHOTO_TTL = 12 * 60 * 60; // 12 hours in seconds
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -23,14 +24,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Must be an image file" }, { status: 400 });
     }
 
+    // Gemini 2.0 Flash moderation gate — reject non-outdoor/inappropriate images
+    const imageBuffer = await file.arrayBuffer();
+    const moderation = await moderatePhoto(imageBuffer, file.type);
+    if (!moderation.allowed) {
+      return NextResponse.json(
+        { error: `Photo rejected: ${moderation.reason}` },
+        { status: 422 }
+      );
+    }
+
     const hood = neighborhood || "general";
     const timestamp = Date.now();
     const filename = `mountain-${hood}-${timestamp}.${file.type.split("/")[1] || "jpg"}`;
 
-    // Upload to Vercel Blob
-    const blob = await put(filename, file, {
+    // Upload to Vercel Blob (use the buffer we already read for moderation)
+    const blob = await put(filename, imageBuffer, {
       access: "public",
       addRandomSuffix: true,
+      contentType: file.type,
     });
 
     // Store reference in KV with 12h TTL
