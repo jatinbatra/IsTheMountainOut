@@ -9,6 +9,8 @@ import {
   evaluateTransition,
   buildNewState,
 } from "@/lib/state";
+import { snapshotHoodScores } from "@/lib/hoods";
+import { settleWeekIfDue, recordDailyActual } from "@/lib/pool";
 
 type CalendarData = Record<string, { score: number; isVisible: boolean }>;
 
@@ -98,6 +100,9 @@ export async function GET(request: Request) {
     await saveMountainState(newState);
 
     await saveCalendarSnapshot(visibility.score, visibility.isVisible);
+    await snapshotHoodScores(visibility.score, weather.humidity);
+    await recordDailyActual(visibility.score);
+    await settleWeekIfDue();
 
     if (transition.shouldNotify) {
       await sendPushToAll("Is The Mountain Out?", transition.message);

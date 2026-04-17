@@ -19,7 +19,22 @@ interface Props {
   score: number;
   neighborhoodLabel: string | null;
   durationMessage: string;
+  isPro?: boolean;
+  onUpgrade?: () => void;
 }
+
+interface Sponsor {
+  id: string;
+  label: string;
+  brand: string;
+  accent: string;
+}
+
+const SPONSORS: Sponsor[] = [
+  { id: "rainier", label: "Rainier Beer", brand: "Rainier", accent: "#dc2626" },
+  { id: "starbucks", label: "Starbucks Reserve", brand: "Starbucks Reserve", accent: "#065f46" },
+  { id: "rei", label: "REI Co-op", brand: "REI", accent: "#dc2626" },
+];
 
 type CaptureState = "idle" | "rendering" | "ready" | "sharing" | "copied" | "saved";
 
@@ -52,9 +67,12 @@ function drawCard(
     streak: StreakState;
     time: string;
     date: string;
+    hideWatermark: boolean;
+    proHandle: string | null;
+    sponsor: Sponsor | null;
   },
 ) {
-  const { isVisible, score, neighborhoodLabel, streak, time, date } = opts;
+  const { isVisible, score, neighborhoodLabel, streak, time, date, hideWatermark, proHandle, sponsor } = opts;
 
   const bg = ctx.createLinearGradient(0, 0, 0, CARD_H);
   if (isVisible) {
@@ -178,14 +196,39 @@ function drawCard(
     );
   }
 
+  if (sponsor) {
+    const sponsorY = CARD_H - 180;
+    ctx.fillStyle = `${sponsor.accent}22`;
+    roundRect(ctx, 72, sponsorY - 40, CARD_W - 144, 76, 38);
+    ctx.fill();
+    ctx.strokeStyle = `${sponsor.accent}55`;
+    ctx.lineWidth = 2;
+    roundRect(ctx, 72, sponsorY - 40, CARD_W - 144, 76, 38);
+    ctx.stroke();
+
+    ctx.fillStyle = "rgba(255,255,255,0.55)";
+    ctx.font = "600 20px 'Inter', system-ui, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("This Mountain Moment presented by", CARD_W / 2, sponsorY - 8);
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "800 30px 'Space Grotesk', 'Inter', system-ui, sans-serif";
+    ctx.fillText(sponsor.brand, CARD_W / 2, sponsorY + 22);
+  }
+
+  if (proHandle) {
+    ctx.fillStyle = "rgba(251,191,36,0.85)";
+    ctx.font = "700 32px 'Space Grotesk', 'Inter', system-ui, sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText(`@${proHandle}`, 72, CARD_H - 110);
+  }
+
   ctx.fillStyle = "rgba(255,255,255,0.35)";
   ctx.font = "500 28px 'Inter', system-ui, sans-serif";
-  ctx.textAlign = "center";
-  ctx.fillText(
-    `${time} PT · isthemountainout.com`,
-    CARD_W / 2,
-    CARD_H - 80,
-  );
+  ctx.textAlign = hideWatermark ? "left" : "center";
+  const footer = hideWatermark
+    ? `${time} PT`
+    : `${time} PT · isthemountainout.com`;
+  ctx.fillText(footer, hideWatermark ? 72 : CARD_W / 2, CARD_H - 60);
 }
 
 function roundRect(
@@ -210,13 +253,37 @@ export default function MountainMoment({
   score,
   neighborhoodLabel,
   durationMessage,
+  isPro = false,
+  onUpgrade,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [captureState, setCaptureState] = useState<CaptureState>("idle");
   const [streak, setStreak] = useState<StreakState>(() => getStreak());
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [sponsorId, setSponsorId] = useState<string | null>(null);
+  const [proHandle, setProHandle] = useState<string | null>(null);
+  const [hideWatermark, setHideWatermark] = useState<boolean>(false);
   const blobRef = useRef<Blob | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    setHideWatermark(isPro);
+    if (isPro && typeof window !== "undefined") {
+      try {
+        const h = window.localStorage.getItem("itmo:handle:v1");
+        setProHandle(h && h.length > 0 ? h : null);
+      } catch {
+        setProHandle(null);
+      }
+    } else {
+      setProHandle(null);
+    }
+  }, [isPro]);
+
+  const sponsor = useMemo(
+    () => (sponsorId ? SPONSORS.find((s) => s.id === sponsorId) ?? null : null),
+    [sponsorId],
+  );
 
   useEffect(() => {
     setStreak(recordVisit(isVisible));
@@ -229,6 +296,7 @@ export default function MountainMoment({
     return "Share this forecast";
   }, [isVisible, currentStreak]);
 
+  // re-render preview when toggles change while modal is open
   const render = useCallback(async () => {
     setCaptureState("rendering");
     const canvas = document.createElement("canvas");
@@ -248,6 +316,9 @@ export default function MountainMoment({
       streak,
       time: formatTime(),
       date: formatDate(),
+      hideWatermark,
+      proHandle,
+      sponsor,
     });
 
     const blob = await new Promise<Blob | null>((resolve) =>
@@ -261,7 +332,12 @@ export default function MountainMoment({
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(URL.createObjectURL(blob));
     setCaptureState("ready");
-  }, [isVisible, score, neighborhoodLabel, streak, previewUrl]);
+  }, [isVisible, score, neighborhoodLabel, streak, previewUrl, hideWatermark, proHandle, sponsor]);
+
+  useEffect(() => {
+    if (open) render();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sponsorId, hideWatermark]);
 
   const openModal = useCallback(() => {
     setOpen(true);
@@ -464,7 +540,80 @@ export default function MountainMoment({
               </div>
             )}
 
-            <div className="mt-5 grid grid-cols-2 gap-2.5">
+            <div className="mt-4 space-y-2.5">
+              {isPro ? (
+                <label className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl bg-amber-500/8 ring-1 ring-amber-400/20 text-xs">
+                  <span className="flex items-center gap-2 font-semibold text-amber-200">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    Watermark-free (Pro)
+                  </span>
+                  <input
+                    type="checkbox"
+                    className="accent-amber-400"
+                    checked={hideWatermark}
+                    onChange={(e) => setHideWatermark(e.target.checked)}
+                  />
+                </label>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onUpgrade?.();
+                  }}
+                  className="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl bg-white/[0.04] ring-1 ring-white/[0.08] hover:bg-white/[0.07] transition-all text-xs text-left"
+                >
+                  <span className="flex items-center gap-2 text-white/60">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                    Remove watermark
+                  </span>
+                  <span className="font-display font-bold text-amber-300">Go Pro →</span>
+                </button>
+              )}
+
+              <div className="px-3 py-2.5 rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06]">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
+                    Sponsor (opt-in)
+                  </span>
+                  {sponsorId && (
+                    <button
+                      onClick={() => setSponsorId(null)}
+                      className="text-[10px] text-slate-500 hover:text-white/70 underline underline-offset-2"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {SPONSORS.map((s) => {
+                    const active = sponsorId === s.id;
+                    return (
+                      <button
+                        key={s.id}
+                        onClick={() => setSponsorId(active ? null : s.id)}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all ${
+                          active
+                            ? "text-white ring-1"
+                            : "text-white/60 bg-white/[0.04] ring-1 ring-white/[0.08] hover:bg-white/[0.08]"
+                        }`}
+                        style={
+                          active
+                            ? { backgroundColor: `${s.accent}22`, borderColor: `${s.accent}66`, boxShadow: `inset 0 0 0 1px ${s.accent}66` }
+                            : undefined
+                        }
+                      >
+                        {s.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="mt-2 text-[10px] text-slate-500 leading-relaxed">
+                  Tag a local brand on your card. Opt in to earn rewards when sponsors are live.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-4 grid grid-cols-2 gap-2.5">
               <button
                 onClick={share}
                 disabled={captureState !== "ready" && captureState !== "copied" && captureState !== "saved"}

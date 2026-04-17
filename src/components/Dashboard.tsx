@@ -8,7 +8,7 @@ import {
   Mountain,
   Sunset,
   MapPin,
-  Trophy,
+  Crown,
 } from "lucide-react";
 import HeroStatus from "@/components/HeroStatus";
 import MountainMoment from "@/components/MountainMoment";
@@ -24,6 +24,10 @@ import OutdoorWidget from "@/components/OutdoorWidget";
 import NeighborhoodSelector from "@/components/NeighborhoodSelector";
 import NotifyButton from "@/components/NotifyButton";
 import MountainCalendar from "@/components/MountainCalendar";
+import HoodWars from "@/components/HoodWars";
+import MountainPool from "@/components/MountainPool";
+import ProUpsell from "@/components/ProUpsell";
+import { usePro } from "@/hooks/usePro";
 import { WEBCAM_FEEDS } from "@/lib/webcams";
 import { registerSW } from "@/lib/notifications";
 import {
@@ -160,6 +164,8 @@ export default function Dashboard({ initialData }: Props) {
     searchParams.get("hood") || null
   );
   const [selectedViewpoint, setSelectedViewpoint] = useState(0);
+  const [proOpen, setProOpen] = useState(false);
+  const pro = usePro();
 
   const setNeighborhood = useCallback(
     (hood: string | null) => {
@@ -207,8 +213,6 @@ export default function Dashboard({ initialData }: Props) {
     [data.visibility.score, data.weather.humidity]
   );
 
-  const leaderboard = allNeighborhoodScores.slice(0, 5);
-
   const topViewpoint = data.viewpoints[0];
   const neighborhoodLabel = neighborhood ? NEIGHBORHOOD_LABELS[neighborhood] ?? null : null;
 
@@ -241,6 +245,7 @@ export default function Dashboard({ initialData }: Props) {
       />
 
       <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-8">
+        <ProUpsell open={proOpen} onClose={() => setProOpen(false)} />
         {/* ── Header ── */}
         <header className="flex items-center justify-between animate-fade-up">
           <div className="flex items-center gap-3.5">
@@ -260,6 +265,18 @@ export default function Dashboard({ initialData }: Props) {
             <span className="text-[11px] text-slate-500 font-medium tracking-wide hidden sm:inline">
               {timeStr} PT
             </span>
+            <button
+              onClick={() => setProOpen(true)}
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-display font-bold transition-all ${
+                pro.active
+                  ? "bg-amber-500/15 text-amber-300 ring-1 ring-amber-400/30"
+                  : "bg-gradient-to-r from-amber-500/15 to-orange-500/15 text-amber-200 ring-1 ring-amber-400/25 hover:from-amber-500/25 hover:to-orange-500/25"
+              }`}
+              aria-label={pro.active ? "Manage Mountain Pro" : "Upgrade to Mountain Pro"}
+            >
+              <Crown className="w-3 h-3" />
+              {pro.active ? "Pro" : "Go Pro"}
+            </button>
             <button
               onClick={() => mutate()}
               disabled={isValidating}
@@ -318,6 +335,8 @@ export default function Dashboard({ initialData }: Props) {
               score={neighborhoodAdjustedScore}
               neighborhoodLabel={neighborhoodLabel}
               durationMessage={data.visibility.durationMessage}
+              isPro={pro.active}
+              onUpgrade={() => setProOpen(true)}
             />
           </div>
         </section>
@@ -458,50 +477,29 @@ export default function Dashboard({ initialData }: Props) {
           </section>
         )}
 
-        {/* ── Neighborhood Leaderboard ── */}
+        {/* ── Hood Wars ── */}
         <section
           data-reveal-index="8"
           className={`transition-all duration-700 ${
             isRevealed(8) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 rounded-xl bg-amber-500/10 ring-1 ring-amber-400/15">
-              <Trophy className="w-4 h-4 text-amber-400" aria-hidden="true" />
-            </div>
-            <div>
-              <h2 className="font-display text-base font-bold text-white">
-                Neighborhood Leaderboard
-              </h2>
-              <p className="text-[11px] text-slate-500 font-medium tracking-wide mt-0.5">
-                Best visibility right now
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2" role="list" aria-label="Neighborhood visibility rankings">
-            {leaderboard.map((entry, i) => (
-              <button
-                key={entry.id}
-                onClick={() => setNeighborhood(entry.id)}
-                role="listitem"
-                className={`flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-medium transition-all ${
-                  neighborhood === entry.id
-                    ? "bg-amber-500/15 text-amber-300 ring-1 ring-amber-400/25"
-                    : "bg-white/[0.03] text-white/50 ring-1 ring-white/[0.06] hover:bg-white/[0.06]"
-                }`}
-              >
-                <span
-                  className={`font-mono text-[10px] font-bold ${
-                    i === 0 ? "text-amber-400" : "text-slate-600"
-                  }`}
-                >
-                  #{i + 1}
-                </span>
-                <span>{NEIGHBORHOOD_LABELS[entry.id] || entry.id}</span>
-                <span className="font-display font-bold">{entry.score}</span>
-              </button>
-            ))}
-          </div>
+          <HoodWars
+            selected={neighborhood}
+            onSelect={setNeighborhood}
+            fallbackScores={allNeighborhoodScores}
+            fallbackLabels={NEIGHBORHOOD_LABELS}
+          />
+        </section>
+
+        {/* ── Mountain Pool ── */}
+        <section
+          data-reveal-index="9"
+          className={`transition-all duration-700 ${
+            isRevealed(9) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
+        >
+          <MountainPool />
         </section>
 
         {/* ── Top Viewpoints ── */}

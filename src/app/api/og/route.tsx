@@ -24,6 +24,12 @@ const NEIGHBORHOOD_LABELS: Record<string, string> = {
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
+  const isHoodWars = searchParams.get("hoodwars") === "1";
+
+  if (isHoodWars) {
+    return renderHoodWarsCard(searchParams);
+  }
+
   const score = Number(searchParams.get("score") || "50");
   const isVisible = searchParams.get("visible") !== "false";
   const hood = searchParams.get("hood") || "";
@@ -149,5 +155,104 @@ export async function GET(request: NextRequest) {
       </div>
     ),
     { width: 1200, height: 630 }
+  );
+}
+
+function renderHoodWarsCard(searchParams: URLSearchParams) {
+  const hood = searchParams.get("hood") || "";
+  const label = NEIGHBORHOOD_LABELS[hood] || "Seattle";
+  const days = Number(searchParams.get("days") || "0");
+  const streak = Number(searchParams.get("streak") || "0");
+
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          background: "linear-gradient(135deg, #0b0f1a 0%, #1c1530 45%, #3a1e0d 100%)",
+          fontFamily: "system-ui, sans-serif",
+          position: "relative",
+          padding: 80,
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            top: "-20%",
+            right: "-10%",
+            width: 600,
+            height: 600,
+            borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(251,146,60,0.22), transparent 70%)",
+          }}
+        />
+        <div
+          style={{
+            fontSize: 22,
+            fontWeight: 700,
+            letterSpacing: "0.35em",
+            textTransform: "uppercase" as const,
+            color: "rgba(251,191,36,0.8)",
+            marginBottom: 40,
+            display: "flex",
+          }}
+        >
+          ⚔  Hood Wars
+        </div>
+        <div
+          style={{
+            fontSize: 130,
+            fontWeight: 900,
+            color: "white",
+            letterSpacing: "-0.04em",
+            lineHeight: 0.92,
+            display: "flex",
+          }}
+        >
+          {label}
+        </div>
+        <div style={{ display: "flex", gap: 40, marginTop: 50 }}>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ fontSize: 18, color: "rgba(255,255,255,0.45)", letterSpacing: "0.15em", textTransform: "uppercase" as const }}>
+              Out-days
+            </div>
+            <div style={{ fontSize: 100, fontWeight: 800, color: "#fbbf24", lineHeight: 1 }}>
+              {days}
+              <span style={{ fontSize: 32, color: "rgba(255,255,255,0.4)", fontWeight: 400 }}> / 30</span>
+            </div>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ fontSize: 18, color: "rgba(255,255,255,0.45)", letterSpacing: "0.15em", textTransform: "uppercase" as const }}>
+              Streak
+            </div>
+            <div style={{ fontSize: 100, fontWeight: 800, color: "#fb923c", lineHeight: 1, display: "flex" }}>
+              🔥 {streak}
+            </div>
+          </div>
+        </div>
+        <div
+          style={{
+            position: "absolute",
+            bottom: 60,
+            left: 80,
+            right: 80,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            color: "rgba(255,255,255,0.4)",
+            fontSize: 20,
+          }}
+        >
+          <span>isthemountainout.com/hoods/{hood}</span>
+          <span style={{ color: "rgba(251,191,36,0.7)", fontWeight: 700 }}>
+            Rep {label}
+          </span>
+        </div>
+      </div>
+    ),
+    { width: 1200, height: 630 },
   );
 }
