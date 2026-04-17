@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { kv } from "@vercel/kv";
+import webpush from "web-push";
 import { fetchWeatherData } from "@/lib/weather";
 import { calculateVisibility } from "@/lib/visibility";
 import {
@@ -8,14 +10,59 @@ import {
   buildNewState,
 } from "@/lib/state";
 
-/**
- * Cron evaluation endpoint.
- * Hit every 15 minutes by external cron (cron-job.org) or Vercel Cron.
- *
- * Validates via Authorization header or query param.
- */
+type CalendarData = Record<string, { score: number; isVisible: boolean }>;
+
+async function saveCalendarSnapshot(score: number, isVisible: boolean) {
+  const today = new Date().toISOString().split("T")[0];
+  try {
+    const data = (await kv.get<CalendarData>("calendar:data")) || {};
+    data[today] = { score, isVisible };
+
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 35);
+    const cutoffStr = cutoff.toISOString().split("T")[0];
+    for (const key of Object.keys(data)) {
+      if (key < cutoffStr) delete data[key];
+    }
+
+    await kv.set("calendar:data", data);
+  } catch (err) {
+    console.warn("[Cron] Calendar snapshot failed:", err);
+  }
+}
+
+async function sendPushToAll(title: string, body: string) {
+  const vapidEmail = process.env.VAPID_EMAIL;
+  const vapidPublic = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+  const vapidPrivate = process.env.VAPID_PRIVATE_KEY;
+
+  if (!vapidEmail || !vapidPublic || !vapidPrivate) return;
+
+  webpush.setVapidDetails(vapidEmail, vapidPublic, vapidPrivate);
+
+  try {
+    const subs = await kv.hgetall<Record<string, string>>("push:subscriptions");
+    if (!subs) return;
+
+    const payload = JSON.stringify({ title, body });
+
+    for (const [endpoint, subJson] of Object.entries(subs)) {
+      try {
+        const subscription = JSON.parse(subJson);
+        await webpush.sendNotification(subscription, payload);
+      } catch (err: unknown) {
+        const statusCode = (err as { statusCode?: number })?.statusCode;
+        if (statusCode === 410 || statusCode === 404) {
+          await kv.hdel("push:subscriptions", endpoint);
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("[Push] Broadcast failed:", err);
+  }
+}
+
 export async function GET(request: Request) {
-  // Validate cron secret
   const cronSecret = process.env.CRON_SECRET;
   if (!cronSecret) {
     return NextResponse.json({ error: "CRON_SECRET not configured" }, { status: 500 });
@@ -24,7 +71,6 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const authHeader = request.headers.get("authorization");
   const querySecret = searchParams.get("secret");
-
   const providedSecret = authHeader?.replace("Bearer ", "") || querySecret;
 
   if (providedSecret !== cronSecret) {
@@ -32,16 +78,10 @@ export async function GET(request: Request) {
   }
 
   try {
-    // 1. Fetch fresh weather data (no cache)
     const weather = await fetchWeatherData({ noCache: true });
-
-    // 2. Calculate visibility
     const visibility = calculateVisibility(weather);
-
-    // 3. Load previous state
     const previousState = await getMountainState();
 
-    // 4. Evaluate transitions (pass cloud data for Alpenglow detection)
     const transition = await evaluateTransition(
       visibility.score,
       visibility.isVisible,
@@ -54,9 +94,14 @@ export async function GET(request: Request) {
       }
     );
 
-    // 5. Save new state
     const newState = buildNewState(visibility.score, visibility.isVisible, previousState);
     await saveMountainState(newState);
+
+    await saveCalendarSnapshot(visibility.score, visibility.isVisible);
+
+    if (transition.shouldNotify) {
+      await sendPushToAll("Is The Mountain Out?", transition.message);
+    }
 
     return NextResponse.json({
       score: visibility.score,
