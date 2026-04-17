@@ -6,14 +6,12 @@ import useSWR from "swr";
 import {
   RefreshCw,
   Mountain,
-  Share2,
-  Check,
-  Sparkles,
   Sunset,
   MapPin,
   Trophy,
 } from "lucide-react";
 import HeroStatus from "@/components/HeroStatus";
+import MountainMoment from "@/components/MountainMoment";
 import MountainScene from "@/components/MountainScene";
 import WeatherDetails from "@/components/WeatherDetails";
 import ViewpointCard from "@/components/ViewpointCard";
@@ -162,7 +160,6 @@ export default function Dashboard({ initialData }: Props) {
     searchParams.get("hood") || null
   );
   const [selectedViewpoint, setSelectedViewpoint] = useState(0);
-  const [shared, setShared] = useState(false);
 
   const setNeighborhood = useCallback(
     (hood: string | null) => {
@@ -213,27 +210,7 @@ export default function Dashboard({ initialData }: Props) {
   const leaderboard = allNeighborhoodScores.slice(0, 5);
 
   const topViewpoint = data.viewpoints[0];
-
-  const handleShare = useCallback(async () => {
-    const hoodLabel = neighborhood ? NEIGHBORHOOD_LABELS[neighborhood] : null;
-    const location = hoodLabel ? ` from ${hoodLabel}` : "";
-    const text = `Mt. Rainier is ${adjustedIsVisible ? "OUT" : "hiding"}${location}! Score: ${neighborhoodAdjustedScore}/100. ${data.visibility.durationMessage}`;
-    const shareUrl = neighborhood
-      ? `${window.location.origin}?hood=${encodeURIComponent(neighborhood)}`
-      : window.location.origin;
-
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: "Is The Mountain Out?", text, url: shareUrl });
-      } else {
-        await navigator.clipboard.writeText(`${text}\n${shareUrl}`);
-      }
-      setShared(true);
-      setTimeout(() => setShared(false), 2000);
-    } catch {
-      // User cancelled
-    }
-  }, [data, neighborhood, neighborhoodAdjustedScore, adjustedIsVisible]);
+  const neighborhoodLabel = neighborhood ? NEIGHBORHOOD_LABELS[neighborhood] ?? null : null;
 
   const lastUpdate = new Date(data.lastUpdated);
   const timeStr = lastUpdate.toLocaleTimeString("en-US", {
@@ -336,37 +313,12 @@ export default function Dashboard({ initialData }: Props) {
 
           <div className="flex items-center justify-center gap-3 flex-wrap">
             <NotifyButton />
-            <button
-              onClick={handleShare}
-              className={`group inline-flex items-center gap-2.5 px-5 py-2.5 rounded-xl font-display font-bold text-sm transition-all ${
-                adjustedIsVisible
-                  ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/25 hover:bg-emerald-500/25"
-                  : "bg-white/[0.06] text-white/60 ring-1 ring-white/[0.08] hover:bg-white/[0.10]"
-              }`}
-              aria-label="Share mountain status"
-            >
-              {shared ? (
-                <>
-                  <Check className="w-4 h-4" />
-                  <span>Copied!</span>
-                </>
-              ) : (
-                <>
-                  {adjustedIsVisible ? (
-                    <Sparkles className="w-4 h-4 text-emerald-400" />
-                  ) : (
-                    <Share2 className="w-4 h-4" />
-                  )}
-                  <span>
-                    {neighborhood && NEIGHBORHOOD_LABELS[neighborhood]
-                      ? `Flex the ${NEIGHBORHOOD_LABELS[neighborhood]} View`
-                      : adjustedIsVisible
-                        ? "Flex the View"
-                        : "Share Status"}
-                  </span>
-                </>
-              )}
-            </button>
+            <MountainMoment
+              isVisible={adjustedIsVisible}
+              score={neighborhoodAdjustedScore}
+              neighborhoodLabel={neighborhoodLabel}
+              durationMessage={data.visibility.durationMessage}
+            />
           </div>
         </section>
 
