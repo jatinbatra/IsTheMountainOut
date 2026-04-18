@@ -336,6 +336,15 @@ body {
   animation: gradient-shift 4s ease-in-out infinite;
 }
 
+.gradient-text-amber {
+  background: linear-gradient(135deg, #fbbf24, #fb923c, #fbbf24);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 4s ease-in-out infinite;
+}
+
 /* Noise overlay — kept minimal to avoid visual mudiness */
 .noise-overlay {
   display: none;

@@ -25,6 +25,7 @@ import NotifyButton from "@/components/NotifyButton";
 import MountainCalendar from "@/components/MountainCalendar";
 import HoodWars from "@/components/HoodWars";
 import MountainPool from "@/components/MountainPool";
+import PhotoDrop from "@/components/PhotoDrop";
 import GlobalStreakBadge from "@/components/GlobalStreakBadge";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import { WEBCAM_FEEDS } from "@/lib/webcams";
@@ -484,6 +485,16 @@ export default function Dashboard({ initialData }: Props) {
           }`}
         >
           <MountainPool />
+        </section>
+
+        {/* ── Photo Drop ── */}
+        <section
+          data-reveal-index="9"
+          className={`transition-all duration-700 ${
+            isRevealed(9) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
+        >
+          <PhotoDrop neighborhood={neighborhood} />
         </section>
 
         {/* ── Top Viewpoints ── */}

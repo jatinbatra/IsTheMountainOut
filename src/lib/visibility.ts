@@ -26,6 +26,14 @@ export const WEIGHTS = {
   AIR_QUALITY: 10,   // PM2.5 / PM10 haze
 } as const;
 
+export type VisibilityStatus = "hiding" | "peeking" | "out";
+
+export function getVisibilityStatus(score: number): VisibilityStatus {
+  if (score >= 76) return "out";
+  if (score >= 41) return "peeking";
+  return "hiding";
+}
+
 // Mt. Rainier is ~90km from Seattle — target visibility distance
 const TARGET_VISIBILITY_M = 90_000;
 // PM2.5 threshold for full penalty
