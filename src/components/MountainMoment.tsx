@@ -19,8 +19,6 @@ interface Props {
   score: number;
   neighborhoodLabel: string | null;
   durationMessage: string;
-  isPro?: boolean;
-  onUpgrade?: () => void;
 }
 
 interface Sponsor {
@@ -68,11 +66,11 @@ function drawCard(
     time: string;
     date: string;
     hideWatermark: boolean;
-    proHandle: string | null;
+    handle: string | null;
     sponsor: Sponsor | null;
   },
 ) {
-  const { isVisible, score, neighborhoodLabel, streak, time, date, hideWatermark, proHandle, sponsor } = opts;
+  const { isVisible, score, neighborhoodLabel, streak, time, date, hideWatermark, handle, sponsor } = opts;
 
   const bg = ctx.createLinearGradient(0, 0, 0, CARD_H);
   if (isVisible) {
@@ -215,11 +213,11 @@ function drawCard(
     ctx.fillText(sponsor.brand, CARD_W / 2, sponsorY + 22);
   }
 
-  if (proHandle) {
+  if (handle) {
     ctx.fillStyle = "rgba(251,191,36,0.85)";
     ctx.font = "700 32px 'Space Grotesk', 'Inter', system-ui, sans-serif";
     ctx.textAlign = "left";
-    ctx.fillText(`@${proHandle}`, 72, CARD_H - 110);
+    ctx.fillText(`@${handle}`, 72, CARD_H - 110);
   }
 
   ctx.fillStyle = "rgba(255,255,255,0.35)";
@@ -253,32 +251,25 @@ export default function MountainMoment({
   score,
   neighborhoodLabel,
   durationMessage,
-  isPro = false,
-  onUpgrade,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [captureState, setCaptureState] = useState<CaptureState>("idle");
   const [streak, setStreak] = useState<StreakState>(() => getStreak());
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [sponsorId, setSponsorId] = useState<string | null>(null);
-  const [proHandle, setProHandle] = useState<string | null>(null);
+  const [handle, setHandle] = useState<string>("");
   const [hideWatermark, setHideWatermark] = useState<boolean>(false);
   const blobRef = useRef<Blob | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
-    setHideWatermark(isPro);
-    if (isPro && typeof window !== "undefined") {
-      try {
-        const h = window.localStorage.getItem("itmo:handle:v1");
-        setProHandle(h && h.length > 0 ? h : null);
-      } catch {
-        setProHandle(null);
-      }
-    } else {
-      setProHandle(null);
+    if (typeof window === "undefined") return;
+    try {
+      setHandle(window.localStorage.getItem("itmo:handle:v1") || "");
+    } catch {
+      // ignore
     }
-  }, [isPro]);
+  }, []);
 
   const sponsor = useMemo(
     () => (sponsorId ? SPONSORS.find((s) => s.id === sponsorId) ?? null : null),
@@ -317,7 +308,7 @@ export default function MountainMoment({
       time: formatTime(),
       date: formatDate(),
       hideWatermark,
-      proHandle,
+      handle,
       sponsor,
     });
 
@@ -332,7 +323,7 @@ export default function MountainMoment({
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(URL.createObjectURL(blob));
     setCaptureState("ready");
-  }, [isVisible, score, neighborhoodLabel, streak, previewUrl, hideWatermark, proHandle, sponsor]);
+  }, [isVisible, score, neighborhoodLabel, streak, previewUrl, hideWatermark, handle, sponsor]);
 
   useEffect(() => {
     if (open) render();
@@ -541,34 +532,40 @@ export default function MountainMoment({
             )}
 
             <div className="mt-4 space-y-2.5">
-              {isPro ? (
-                <label className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl bg-amber-500/8 ring-1 ring-amber-400/20 text-xs">
-                  <span className="flex items-center gap-2 font-semibold text-amber-200">
-                    <Sparkles className="w-3.5 h-3.5" />
-                    Watermark-free (Pro)
-                  </span>
-                  <input
-                    type="checkbox"
-                    className="accent-amber-400"
-                    checked={hideWatermark}
-                    onChange={(e) => setHideWatermark(e.target.checked)}
-                  />
+              <label className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06] text-xs cursor-pointer">
+                <span className="flex items-center gap-2 font-semibold text-white/80">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
+                  Hide watermark
+                </span>
+                <input
+                  type="checkbox"
+                  className="accent-emerald-400 w-4 h-4"
+                  checked={hideWatermark}
+                  onChange={(e) => setHideWatermark(e.target.checked)}
+                />
+              </label>
+
+              <div className="px-3 py-2.5 rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06]">
+                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
+                  Your handle
                 </label>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => {
-                    onUpgrade?.();
+                <input
+                  type="text"
+                  placeholder="@yourname (optional)"
+                  value={handle}
+                  onChange={(e) => {
+                    const v = e.target.value.slice(0, 24).replace(/[^\w\-. ]/g, "");
+                    setHandle(v);
+                    try {
+                      window.localStorage.setItem("itmo:handle:v1", v);
+                    } catch {
+                      // ignore
+                    }
                   }}
-                  className="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl bg-white/[0.04] ring-1 ring-white/[0.08] hover:bg-white/[0.07] transition-all text-xs text-left"
-                >
-                  <span className="flex items-center gap-2 text-white/60">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                    Remove watermark
-                  </span>
-                  <span className="font-display font-bold text-amber-300">Go Pro →</span>
-                </button>
-              )}
+                  className="w-full px-3 py-2 rounded-lg bg-white/[0.04] ring-1 ring-white/[0.08] text-xs text-white placeholder:text-slate-600 focus:outline-none focus:ring-emerald-400/30"
+                  maxLength={24}
+                />
+              </div>
 
               <div className="px-3 py-2.5 rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06]">
                 <div className="flex items-center justify-between">
