@@ -8,7 +8,6 @@ import {
   Mountain,
   Sunset,
   MapPin,
-  Crown,
 } from "lucide-react";
 import HeroStatus from "@/components/HeroStatus";
 import MountainMoment from "@/components/MountainMoment";
@@ -26,8 +25,6 @@ import NotifyButton from "@/components/NotifyButton";
 import MountainCalendar from "@/components/MountainCalendar";
 import HoodWars from "@/components/HoodWars";
 import MountainPool from "@/components/MountainPool";
-import ProUpsell from "@/components/ProUpsell";
-import { usePro } from "@/hooks/usePro";
 import { WEBCAM_FEEDS } from "@/lib/webcams";
 import { registerSW } from "@/lib/notifications";
 import {
@@ -164,8 +161,6 @@ export default function Dashboard({ initialData }: Props) {
     searchParams.get("hood") || null
   );
   const [selectedViewpoint, setSelectedViewpoint] = useState(0);
-  const [proOpen, setProOpen] = useState(false);
-  const pro = usePro();
 
   const setNeighborhood = useCallback(
     (hood: string | null) => {
@@ -245,7 +240,6 @@ export default function Dashboard({ initialData }: Props) {
       />
 
       <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-8">
-        <ProUpsell open={proOpen} onClose={() => setProOpen(false)} />
         {/* ── Header ── */}
         <header className="flex items-center justify-between animate-fade-up">
           <div className="flex items-center gap-3.5">
@@ -265,18 +259,6 @@ export default function Dashboard({ initialData }: Props) {
             <span className="text-[11px] text-slate-500 font-medium tracking-wide hidden sm:inline">
               {timeStr} PT
             </span>
-            <button
-              onClick={() => setProOpen(true)}
-              className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-display font-bold transition-all ${
-                pro.active
-                  ? "bg-amber-500/15 text-amber-300 ring-1 ring-amber-400/30"
-                  : "bg-gradient-to-r from-amber-500/15 to-orange-500/15 text-amber-200 ring-1 ring-amber-400/25 hover:from-amber-500/25 hover:to-orange-500/25"
-              }`}
-              aria-label={pro.active ? "Manage Mountain Pro" : "Upgrade to Mountain Pro"}
-            >
-              <Crown className="w-3 h-3" />
-              {pro.active ? "Pro" : "Go Pro"}
-            </button>
             <button
               onClick={() => mutate()}
               disabled={isValidating}
@@ -335,8 +317,6 @@ export default function Dashboard({ initialData }: Props) {
               score={neighborhoodAdjustedScore}
               neighborhoodLabel={neighborhoodLabel}
               durationMessage={data.visibility.durationMessage}
-              isPro={pro.active}
-              onUpgrade={() => setProOpen(true)}
             />
           </div>
         </section>
