@@ -21,10 +21,31 @@ interface Props {
   };
 }
 
-const STATUS_COPY: Record<VisibilityStatus, { label: string; gradient: string; aria: string }> = {
-  out: { label: "OUT!", gradient: "gradient-text", aria: "Mountain is out" },
-  peeking: { label: "PEEKING", gradient: "gradient-text-amber", aria: "Mountain is peeking through" },
-  hiding: { label: "HIDING", gradient: "gradient-text-red", aria: "Mountain is hiding" },
+const STATUS_COPY: Record<
+  VisibilityStatus,
+  { label: string; gradient: string; aria: string; range: string; caption: string }
+> = {
+  out: {
+    label: "OUT!",
+    gradient: "gradient-text",
+    aria: "Mountain is out",
+    range: "76–100",
+    caption: "clearly visible",
+  },
+  peeking: {
+    label: "PEEKING",
+    gradient: "gradient-text-amber",
+    aria: "Mountain is peeking through",
+    range: "41–75",
+    caption: "partially visible",
+  },
+  hiding: {
+    label: "HIDING",
+    gradient: "gradient-text-red",
+    aria: "Mountain is hiding",
+    range: "0–40",
+    caption: "not visible",
+  },
 };
 
 function getWeatherSentence(
@@ -132,18 +153,27 @@ export default function HeroStatus({
               </p>
             </>
           ) : (
-            <h1
-              className={`font-display font-black leading-[0.8] tracking-[-0.06em] ${statusCopy.gradient}`}
-              style={{
-                fontSize:
-                  status === "peeking"
-                    ? "clamp(4.5rem, 15vw, 11rem)"
-                    : "clamp(7rem, 22vw, 16rem)",
-              }}
-              aria-label={statusCopy.aria}
-            >
-              {statusCopy.label}
-            </h1>
+            <>
+              <h1
+                className={`font-display font-black leading-[0.8] tracking-[-0.06em] ${statusCopy.gradient}`}
+                style={{
+                  fontSize:
+                    status === "peeking"
+                      ? "clamp(4.5rem, 15vw, 11rem)"
+                      : "clamp(7rem, 22vw, 16rem)",
+                }}
+                aria-label={statusCopy.aria}
+              >
+                {statusCopy.label}
+              </h1>
+              <p className="mt-3 text-[11px] uppercase tracking-[0.3em] font-semibold text-slate-500">
+                <span className="font-mono text-white/40 tabular-nums">
+                  {statusCopy.range}
+                </span>
+                <span className="mx-2 text-white/10">·</span>
+                <span>{statusCopy.caption}</span>
+              </p>
+            </>
           )}
         </div>
 
