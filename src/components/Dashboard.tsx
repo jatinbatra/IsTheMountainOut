@@ -25,6 +25,8 @@ import NotifyButton from "@/components/NotifyButton";
 import MountainCalendar from "@/components/MountainCalendar";
 import HoodWars from "@/components/HoodWars";
 import MountainPool from "@/components/MountainPool";
+import GlobalStreakBadge from "@/components/GlobalStreakBadge";
+import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import { WEBCAM_FEEDS } from "@/lib/webcams";
 import { registerSW } from "@/lib/notifications";
 import {
@@ -239,6 +241,7 @@ export default function Dashboard({ initialData }: Props) {
         } as React.CSSProperties}
       />
 
+      <PWAInstallPrompt />
       <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-8">
         {/* ── Header ── */}
         <header className="flex items-center justify-between animate-fade-up">
@@ -256,6 +259,7 @@ export default function Dashboard({ initialData }: Props) {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <GlobalStreakBadge />
             <span className="text-[11px] text-slate-500 font-medium tracking-wide hidden sm:inline">
               {timeStr} PT
             </span>
