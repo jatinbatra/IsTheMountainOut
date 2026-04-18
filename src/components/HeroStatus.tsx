@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { TrendingUp, TrendingDown, ChevronDown, AlertTriangle } from "lucide-react";
-import { WMO } from "@/lib/visibility";
+import { WMO, getVisibilityStatus, type VisibilityStatus } from "@/lib/visibility";
 
 interface Props {
   isVisible: boolean;
@@ -20,6 +20,12 @@ interface Props {
     weatherCode: number;
   };
 }
+
+const STATUS_COPY: Record<VisibilityStatus, { label: string; gradient: string; aria: string }> = {
+  out: { label: "OUT!", gradient: "gradient-text", aria: "Mountain is out" },
+  peeking: { label: "PEEKING", gradient: "gradient-text-amber", aria: "Mountain is peeking through" },
+  hiding: { label: "HIDING", gradient: "gradient-text-red", aria: "Mountain is hiding" },
+};
 
 function getWeatherSentence(
   score: number,
@@ -60,8 +66,10 @@ export default function HeroStatus({
   sunrise,
   scoreBreakdown,
 }: Props) {
+  const status = getVisibilityStatus(score);
   const nightWithClearSkies = isNight && isVisible;
   const [showMath, setShowMath] = useState(false);
+  const statusCopy = STATUS_COPY[status];
 
   const sunriseStr = sunrise
     ? new Date(sunrise).toLocaleTimeString("en-US", {
@@ -94,9 +102,12 @@ export default function HeroStatus({
       <div
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] rounded-full pointer-events-none animate-hero-glow"
         style={{
-          background: isVisible
-            ? `radial-gradient(ellipse, rgba(52,211,153,${0.15 + score / 400}) 0%, rgba(59,130,246,0.03) 40%, transparent 65%)`
-            : "radial-gradient(ellipse, rgba(248,113,113,0.10) 0%, rgba(251,146,60,0.03) 40%, transparent 65%)",
+          background:
+            status === "out"
+              ? `radial-gradient(ellipse, rgba(52,211,153,${0.15 + score / 400}) 0%, rgba(59,130,246,0.03) 40%, transparent 65%)`
+              : status === "peeking"
+                ? "radial-gradient(ellipse, rgba(251,191,36,0.12) 0%, rgba(251,146,60,0.04) 40%, transparent 65%)"
+                : "radial-gradient(ellipse, rgba(248,113,113,0.10) 0%, rgba(251,146,60,0.03) 40%, transparent 65%)",
         }}
         aria-hidden="true"
       />
@@ -122,13 +133,16 @@ export default function HeroStatus({
             </>
           ) : (
             <h1
-              className={`font-display font-black leading-[0.8] tracking-[-0.06em] ${
-                isVisible ? "gradient-text" : "gradient-text-red"
-              }`}
-              style={{ fontSize: "clamp(7rem, 22vw, 16rem)" }}
-              aria-label={`Mountain is ${isVisible ? "visible" : "not visible"}`}
+              className={`font-display font-black leading-[0.8] tracking-[-0.06em] ${statusCopy.gradient}`}
+              style={{
+                fontSize:
+                  status === "peeking"
+                    ? "clamp(4.5rem, 15vw, 11rem)"
+                    : "clamp(7rem, 22vw, 16rem)",
+              }}
+              aria-label={statusCopy.aria}
             >
-              {isVisible ? "YES" : "NO"}
+              {statusCopy.label}
             </h1>
           )}
         </div>
@@ -168,9 +182,9 @@ export default function HeroStatus({
             <div className="w-full h-[3px] rounded-full bg-white/[0.06] overflow-hidden">
               <div
                 className={`h-full rounded-full animate-score-fill ${
-                  score >= 70
+                  status === "out"
                     ? "bg-emerald-400/70"
-                    : score >= 50
+                    : status === "peeking"
                       ? "bg-amber-400/70"
                       : "bg-red-400/60"
                 }`}
@@ -234,14 +248,17 @@ export default function HeroStatus({
                 {sunriseStr}.
               </p>
             </>
-          ) : isVisible ? (
+          ) : status === "hiding" ? (
             <>
-              <TrendingUp className="w-4 h-4 text-emerald-400/50" aria-hidden="true" />
+              <TrendingDown className="w-4 h-4 text-red-400/50" aria-hidden="true" />
               <p className="text-white/45 text-sm leading-relaxed">{durationMessage}</p>
             </>
           ) : (
             <>
-              <TrendingDown className="w-4 h-4 text-red-400/50" aria-hidden="true" />
+              <TrendingUp
+                className={`w-4 h-4 ${status === "out" ? "text-emerald-400/50" : "text-amber-400/50"}`}
+                aria-hidden="true"
+              />
               <p className="text-white/45 text-sm leading-relaxed">{durationMessage}</p>
             </>
           )}
