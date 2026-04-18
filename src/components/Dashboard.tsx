@@ -28,6 +28,7 @@ import MountainPool from "@/components/MountainPool";
 import PhotoDrop from "@/components/PhotoDrop";
 import GlobalStreakBadge from "@/components/GlobalStreakBadge";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
+import NextClearWindow from "@/components/NextClearWindow";
 import { WEBCAM_FEEDS } from "@/lib/webcams";
 import { registerSW } from "@/lib/notifications";
 import {
@@ -303,6 +304,15 @@ export default function Dashboard({ initialData }: Props) {
             weatherCode: data.weather.weatherCode,
           }}
         />
+
+        {/* ── Next Clear Window ── */}
+        <section className="animate-fade-up">
+          <NextClearWindow
+            hourlyTimeline={data.hourlyTimeline}
+            weeklyForecast={data.weeklyForecast}
+            currentScore={neighborhoodAdjustedScore}
+          />
+        </section>
 
         {/* ── Best viewpoint + Notify + Share ── */}
         <section className="animate-fade-up space-y-4">
