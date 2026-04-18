@@ -11,6 +11,7 @@ import {
 } from "@/lib/state";
 import { snapshotHoodScores } from "@/lib/hoods";
 import { settleWeekIfDue, recordDailyActual } from "@/lib/pool";
+import { recordGlobalStreak } from "@/lib/globalStreak";
 
 type CalendarData = Record<string, { score: number; isVisible: boolean }>;
 
@@ -103,9 +104,18 @@ export async function GET(request: Request) {
     await snapshotHoodScores(visibility.score, weather.humidity);
     await recordDailyActual(visibility.score);
     await settleWeekIfDue();
+    await recordGlobalStreak(visibility.isVisible);
 
     if (transition.shouldNotify) {
-      await sendPushToAll("Is The Mountain Out?", transition.message);
+      const title =
+        transition.type === "alpenglow_alert"
+          ? "Alpenglow incoming"
+          : transition.type === "mountain_emerged"
+            ? "The Mountain is OUT"
+            : transition.type === "sunset_prime"
+              ? "Prime sunset tonight"
+              : "Is The Mountain Out?";
+      await sendPushToAll(title, transition.message);
     }
 
     return NextResponse.json({
