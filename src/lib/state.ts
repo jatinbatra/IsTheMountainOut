@@ -18,6 +18,7 @@ export interface StateTransition {
     | "weekend_lookahead"
     | "gloom_breaker"
     | "record_visibility"
+    | "dawn_patrol"
     | "no_change";
   shouldNotify: boolean;
   message: string;
@@ -30,6 +31,7 @@ export interface EvaluateContext {
   hourlyScored?: { time: string; score: number }[];
   dailyScored?: { date: string; dayLabel: string; score: number }[];
   gloomStreakDays?: number;
+  sunrise?: string;
 }
 
 const STATE_KEY = "mountain:state";
@@ -204,6 +206,39 @@ export async function evaluateTransition(
           score: currentScore,
           alpenglowProbability: alpenglow.probability,
         };
+      }
+    }
+  }
+
+  // --- Trigger I: Dawn Patrol (30-75min before sunrise, morning looks clear) ---
+  if (ctx?.sunrise && ctx.hourlyScored?.length) {
+    const sunriseTime = new Date(ctx.sunrise);
+    const minsToSunrise = (sunriseTime.getTime() - now.getTime()) / (1000 * 60);
+    if (minsToSunrise >= 30 && minsToSunrise <= 75) {
+      const sunriseStart = sunriseTime.getTime();
+      const windowEnd = sunriseStart + 3 * 60 * 60 * 1000;
+      const dawnHours = ctx.hourlyScored.filter((h) => {
+        const t = new Date(h.time).getTime();
+        return t >= sunriseStart && t <= windowEnd;
+      });
+      if (dawnHours.length) {
+        const peak = Math.max(...dawnHours.map((h) => h.score));
+        if (peak >= 70) {
+          const sent = await alreadySent(`mountain:dawn:${datePT(now)}`, 20 * 60 * 60);
+          if (!sent) {
+            const sunriseStr = sunriseTime.toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
+              timeZone: "America/Los_Angeles",
+            });
+            return {
+              type: "dawn_patrol",
+              shouldNotify: true,
+              message: `Dawn patrol: Mt. Rainier could peak at ${peak}/100 within 3 hrs of sunrise (${sunriseStr}). Set the alarm.`,
+              score: currentScore,
+            };
+          }
+        }
       }
     }
   }

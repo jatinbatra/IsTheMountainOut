@@ -21,10 +21,11 @@ import FeaturedWebcam from "@/components/FeaturedWebcam";
 import VisibilityHistory from "@/components/VisibilityHistory";
 import OutdoorWidget from "@/components/OutdoorWidget";
 import NeighborhoodSelector from "@/components/NeighborhoodSelector";
-import NotifyButton from "@/components/NotifyButton";
+import NotifyCard from "@/components/NotifyCard";
 import MountainCalendar from "@/components/MountainCalendar";
 import HoodWars from "@/components/HoodWars";
 import MountainPool from "@/components/MountainPool";
+import GuessTheScore from "@/components/GuessTheScore";
 import PhotoDrop from "@/components/PhotoDrop";
 import GlobalStreakBadge from "@/components/GlobalStreakBadge";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
@@ -328,7 +329,6 @@ export default function Dashboard({ initialData }: Props) {
           )}
 
           <div className="flex items-center justify-center gap-3 flex-wrap">
-            <NotifyButton />
             <MountainMoment
               isVisible={adjustedIsVisible}
               score={neighborhoodAdjustedScore}
@@ -340,6 +340,11 @@ export default function Dashboard({ initialData }: Props) {
               neighborhoodLabel={neighborhoodLabel}
             />
           </div>
+        </section>
+
+        {/* ── Notify card ── */}
+        <section className="animate-fade-up">
+          <NotifyCard />
         </section>
 
         {/* ── Privacy commitment ── */}
@@ -496,6 +501,16 @@ export default function Dashboard({ initialData }: Props) {
             fallbackScores={allNeighborhoodScores}
             fallbackLabels={NEIGHBORHOOD_LABELS}
           />
+        </section>
+
+        {/* ── Guess the Score ── */}
+        <section
+          data-reveal-index="8"
+          className={`transition-all duration-700 ${
+            isRevealed(8) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
+        >
+          <GuessTheScore />
         </section>
 
         {/* ── Mountain Pool ── */}

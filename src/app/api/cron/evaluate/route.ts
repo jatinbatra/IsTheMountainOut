@@ -16,6 +16,7 @@ import {
 import { snapshotHoodScores } from "@/lib/hoods";
 import { settleWeekIfDue, recordDailyActual } from "@/lib/pool";
 import { recordGlobalStreak, getGlobalStreak } from "@/lib/globalStreak";
+import { recordPeakCandidate } from "@/lib/guess";
 
 type CalendarData = Record<string, { score: number; isVisible: boolean }>;
 
@@ -111,7 +112,7 @@ export async function GET(request: Request) {
         cloudMid: weather.currentCloudMid,
         cloudHigh: weather.currentCloudHigh,
       },
-      { hourlyScored, dailyScored, gloomStreakDays }
+      { hourlyScored, dailyScored, gloomStreakDays, sunrise: weather.sunrise }
     );
 
     const newState = buildNewState(visibility.score, visibility.isVisible, previousState);
@@ -122,6 +123,7 @@ export async function GET(request: Request) {
     await recordDailyActual(visibility.score);
     await settleWeekIfDue();
     await recordGlobalStreak(visibility.isVisible);
+    await recordPeakCandidate(visibility.score);
 
     if (transition.shouldNotify) {
       const titles: Record<string, string> = {
@@ -133,6 +135,7 @@ export async function GET(request: Request) {
         morning_brief: "Morning brief",
         weekend_lookahead: "Weekend look-ahead",
         golden_hour: "Golden hour — get outside",
+        dawn_patrol: "Dawn patrol conditions",
       };
       const title = titles[transition.type] ?? "Is The Mountain Out?";
       await sendPushToAll(title, transition.message);

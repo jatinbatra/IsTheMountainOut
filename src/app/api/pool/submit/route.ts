@@ -31,7 +31,11 @@ export async function POST(req: NextRequest) {
     submittedAt: new Date().toISOString(),
   };
 
-  await submitPick(week.id, pick);
+  try {
+    await submitPick(week.id, pick);
+  } catch {
+    return NextResponse.json({ error: "storage_unavailable" }, { status: 503 });
+  }
 
   return NextResponse.json({ ok: true, week, pick });
 }
