@@ -11,6 +11,7 @@ import {
   RotateCcw,
   ChevronRight,
   AtSign,
+  AlertCircle,
 } from "lucide-react";
 import { getUserId, getHandle, setHandle } from "@/lib/identity";
 
@@ -75,6 +76,8 @@ export default function MountainPool() {
   const [slate, setSlate] = useState<number[]>(() => [60, 55, 50, 55, 60, 65, 70]);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [savedSlate, setSavedSlate] = useState<number[] | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     setUid(getUserId());
@@ -89,9 +92,15 @@ export default function MountainPool() {
   useEffect(() => {
     if (data?.myPick) {
       setSlate(data.myPick.picks);
+      setSavedSlate(data.myPick.picks);
       setSubmitted(true);
     }
   }, [data?.myPick]);
+
+  const isDirty = useMemo(() => {
+    if (!savedSlate) return true;
+    return slate.some((v, i) => v !== savedSlate[i]);
+  }, [slate, savedSlate]);
 
   const week = data?.week;
   const isLocked = week?.isLocked ?? false;
@@ -109,12 +118,13 @@ export default function MountainPool() {
       next[idx] = Math.max(0, Math.min(100, Math.round(value)));
       return next;
     });
-    setSubmitted(false);
+    setSubmitError(null);
   }, []);
 
   const submit = async () => {
     if (!userId || userId === "ssr") return;
     setSubmitting(true);
+    setSubmitError(null);
     try {
       if (handleInput) setHandle(handleInput);
       const res = await fetch("/api/pool/submit", {
@@ -124,16 +134,29 @@ export default function MountainPool() {
       });
       if (res.ok) {
         setSubmitted(true);
+        setSavedSlate([...slate]);
         mutate();
+      } else {
+        const body = await res.json().catch(() => ({}));
+        const code = typeof body?.error === "string" ? body.error : null;
+        setSubmitError(
+          code === "week_locked"
+            ? "Picks are locked for this week — try next Monday."
+            : code === "storage_unavailable"
+              ? "Couldn't save picks — retry in a moment."
+              : "Something went wrong. Tap to retry.",
+        );
       }
+    } catch {
+      setSubmitError("Network error — tap to retry.");
     } finally {
       setSubmitting(false);
     }
   };
 
   const reset = () => {
-    setSlate([60, 55, 50, 55, 60, 65, 70]);
-    setSubmitted(false);
+    setSlate(savedSlate ?? [60, 55, 50, 55, 60, 65, 70]);
+    setSubmitError(null);
   };
 
   return (
@@ -219,11 +242,13 @@ export default function MountainPool() {
           </button>
           <button
             onClick={submit}
-            disabled={isLocked || submitting}
+            disabled={isLocked || submitting || (submitted && !isDirty && !submitError)}
             className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-display font-bold transition-all disabled:opacity-40 ${
-              submitted
-                ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/30"
-                : "bg-gradient-to-r from-blue-500/30 to-violet-500/30 text-white ring-1 ring-blue-400/40 shadow-lg shadow-blue-500/10"
+              submitError
+                ? "bg-rose-500/15 text-rose-200 ring-1 ring-rose-400/40"
+                : submitted && !isDirty
+                  ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/30"
+                  : "bg-gradient-to-r from-blue-500/30 to-violet-500/30 text-white ring-1 ring-blue-400/40 shadow-lg shadow-blue-500/10"
             }`}
           >
             {submitting ? (
@@ -231,10 +256,20 @@ export default function MountainPool() {
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 Locking in…
               </>
-            ) : submitted ? (
+            ) : submitError ? (
+              <>
+                <AlertCircle className="w-3.5 h-3.5" />
+                Retry
+              </>
+            ) : submitted && !isDirty ? (
               <>
                 <Check className="w-3.5 h-3.5" />
-                Picks locked
+                Picks saved
+              </>
+            ) : submitted && isDirty ? (
+              <>
+                <Target className="w-3.5 h-3.5" />
+                Update picks
               </>
             ) : (
               <>
@@ -244,6 +279,13 @@ export default function MountainPool() {
             )}
           </button>
         </div>
+
+        {submitError && (
+          <p className="flex items-center gap-1.5 text-[11px] text-rose-300/90 font-medium -mt-1">
+            <AlertCircle className="w-3 h-3" aria-hidden="true" />
+            {submitError}
+          </p>
+        )}
       </div>
 
       {data && data.standings.length > 0 && (

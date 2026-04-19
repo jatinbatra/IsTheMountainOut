@@ -67,7 +67,12 @@ export function getWeekInfo(now: Date = new Date()): WeekInfo {
 }
 
 export async function submitPick(week: string, pick: Pick): Promise<void> {
-  await kv.hset(PICKS_KEY(week), { [pick.userId]: JSON.stringify(pick) });
+  try {
+    await kv.hset(PICKS_KEY(week), { [pick.userId]: JSON.stringify(pick) });
+  } catch (err) {
+    console.error("[Pool] submitPick failed:", err);
+    throw new Error("storage_unavailable");
+  }
 }
 
 export async function getPick(week: string, userId: string): Promise<Pick | null> {
