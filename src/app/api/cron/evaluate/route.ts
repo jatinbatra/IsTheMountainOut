@@ -2,7 +2,11 @@ import { NextResponse } from "next/server";
 import { kv } from "@vercel/kv";
 import webpush from "web-push";
 import { fetchWeatherData } from "@/lib/weather";
-import { calculateVisibility } from "@/lib/visibility";
+import {
+  calculateVisibility,
+  scoreHourForTimeline,
+  scoreDailyForecast,
+} from "@/lib/visibility";
 import {
   getMountainState,
   saveMountainState,
@@ -11,7 +15,7 @@ import {
 } from "@/lib/state";
 import { snapshotHoodScores } from "@/lib/hoods";
 import { settleWeekIfDue, recordDailyActual } from "@/lib/pool";
-import { recordGlobalStreak } from "@/lib/globalStreak";
+import { recordGlobalStreak, getGlobalStreak } from "@/lib/globalStreak";
 
 type CalendarData = Record<string, { score: number; isVisible: boolean }>;
 
@@ -85,6 +89,18 @@ export async function GET(request: Request) {
     const visibility = calculateVisibility(weather);
     const previousState = await getMountainState();
 
+    const hourlyScored = weather.hourlyForecast.map((h) => ({
+      time: h.time,
+      score: scoreHourForTimeline(h).score,
+    }));
+    const dailyScored = weather.dailyForecast.map((d) => ({
+      date: d.date,
+      dayLabel: d.dayLabel,
+      score: scoreDailyForecast(d).score,
+    }));
+    const streak = await getGlobalStreak();
+    const gloomStreakDays = streak?.type === "gloom" ? streak.days : 0;
+
     const transition = await evaluateTransition(
       visibility.score,
       visibility.isVisible,
@@ -94,7 +110,8 @@ export async function GET(request: Request) {
         cloudLow: weather.currentCloudLow,
         cloudMid: weather.currentCloudMid,
         cloudHigh: weather.currentCloudHigh,
-      }
+      },
+      { hourlyScored, dailyScored, gloomStreakDays }
     );
 
     const newState = buildNewState(visibility.score, visibility.isVisible, previousState);
@@ -107,14 +124,17 @@ export async function GET(request: Request) {
     await recordGlobalStreak(visibility.isVisible);
 
     if (transition.shouldNotify) {
-      const title =
-        transition.type === "alpenglow_alert"
-          ? "Alpenglow incoming"
-          : transition.type === "mountain_emerged"
-            ? "The Mountain is OUT"
-            : transition.type === "sunset_prime"
-              ? "Prime sunset tonight"
-              : "Is The Mountain Out?";
+      const titles: Record<string, string> = {
+        alpenglow_alert: "Alpenglow incoming",
+        record_visibility: "Rare clarity — look up",
+        mountain_emerged: "The Mountain is OUT",
+        gloom_breaker: "The gloom just broke",
+        sunset_prime: "Prime sunset tonight",
+        morning_brief: "Morning brief",
+        weekend_lookahead: "Weekend look-ahead",
+        golden_hour: "Golden hour — get outside",
+      };
+      const title = titles[transition.type] ?? "Is The Mountain Out?";
       await sendPushToAll(title, transition.message);
     }
 

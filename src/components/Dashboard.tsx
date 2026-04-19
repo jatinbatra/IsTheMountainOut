@@ -29,6 +29,8 @@ import PhotoDrop from "@/components/PhotoDrop";
 import GlobalStreakBadge from "@/components/GlobalStreakBadge";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import NextClearWindow from "@/components/NextClearWindow";
+import SmsShareButton from "@/components/SmsShareButton";
+import PrivacyCommitment from "@/components/PrivacyCommitment";
 import { WEBCAM_FEEDS } from "@/lib/webcams";
 import { registerSW } from "@/lib/notifications";
 import {
@@ -333,7 +335,16 @@ export default function Dashboard({ initialData }: Props) {
               neighborhoodLabel={neighborhoodLabel}
               durationMessage={data.visibility.durationMessage}
             />
+            <SmsShareButton
+              score={neighborhoodAdjustedScore}
+              neighborhoodLabel={neighborhoodLabel}
+            />
           </div>
+        </section>
+
+        {/* ── Privacy commitment ── */}
+        <section className="animate-fade-up">
+          <PrivacyCommitment />
         </section>
 
         {/* ── Alpenglow Alert ── */}
