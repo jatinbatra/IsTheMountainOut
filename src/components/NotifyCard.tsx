@@ -44,10 +44,19 @@ export default function NotifyCard() {
   const [subscribing, setSubscribing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [endpoint, setEndpoint] = useState<string | null>(null);
+  const [testing, setTesting] = useState(false);
+  const [testResult, setTestResult] = useState<"idle" | "sent" | "failed">("idle");
 
   useEffect(() => {
     setPlatform(detectPlatform());
     setPermission(getNotificationPermission());
+    if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistration().then(async (reg) => {
+        const sub = await reg?.pushManager.getSubscription();
+        if (sub) setEndpoint(sub.endpoint);
+      });
+    }
   }, []);
 
   const canEnable = platform === "standard" || platform === "ios-pwa";
@@ -77,9 +86,29 @@ export default function NotifyCard() {
       const sub = await subscribeToPush(reg, vapidKey);
       if (!sub) {
         setError("Subscription failed. Check your browser settings and retry.");
+        return;
       }
+      setEndpoint(sub.endpoint);
     } finally {
       setSubscribing(false);
+    }
+  };
+
+  const sendTest = async () => {
+    if (!endpoint) return;
+    setTesting(true);
+    setTestResult("idle");
+    try {
+      const res = await fetch("/api/push/test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ endpoint }),
+      });
+      setTestResult(res.ok ? "sent" : "failed");
+    } catch {
+      setTestResult("failed");
+    } finally {
+      setTesting(false);
     }
   };
 
@@ -162,6 +191,29 @@ export default function NotifyCard() {
                     <Bell className="w-3.5 h-3.5" />
                     Turn on alerts
                   </>
+                )}
+              </button>
+            )}
+            {enabled && endpoint && (
+              <button
+                onClick={sendTest}
+                disabled={testing}
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-display font-semibold bg-white/[0.04] text-white/75 ring-1 ring-white/[0.08] hover:bg-white/[0.08] transition-all disabled:opacity-50"
+              >
+                {testing ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    Sending…
+                  </>
+                ) : testResult === "sent" ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-300" />
+                    Test sent — check your notifications
+                  </>
+                ) : testResult === "failed" ? (
+                  "Test failed — retry"
+                ) : (
+                  "Send test ping"
                 )}
               </button>
             )}

@@ -14,6 +14,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { getUserId, getHandle, setHandle } from "@/lib/identity";
+import { getLocalPoolPicks, setLocalPoolPicks } from "@/lib/localPersist";
 
 interface Pick {
   userId: string;
@@ -78,6 +79,7 @@ export default function MountainPool() {
   const [submitted, setSubmitted] = useState(false);
   const [savedSlate, setSavedSlate] = useState<number[] | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [savedLocally, setSavedLocally] = useState(false);
 
   useEffect(() => {
     setUid(getUserId());
@@ -94,8 +96,17 @@ export default function MountainPool() {
       setSlate(data.myPick.picks);
       setSavedSlate(data.myPick.picks);
       setSubmitted(true);
+      setSavedLocally(false);
+    } else if (data?.week && !data.myPick) {
+      const local = getLocalPoolPicks(data.week.id);
+      if (local) {
+        setSlate(local.picks);
+        setSavedSlate(local.picks);
+        setSubmitted(true);
+        setSavedLocally(true);
+      }
     }
-  }, [data?.myPick]);
+  }, [data?.myPick, data?.week]);
 
   const isDirty = useMemo(() => {
     if (!savedSlate) return true;
@@ -132,23 +143,27 @@ export default function MountainPool() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, handle: handleInput || "anon", picks: slate }),
       });
+      if (week?.id) setLocalPoolPicks(week.id, slate);
+      setSavedSlate([...slate]);
+      setSubmitted(true);
+
       if (res.ok) {
-        setSubmitted(true);
-        setSavedSlate([...slate]);
+        setSavedLocally(false);
         mutate();
       } else {
         const body = await res.json().catch(() => ({}));
         const code = typeof body?.error === "string" ? body.error : null;
-        setSubmitError(
-          code === "week_locked"
-            ? "Picks are locked for this week — try next Monday."
-            : code === "storage_unavailable"
-              ? "Couldn't save picks — retry in a moment."
-              : "Something went wrong. Tap to retry.",
-        );
+        if (code === "week_locked") {
+          setSubmitError("Picks are locked for this week — try next Monday.");
+        } else {
+          setSavedLocally(true);
+        }
       }
     } catch {
-      setSubmitError("Network error — tap to retry.");
+      if (week?.id) setLocalPoolPicks(week.id, slate);
+      setSavedSlate([...slate]);
+      setSubmitted(true);
+      setSavedLocally(true);
     } finally {
       setSubmitting(false);
     }
@@ -284,6 +299,12 @@ export default function MountainPool() {
           <p className="flex items-center gap-1.5 text-[11px] text-rose-300/90 font-medium -mt-1">
             <AlertCircle className="w-3 h-3" aria-hidden="true" />
             {submitError}
+          </p>
+        )}
+
+        {savedLocally && submitted && !isDirty && !submitError && (
+          <p className="text-[11px] text-amber-300/80 font-medium -mt-1">
+            Saved on this device. Leaderboard is offline right now — your picks will sync when it&apos;s back.
           </p>
         )}
       </div>
