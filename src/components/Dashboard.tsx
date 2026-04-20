@@ -32,6 +32,7 @@ import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import NextClearWindow from "@/components/NextClearWindow";
 import SpotterButton from "@/components/SpotterButton";
 import CountdownStrip from "@/components/CountdownStrip";
+import WeekendAtRainier from "@/components/WeekendAtRainier";
 import SmsShareButton from "@/components/SmsShareButton";
 import PrivacyCommitment from "@/components/PrivacyCommitment";
 import { WEBCAM_FEEDS } from "@/lib/webcams";
@@ -452,6 +453,16 @@ export default function Dashboard({ initialData }: Props) {
           }`}
         >
           <MountainCalendar />
+        </section>
+
+        {/* ── Weekend at Rainier ── */}
+        <section
+          data-reveal-index="4"
+          className={`transition-all duration-700 ${
+            isRevealed(4) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
+        >
+          <WeekendAtRainier weeklyForecast={data.weeklyForecast} />
         </section>
 
         {/* ── Golden Hour + Trails (when visible) ── */}
