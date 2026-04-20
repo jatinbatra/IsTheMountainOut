@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import { Dice5, Loader2, Check, Trophy, Sparkles, AlertCircle } from "lucide-react";
 import { getUserId, getHandle, setHandle } from "@/lib/identity";
+import { getLocalGuess, setLocalGuess } from "@/lib/localPersist";
 
 interface DayGuess {
   date: string;
@@ -39,6 +40,7 @@ export default function GuessTheScore() {
   const [guess, setGuess] = useState(60);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [localGuess, setLocalGuessState] = useState<{ guess: number; date: string } | null>(null);
 
   useEffect(() => {
     setUid(getUserId());
@@ -51,11 +53,22 @@ export default function GuessTheScore() {
   });
 
   useEffect(() => {
-    if (data?.myGuess) setGuess(data.myGuess.guess);
-  }, [data?.myGuess]);
+    if (data?.myGuess) {
+      setGuess(data.myGuess.guess);
+      return;
+    }
+    if (data?.date) {
+      const local = getLocalGuess(data.date);
+      if (local) {
+        setGuess(local.guess);
+        setLocalGuessState({ guess: local.guess, date: data.date });
+      }
+    }
+  }, [data?.myGuess, data?.date]);
 
-  const submitted = !!data?.myGuess;
+  const submitted = !!data?.myGuess || !!localGuess;
   const revealed = data?.isRevealed ?? false;
+  const onlyLocal = !data?.myGuess && !!localGuess;
 
   const submit = useCallback(async () => {
     if (!userId || userId === "ssr") return;
@@ -68,25 +81,25 @@ export default function GuessTheScore() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, handle: handleInput || "anon", guess }),
       });
+      if (data?.date) setLocalGuess(data.date, guess);
+      setLocalGuessState(data?.date ? { guess, date: data.date } : null);
+
       if (res.ok) {
         mutate();
       } else {
         const body = await res.json().catch(() => ({}));
         const code = typeof body?.error === "string" ? body.error : null;
-        setError(
-          code === "already_revealed"
-            ? "Today's answer is already out — come back tomorrow."
-            : code === "storage_unavailable"
-              ? "Couldn't save. Try again in a moment."
-              : "Something went wrong. Tap to retry.",
-        );
+        if (code === "already_revealed") {
+          setError("Today\u2019s answer is already out \u2014 come back tomorrow.");
+        }
       }
     } catch {
-      setError("Network error — tap to retry.");
+      if (data?.date) setLocalGuess(data.date, guess);
+      setLocalGuessState(data?.date ? { guess, date: data.date } : null);
     } finally {
       setSubmitting(false);
     }
-  }, [userId, handleInput, guess, mutate]);
+  }, [userId, handleInput, guess, mutate, data?.date]);
 
   const heading = useMemo(() => {
     if (revealed) return "Today's reveal";
@@ -244,6 +257,11 @@ export default function GuessTheScore() {
             <p className="flex items-center gap-1.5 text-[11px] text-rose-300/90 font-medium">
               <AlertCircle className="w-3 h-3" aria-hidden="true" />
               {error}
+            </p>
+          )}
+          {onlyLocal && !error && (
+            <p className="text-[11px] text-amber-300/80 font-medium">
+              Saved on this device. Leaderboard is offline right now.
             </p>
           )}
           {data && data.averageGuess !== null && !submitted && (

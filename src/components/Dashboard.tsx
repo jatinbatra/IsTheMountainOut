@@ -30,6 +30,8 @@ import PhotoDrop from "@/components/PhotoDrop";
 import GlobalStreakBadge from "@/components/GlobalStreakBadge";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import NextClearWindow from "@/components/NextClearWindow";
+import SpotterButton from "@/components/SpotterButton";
+import CountdownStrip from "@/components/CountdownStrip";
 import SmsShareButton from "@/components/SmsShareButton";
 import PrivacyCommitment from "@/components/PrivacyCommitment";
 import { WEBCAM_FEEDS } from "@/lib/webcams";
@@ -307,6 +309,23 @@ export default function Dashboard({ initialData }: Props) {
             weatherCode: data.weather.weatherCode,
           }}
         />
+
+        {/* ── "I see it!" live spotter ── */}
+        <section className="animate-fade-up">
+          <SpotterButton
+            isVisible={adjustedIsVisible}
+            score={neighborhoodAdjustedScore}
+          />
+        </section>
+
+        {/* ── Countdown strip ── */}
+        <section className="animate-fade-up">
+          <CountdownStrip
+            sunrise={data.weather.sunrise}
+            sunset={data.weather.sunset}
+            alpenglow={data.alpenglow ?? null}
+          />
+        </section>
 
         {/* ── Next Clear Window ── */}
         <section className="animate-fade-up">
