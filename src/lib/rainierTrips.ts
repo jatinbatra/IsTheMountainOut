@@ -54,6 +54,8 @@ export interface Destination {
   highlight: string;
   bestFor: string;
   mapsUrl: string;
+  lat: number;
+  lon: number;
 }
 
 export const DESTINATIONS: Destination[] = [
@@ -66,6 +68,8 @@ export const DESTINATIONS: Destination[] = [
     highlight: "Wildflower meadows, glacier views, Jackson Visitor Center.",
     bestFor: "Year-round access. Skiing and snowshoeing Nov–May, meadows in bloom late July.",
     mapsUrl: "https://maps.google.com/?q=Paradise+Mount+Rainier",
+    lat: 46.786,
+    lon: -121.735,
   },
   {
     id: "sunrise",
@@ -76,6 +80,8 @@ export const DESTINATIONS: Destination[] = [
     highlight: "Highest driveable point. Sweeping alpine panoramas.",
     bestFor: "Clear summer days. Road closed October through June.",
     mapsUrl: "https://maps.google.com/?q=Sunrise+Mount+Rainier",
+    lat: 46.915,
+    lon: -121.642,
   },
   {
     id: "reflection",
@@ -86,6 +92,8 @@ export const DESTINATIONS: Destination[] = [
     highlight: "The postcard Rainier reflection shot.",
     bestFor: "Calm summer mornings for mirror-smooth water.",
     mapsUrl: "https://maps.google.com/?q=Reflection+Lakes+Mount+Rainier",
+    lat: 46.769,
+    lon: -121.740,
   },
   {
     id: "tipsoo",
@@ -96,6 +104,8 @@ export const DESTINATIONS: Destination[] = [
     highlight: "Easy alpine lake, huge wildflower bloom late July.",
     bestFor: "July–September. Photographers love sunset here.",
     mapsUrl: "https://maps.google.com/?q=Tipsoo+Lake",
+    lat: 46.871,
+    lon: -121.518,
   },
   {
     id: "narada",
@@ -106,6 +116,8 @@ export const DESTINATIONS: Destination[] = [
     highlight: "168-ft waterfall right off the road.",
     bestFor: "Year-round. Thunders in spring snowmelt.",
     mapsUrl: "https://maps.google.com/?q=Narada+Falls+Mount+Rainier",
+    lat: 46.775,
+    lon: -121.742,
   },
 ];
 

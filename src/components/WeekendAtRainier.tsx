@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import useSWR from "swr";
 import {
   MapPin,
   Navigation,
@@ -10,6 +11,9 @@ import {
   CheckCircle2,
   XCircle,
   AlertCircle,
+  AlertTriangle,
+  Cloud,
+  Wind,
 } from "lucide-react";
 import {
   DESTINATIONS,
@@ -19,10 +23,13 @@ import {
   type Destination,
 } from "@/lib/rainierTrips";
 import type { WeeklyForecastDay } from "@/components/Dashboard";
+import type { RealtimeBundle, DestinationWeather, ParkAlert } from "@/lib/rainierRealtime";
 
 interface Props {
   weeklyForecast?: WeeklyForecastDay[];
 }
+
+const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 function parseDay(dateStr: string): Date {
   const [y, m, d] = dateStr.split("-").map(Number);
@@ -112,12 +119,16 @@ function DestinationRow({
   dest,
   open,
   score,
+  weather,
 }: {
   dest: Destination;
   open: boolean;
   score?: number;
+  weather?: DestinationWeather;
 }) {
   const road = ROADS[dest.road];
+  const hasLiveWeather =
+    weather && (weather.temperature !== null || weather.cloudCover !== null);
   return (
     <a
       href={dest.mapsUrl}
@@ -160,6 +171,27 @@ function DestinationRow({
         <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
           {dest.highlight}
         </p>
+        {hasLiveWeather && (
+          <div className="flex items-center gap-3 mt-1.5 text-[10px] text-emerald-300/80 flex-wrap">
+            {weather!.temperature !== null && (
+              <span className="tabular-nums font-semibold">
+                {Math.round(weather!.temperature!)}°F now
+              </span>
+            )}
+            {weather!.cloudCover !== null && (
+              <span className="inline-flex items-center gap-1 tabular-nums">
+                <Cloud className="w-3 h-3" aria-hidden="true" />
+                {Math.round(weather!.cloudCover!)}% cloud
+              </span>
+            )}
+            {weather!.windSpeed !== null && weather!.windSpeed! >= 5 && (
+              <span className="inline-flex items-center gap-1 tabular-nums">
+                <Wind className="w-3 h-3" aria-hidden="true" />
+                {Math.round(weather!.windSpeed!)} mph
+              </span>
+            )}
+          </div>
+        )}
         <div className="flex items-center gap-3 mt-1.5 text-[10px] text-slate-500 flex-wrap">
           <span className="inline-flex items-center gap-1">
             <Navigation className="w-3 h-3" aria-hidden="true" />
@@ -182,12 +214,63 @@ function DestinationRow({
   );
 }
 
+function AlertsBlock({ alerts }: { alerts: ParkAlert[] }) {
+  if (alerts.length === 0) return null;
+  const top = alerts.slice(0, 3);
+  return (
+    <div className="rounded-xl bg-amber-500/[0.06] ring-1 ring-amber-400/25 p-3 space-y-2">
+      <div className="flex items-center gap-2">
+        <AlertTriangle className="w-4 h-4 text-amber-300" aria-hidden="true" />
+        <p className="text-xs font-display font-bold text-amber-200">
+          Live park alerts ({alerts.length})
+        </p>
+      </div>
+      <ul className="space-y-1.5">
+        {top.map((a) => (
+          <li key={a.id} className="text-xs text-slate-200 leading-snug">
+            <span className="text-[10px] uppercase tracking-wide font-semibold text-amber-300/80 mr-1.5">
+              {a.category}
+            </span>
+            {a.url ? (
+              <a
+                href={a.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline"
+              >
+                {a.title}
+              </a>
+            ) : (
+              <span>{a.title}</span>
+            )}
+          </li>
+        ))}
+      </ul>
+      {alerts.length > top.length && (
+        <p className="text-[10px] text-amber-300/70">
+          + {alerts.length - top.length} more — check NPS site
+        </p>
+      )}
+    </div>
+  );
+}
+
 export default function WeekendAtRainier({ weeklyForecast }: Props) {
   const { saturday, sunday, weekendDate } = useMemo(
     () => nextWeekend(weeklyForecast),
     [weeklyForecast]
   );
   const pass = useMemo(() => passInfoForDate(weekendDate), [weekendDate]);
+
+  const { data: realtime } = useSWR<RealtimeBundle>(
+    "/api/weekend-realtime",
+    fetcher,
+    {
+      refreshInterval: 10 * 60 * 1000,
+      revalidateOnFocus: false,
+    }
+  );
+
   const destinations = useMemo(() => {
     return DESTINATIONS.map((d) => {
       const road = ROADS[d.road];
@@ -198,12 +281,13 @@ export default function WeekendAtRainier({ weeklyForecast }: Props) {
         satScore !== undefined && sunScore !== undefined
           ? Math.max(satScore, sunScore)
           : satScore ?? sunScore;
-      return { dest: d, open, score: bestScore };
+      const weather = realtime?.destinations?.[d.id];
+      return { dest: d, open, score: bestScore, weather };
     }).sort((a, b) => {
       if (a.open !== b.open) return a.open ? -1 : 1;
       return 0;
     });
-  }, [saturday, sunday, weekendDate]);
+  }, [saturday, sunday, weekendDate, realtime]);
 
   const weekendLabel = weekendDate.toLocaleDateString("en-US", {
     month: "short",
@@ -235,17 +319,29 @@ export default function WeekendAtRainier({ weeklyForecast }: Props) {
         {recommendation(saturday, sunday)}
       </p>
 
+      {realtime?.alerts && realtime.alerts.length > 0 && (
+        <AlertsBlock alerts={realtime.alerts} />
+      )}
+
       <div>
-        <p className="text-[10px] uppercase tracking-widest font-semibold text-slate-400 mb-2 px-1">
-          Popular stops
-        </p>
+        <div className="flex items-end justify-between mb-2 px-1">
+          <p className="text-[10px] uppercase tracking-widest font-semibold text-slate-400">
+            Popular stops
+          </p>
+          {realtime && (
+            <p className="text-[10px] text-emerald-300/60 font-medium">
+              Live weather
+            </p>
+          )}
+        </div>
         <div className="rounded-xl bg-white/[0.02] ring-1 ring-white/[0.04] divide-y divide-white/[0.04]">
-          {destinations.map(({ dest, open, score }) => (
+          {destinations.map(({ dest, open, score, weather }) => (
             <DestinationRow
               key={dest.id}
               dest={dest}
               open={open}
               score={score}
+              weather={weather}
             />
           ))}
         </div>
