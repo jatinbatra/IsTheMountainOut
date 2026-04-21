@@ -56,6 +56,8 @@ export interface Destination {
   mapsUrl: string;
   lat: number;
   lon: number;
+  photoUrl: string;
+  photoCredit: string;
 }
 
 export const DESTINATIONS: Destination[] = [
@@ -70,6 +72,8 @@ export const DESTINATIONS: Destination[] = [
     mapsUrl: "https://maps.google.com/?q=Paradise+Mount+Rainier",
     lat: 46.786,
     lon: -121.735,
+    photoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Mount_Rainier_7431s.JPG/800px-Mount_Rainier_7431s.JPG",
+    photoCredit: "Walter Siegmund / CC BY-SA",
   },
   {
     id: "sunrise",
@@ -82,6 +86,8 @@ export const DESTINATIONS: Destination[] = [
     mapsUrl: "https://maps.google.com/?q=Sunrise+Mount+Rainier",
     lat: 46.915,
     lon: -121.642,
+    photoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Mount_Rainier_from_the_Silver_Forest_Trail.jpg/800px-Mount_Rainier_from_the_Silver_Forest_Trail.jpg",
+    photoCredit: "NPS / Public Domain",
   },
   {
     id: "reflection",
@@ -94,6 +100,8 @@ export const DESTINATIONS: Destination[] = [
     mapsUrl: "https://maps.google.com/?q=Reflection+Lakes+Mount+Rainier",
     lat: 46.769,
     lon: -121.740,
+    photoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Reflection_Lakes_with_Mount_Rainier.jpg/800px-Reflection_Lakes_with_Mount_Rainier.jpg",
+    photoCredit: "NPS / Public Domain",
   },
   {
     id: "tipsoo",
@@ -106,6 +114,8 @@ export const DESTINATIONS: Destination[] = [
     mapsUrl: "https://maps.google.com/?q=Tipsoo+Lake",
     lat: 46.871,
     lon: -121.518,
+    photoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Tipsoo_Lake_and_Mount_Rainier.jpg/800px-Tipsoo_Lake_and_Mount_Rainier.jpg",
+    photoCredit: "NPS / Public Domain",
   },
   {
     id: "narada",
@@ -118,6 +128,8 @@ export const DESTINATIONS: Destination[] = [
     mapsUrl: "https://maps.google.com/?q=Narada+Falls+Mount+Rainier",
     lat: 46.775,
     lon: -121.742,
+    photoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Narada_Falls_Mount_Rainier_National_Park.jpg/800px-Narada_Falls_Mount_Rainier_National_Park.jpg",
+    photoCredit: "NPS / Public Domain",
   },
 ];
 

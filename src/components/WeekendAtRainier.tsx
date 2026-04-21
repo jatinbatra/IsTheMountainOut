@@ -136,17 +136,32 @@ function DestinationRow({
       rel="noopener noreferrer"
       className="group flex items-start gap-3 p-3 rounded-xl hover:bg-white/[0.03] transition-colors"
     >
-      <div
-        className={`flex-shrink-0 mt-0.5 p-1.5 rounded-lg ring-1 ${
-          open
-            ? "bg-emerald-500/10 ring-emerald-400/20"
-            : "bg-slate-500/10 ring-slate-400/15"
-        }`}
-      >
-        <MapPin
-          className={`w-3.5 h-3.5 ${open ? "text-emerald-300" : "text-slate-500"}`}
-          aria-hidden="true"
+      <div className="relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden ring-1 ring-white/10 bg-white/[0.03]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={dest.photoUrl}
+          alt={`${dest.name} at Mount Rainier`}
+          loading="lazy"
+          className={`w-full h-full object-cover transition-opacity ${
+            open ? "opacity-100" : "opacity-50 grayscale"
+          }`}
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).style.display = "none";
+            const sib = (e.currentTarget as HTMLImageElement)
+              .nextElementSibling as HTMLElement | null;
+            if (sib) sib.style.display = "flex";
+          }}
         />
+        <div
+          className={`absolute inset-0 items-center justify-center hidden ${
+            open ? "bg-emerald-500/10" : "bg-slate-500/10"
+          }`}
+        >
+          <MapPin
+            className={`w-5 h-5 ${open ? "text-emerald-300" : "text-slate-500"}`}
+            aria-hidden="true"
+          />
+        </div>
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
