@@ -667,12 +667,26 @@ export default function Dashboard({ initialData }: Props) {
             Refreshes every 15 minutes &middot; Built with Next.js &amp;
             Tailwind
           </p>
-          <p className="mt-3">
+          <p className="mt-3 flex items-center justify-center gap-3">
+            <a
+              href="/almanac"
+              className="text-blue-400/50 hover:text-blue-300 transition-colors"
+            >
+              Mountain Almanac
+            </a>
+            <span className="text-white/[0.08]">·</span>
             <a
               href="/embed"
               className="text-blue-400/30 hover:text-blue-300 transition-colors"
             >
               Embed widget
+            </a>
+            <span className="text-white/[0.08]">·</span>
+            <a
+              href="/api/stats.json"
+              className="text-blue-400/30 hover:text-blue-300 transition-colors"
+            >
+              Press API
             </a>
           </p>
         </footer>

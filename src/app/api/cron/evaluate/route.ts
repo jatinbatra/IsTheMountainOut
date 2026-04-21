@@ -27,7 +27,7 @@ async function saveCalendarSnapshot(score: number, isVisible: boolean) {
     data[today] = { score, isVisible };
 
     const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - 35);
+    cutoff.setDate(cutoff.getDate() - 400);
     const cutoffStr = cutoff.toISOString().split("T")[0];
     for (const key of Object.keys(data)) {
       if (key < cutoffStr) delete data[key];
