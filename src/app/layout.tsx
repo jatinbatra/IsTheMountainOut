@@ -23,11 +23,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={`h-full antialiased ${inter.variable} ${spaceGrotesk.variable}`}>
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#050b18" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col overscroll-none">{children}</body>
     </html>
   );
 }

@@ -66,7 +66,7 @@ function getWeatherSentence(
     return "Showers are blocking the view. Try again after the rain passes.";
 
   if (score >= 85)
-    return `Crystal clear \u2014 ${cloudLow}% low clouds, ${visMiles}mi visibility. Go see it.`;
+    return `Crystal clear \u2014 ${cloudLow}% low clouds, ${visMiles}mi visibility. Go see it now.`;
   if (score >= 70)
     return `Looking good \u2014 light clouds at ${cloudLow}%, ${visMiles}mi visibility. Worth stepping outside.`;
   if (score >= 55)
