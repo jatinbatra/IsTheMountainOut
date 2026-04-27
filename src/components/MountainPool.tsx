@@ -154,7 +154,7 @@ export default function MountainPool() {
         const body = await res.json().catch(() => ({}));
         const code = typeof body?.error === "string" ? body.error : null;
         if (code === "week_locked") {
-          setSubmitError("Picks are locked for this week — try next Monday.");
+          setSubmitError("Picks are locked for this week. Try next Monday.");
         } else {
           setSavedLocally(true);
         }

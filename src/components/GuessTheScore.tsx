@@ -139,7 +139,7 @@ export default function GuessTheScore() {
             <div className="text-center">
               <div className="text-[10px] uppercase tracking-wide text-slate-500 font-semibold">Actual peak</div>
               <div className="font-display text-4xl font-black text-white tabular-nums mt-1">
-                {data?.actualPeak ?? "—"}
+                {data?.actualPeak ?? "-"}
               </div>
             </div>
             {data?.myGuess && (
