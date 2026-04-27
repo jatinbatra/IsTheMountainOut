@@ -52,7 +52,7 @@ export default function WeatherDetails({ weather, reasons }: Props) {
       detail: `Mid ${weather.cloudMid}% · High ${weather.cloudHigh}%`,
       pct: weather.cloudLow,
       color: weather.cloudLow < 30 ? "bg-emerald-400/60" : weather.cloudLow < 60 ? "bg-amber-400/60" : "bg-red-400/60",
-      description: "Low clouds sit between you and the mountain — the #1 factor blocking views.",
+      description: "Low clouds sit between you and the mountain and the #1 factor blocking views.",
     },
     {
       icon: Eye,

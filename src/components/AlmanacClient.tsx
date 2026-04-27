@@ -144,7 +144,7 @@ export default function AlmanacClient({ stats }: { stats: AlmanacStats }) {
             </div>
           ) : (
             <div className="rounded-xl bg-white/[0.02] ring-1 ring-white/[0.04] p-4 text-xs text-slate-500">
-              Longest clear streak — not yet on record
+              Longest clear streak: not yet on record
             </div>
           )}
           {records.longestGloom ? (
@@ -161,7 +161,7 @@ export default function AlmanacClient({ stats }: { stats: AlmanacStats }) {
             </div>
           ) : (
             <div className="rounded-xl bg-white/[0.02] ring-1 ring-white/[0.04] p-4 text-xs text-slate-500">
-              Longest gloom streak — not yet on record
+              Longest gloom streak: not yet on record
             </div>
           )}
           {records.bestSingleDay && (

@@ -74,9 +74,9 @@ function recommendation(
   sat?: WeeklyForecastDay,
   sun?: WeeklyForecastDay
 ): string {
-  if (!sat && !sun) return "Forecast loading — check back soon.";
+  if (!sat && !sun) return "Forecast loading. Check back soon.";
   if (sat && sun) {
-    if (Math.abs(sat.score - sun.score) < 8) return "Both days look similar — pick whichever fits your schedule.";
+    if (Math.abs(sat.score - sun.score) < 8) return "Both days look similar. Pick whichever fits your schedule.";
     return sat.score > sun.score
       ? `Saturday wins (${sat.score} vs ${sun.score}). Go early.`
       : `Sunday wins (${sun.score} vs ${sat.score}). Sleep in Saturday.`;
@@ -263,7 +263,7 @@ function AlertsBlock({ alerts }: { alerts: ParkAlert[] }) {
       </ul>
       {alerts.length > top.length && (
         <p className="text-[10px] text-amber-300/70">
-          + {alerts.length - top.length} more — check NPS site
+          + {alerts.length - top.length} more. Check NPS site
         </p>
       )}
     </div>
@@ -370,7 +370,7 @@ export default function WeekendAtRainier({ weeklyForecast }: Props) {
           </p>
         </div>
         <p className="text-xs text-slate-300 leading-relaxed">
-          Yes — every vehicle needs a park pass at the entrance.
+          Yes, every vehicle needs a park pass at the entrance.
         </p>
         <ul className="space-y-1 text-xs text-slate-400">
           {pass.options.map((opt) => (
@@ -380,7 +380,7 @@ export default function WeekendAtRainier({ weeklyForecast }: Props) {
                 <span className="text-white font-semibold tabular-nums">
                   {opt.price}
                 </span>{" "}
-                — {opt.label}
+                , {opt.label}
                 {opt.note && (
                   <span className="text-slate-500"> ({opt.note})</span>
                 )}

@@ -17,7 +17,7 @@ const ALERTS: { icon: typeof Bell; label: string; desc: string }[] = [
   { icon: TrendingUp, label: "Mountain OUT", desc: "After 6+ hours of hiding" },
   { icon: Cloud, label: "Gloom broken", desc: "Clear skies after 3+ gloomy days" },
   { icon: Sunset, label: "Prime sunset", desc: "Crystal clear 90min before sunset" },
-  { icon: Sunrise, label: "Dawn patrol", desc: "Clear sunrise — fires 30min before" },
+  { icon: Sunrise, label: "Dawn patrol", desc: "Clear sunrise, fires 30min before" },
   { icon: Sunrise, label: "Morning brief", desc: "Daily 7am status + next window" },
   { icon: CalendarDays, label: "Weekend look-ahead", desc: "Friday 5pm weekend forecast" },
 ];
@@ -52,8 +52,6 @@ export default function NotifyCard() {
   useEffect(() => {
     setPlatform(detectPlatform());
     setPermission(getNotificationPermission());
-    // Try to recover the existing subscription endpoint.
-    // Retry after a short delay to handle SW registration race.
     const lookupEndpoint = async () => {
       if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
       const reg = await navigator.serviceWorker.getRegistration();
@@ -71,9 +69,38 @@ export default function NotifyCard() {
   const canEnable = platform === "standard" || platform === "ios-pwa";
   const enabled = permission === "granted";
 
+  const ensureSubscribedAndTest = async (): Promise<boolean> => {
+    try {
+      const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+      if (!vapidKey) {
+        setError("VAPID key not configured. Push notifications are not set up on this deployment.");
+        return false;
+      }
+      const reg = await registerSW();
+      if (!reg) { setError("Service worker failed to register."); return false; }
+      const sub = await subscribeToPush(reg, vapidKey);
+      if (!sub) { setError("Could not create push subscription."); return false; }
+      setEndpoint(sub.endpoint);
+
+      const res = await fetch("/api/push/test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ endpoint: sub.endpoint }),
+      });
+      if (res.ok) return true;
+      const data = await res.json().catch(() => ({}));
+      setError(`Test failed: ${data.error || res.status}${data.detail ? ". " + data.detail : ""}`);
+      return false;
+    } catch {
+      setError("Network error. Check your connection and try again.");
+      return false;
+    }
+  };
+
   const fireTestPing = async (ep: string) => {
     setTesting(true);
     setTestResult("idle");
+    setError(null);
     try {
       const res = await fetch("/api/push/test", {
         method: "POST",
@@ -83,17 +110,27 @@ export default function NotifyCard() {
       if (res.ok) {
         setTestResult("sent");
         setVerified(true);
-      } else {
-        const data = await res.json().catch(() => ({}));
-        if (data.error === "subscription_not_found" || data.error === "subscription_expired") {
-          setError("Subscription expired. Tap 'Re-subscribe' to fix it.");
-          setEndpoint(null);
-          setVerified(false);
-        }
-        setTestResult("failed");
+        return;
       }
+      const data = await res.json().catch(() => ({}));
+      if (data.error === "subscription_not_found" || data.error === "subscription_expired" || data.error === "subscription_lookup_failed") {
+        setError("Syncing your subscription to the server...");
+        const ok = await ensureSubscribedAndTest();
+        if (ok) {
+          setTestResult("sent");
+          setVerified(true);
+          setError(null);
+          return;
+        }
+      } else if (data.error === "push_not_configured") {
+        setError("Push not configured on the server. VAPID_PRIVATE_KEY or VAPID_EMAIL may be missing from Vercel env vars.");
+      } else {
+        setError(`Test failed: ${data.error || res.status}${data.detail ? ". " + data.detail : ""}`);
+      }
+      setTestResult("failed");
     } catch {
       setTestResult("failed");
+      setError("Network error. Check your connection.");
     } finally {
       setTesting(false);
     }
@@ -110,40 +147,10 @@ export default function NotifyCard() {
         return;
       }
       setPermission("granted");
-      const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-      if (!vapidKey) {
-        setError("Alerts aren't fully configured yet — we'll email you when they go live.");
-        return;
-      }
-      const reg = await registerSW();
-      if (!reg) {
-        setError("Couldn't register the service worker. Try reloading the page.");
-        return;
-      }
-      const sub = await subscribeToPush(reg, vapidKey);
-      if (!sub) {
-        setError("Subscription failed. Check your browser settings and retry.");
-        return;
-      }
-      setEndpoint(sub.endpoint);
-      fireTestPing(sub.endpoint);
-    } finally {
-      setSubscribing(false);
-    }
-  };
-
-  const handleResubscribe = async () => {
-    setError(null);
-    setSubscribing(true);
-    try {
-      const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-      if (!vapidKey) return;
-      const reg = await registerSW();
-      if (!reg) return;
-      const sub = await subscribeToPush(reg, vapidKey);
-      if (sub) {
-        setEndpoint(sub.endpoint);
-        fireTestPing(sub.endpoint);
+      const ok = await ensureSubscribedAndTest();
+      if (ok) {
+        setTestResult("sent");
+        setVerified(true);
       }
     } finally {
       setSubscribing(false);
@@ -178,13 +185,13 @@ export default function NotifyCard() {
               </p>
               <h3 className="text-sm font-display font-bold text-white mt-0.5">
                 {verified
-                  ? "You're all set. Close this tab — we'll find you."
+                  ? "You're all set. Close this tab, we'll find you."
                   : "Tap 'Verify' to confirm delivery works."}
               </h3>
               <div className="mt-2 space-y-1.5 text-xs text-white/50 leading-relaxed">
                 <p>
                   <span className="text-white/70 font-semibold">How it works:</span>{" "}
-                  We check Mt. Rainier conditions every 15 minutes. When something changes — the mountain emerges, alpenglow is likely, or a gloom streak breaks — your{" "}
+                  We check Mt. Rainier conditions every 15 minutes. When something changes (the mountain emerges, alpenglow is likely, or a gloom streak breaks) your{" "}
                   <span className="text-white/70">browser sends you a notification</span>, even if this site is closed.
                 </p>
                 <p>
@@ -203,8 +210,8 @@ export default function NotifyCard() {
               </h3>
               <p className="text-xs text-white/55 mt-1 leading-relaxed">
                 {platform === "ios-safari-browser"
-                  ? "On iPhone: Safari blocks web push unless you install this app to your Home Screen first."
-                  : "One tap to enable browser push notifications. Works even when this site is closed. We'll only notify you for genuinely worthwhile moments."}
+                  ? "On iPhone, Safari blocks web push unless you install this app to your Home Screen first."
+                  : "One tap to enable browser push notifications. Works even when this site is closed. We only notify you for genuinely worthwhile moments."}
               </p>
             </>
           )}
@@ -246,7 +253,7 @@ export default function NotifyCard() {
                 {subscribing ? (
                   <>
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    Enabling…
+                    Enabling...
                   </>
                 ) : permission === "denied" ? (
                   "Blocked in browser settings"
@@ -267,43 +274,34 @@ export default function NotifyCard() {
                 {testing ? (
                   <>
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    Sending…
+                    Sending...
                   </>
                 ) : testResult === "sent" ? (
                   <>
                     <Check className="w-3.5 h-3.5" />
-                    Delivered — check your notifications
+                    Delivered. Check your notifications.
                   </>
                 ) : testResult === "failed" ? (
                   <>
                     <Bell className="w-3.5 h-3.5" />
-                    Failed — tap to retry
+                    Failed. Tap to retry.
                   </>
                 ) : (
                   <>
                     <BellRing className="w-3.5 h-3.5" />
-                    {verified ? "Send another test" : "Verify — send me a test notification"}
+                    {verified ? "Send another test" : "Verify: send me a test notification"}
                   </>
                 )}
               </button>
             )}
             {enabled && !endpoint && (
               <button
-                onClick={handleResubscribe}
+                onClick={() => ensureSubscribedAndTest().then(ok => { if (ok) { setTestResult("sent"); setVerified(true); setError(null); } })}
                 disabled={subscribing}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-display font-bold bg-amber-500/20 text-amber-300 ring-1 ring-amber-400/30 hover:bg-amber-500/30 transition-all disabled:opacity-50"
               >
-                {subscribing ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    Reconnecting…
-                  </>
-                ) : (
-                  <>
-                    <Bell className="w-3.5 h-3.5" />
-                    Re-subscribe
-                  </>
-                )}
+                <Bell className="w-3.5 h-3.5" />
+                Re-subscribe
               </button>
             )}
             <button

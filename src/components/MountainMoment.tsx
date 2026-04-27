@@ -363,7 +363,7 @@ export default function MountainMoment({
     if (!blob) return;
 
     const hoodPart = neighborhoodLabel ? ` from ${neighborhoodLabel}` : "";
-    const text = `Mt. Rainier is ${isVisible ? "OUT" : "hiding"}${hoodPart} — ${score}/100. ${durationMessage}`;
+    const text = `Mt. Rainier is ${isVisible ? "OUT" : "hiding"}${hoodPart} , ${score}/100. ${durationMessage}`;
     const url = neighborhoodLabel
       ? `https://isthemountainout.com/?hood=${encodeURIComponent(neighborhoodLabel.toLowerCase().replace(/\s+/g, "-"))}`
       : "https://isthemountainout.com";
@@ -414,7 +414,7 @@ export default function MountainMoment({
 
   const copyCaption = useCallback(async () => {
     const hoodPart = neighborhoodLabel ? ` from ${neighborhoodLabel}` : "";
-    const caption = `Mt. Rainier is ${isVisible ? "OUT" : "hiding"}${hoodPart} — ${score}/100 ${isVisible ? "🏔️" : "☁️"}\n\n${durationMessage}\n\nisthemountainout.com`;
+    const caption = `Mt. Rainier is ${isVisible ? "OUT" : "hiding"}${hoodPart} , ${score}/100 ${isVisible ? "🏔️" : "☁️"}\n\n${durationMessage}\n\nisthemountainout.com`;
     try {
       await navigator.clipboard.writeText(caption);
       setCaptureState("copied");
@@ -664,7 +664,7 @@ export default function MountainMoment({
             <p className="mt-4 text-center text-[11px] text-slate-500 leading-relaxed">
               <Camera className="w-3 h-3 inline -mt-0.5 mr-1 text-slate-600" />
               Tap Share Moment, then pick Instagram, Threads, iMessage, or anywhere
-              else — the card attaches automatically.
+              else. The card attaches automatically.
             </p>
           </div>
         </div>

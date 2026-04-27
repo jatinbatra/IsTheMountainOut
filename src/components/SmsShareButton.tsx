@@ -14,7 +14,7 @@ function buildSmsBody(score: number, hood?: string | null): string {
     score >= 76
       ? `Mt. Rainier is OUT right now${place} (${score}/100). Look up.`
       : score >= 41
-        ? `Mt. Rainier is ${status}${place} — ${score}/100.`
+        ? `Mt. Rainier is ${status}${place} , ${score}/100.`
         : `Mt. Rainier is ${status}${place} today (${score}/100).`;
   return `${line} isthemountainout.com`;
 }

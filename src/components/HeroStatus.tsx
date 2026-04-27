@@ -61,21 +61,21 @@ function getWeatherSentence(
   if (weatherCode >= WMO.DRIZZLE_MIN && weatherCode <= WMO.RAIN_MAX)
     return "Rain is cutting visibility. Check back when it clears.";
   if (weatherCode >= WMO.SNOW_MIN && weatherCode <= WMO.SNOW_MAX)
-    return "Snow is falling \u2014 the mountain is completely hidden.";
+    return "Snow is falling. The mountain is completely hidden.";
   if (weatherCode >= WMO.SHOWERS_MIN)
     return "Showers are blocking the view. Try again after the rain passes.";
 
   if (score >= 85)
-    return `Crystal clear \u2014 ${cloudLow}% low clouds, ${visMiles}mi visibility. Go see it now.`;
+    return `Crystal clear: ${cloudLow}% low clouds, ${visMiles}mi visibility. Go see it now.`;
   if (score >= 70)
-    return `Looking good \u2014 light clouds at ${cloudLow}%, ${visMiles}mi visibility. Worth stepping outside.`;
+    return `Looking good: light clouds at ${cloudLow}%, ${visMiles}mi visibility. Worth stepping outside.`;
   if (score >= 55)
-    return `Borderline \u2014 ${cloudLow}% low clouds may block parts of the mountain. ${visMiles}mi visibility.`;
+    return `Borderline: ${cloudLow}% low clouds may block parts of the mountain. ${visMiles}mi visibility.`;
   if (score >= 40)
     return `Too many low clouds at ${cloudLow}%. You might see the peak poking through.`;
   if (score >= 20)
     return `Heavy cloud cover at ${cloudLow}%. The mountain is hiding today.`;
-  return `Completely socked in \u2014 ${cloudLow}% cloud cover and only ${visMiles}mi visibility.`;
+  return `Completely socked in: ${cloudLow}% cloud cover and only ${visMiles}mi visibility.`;
 }
 
 export default function HeroStatus({
@@ -149,7 +149,7 @@ export default function HeroStatus({
                 CLEAR
               </h1>
               <p className="text-white/40 text-sm mt-4 font-medium">
-                Clear skies tonight &mdash; check at {sunriseStr}
+                Clear skies tonight. Check at {sunriseStr}
               </p>
             </>
           ) : (
@@ -264,7 +264,7 @@ export default function HeroStatus({
               )}
             </div>
             <p className="text-[10px] text-slate-600 mt-3 tracking-wide">
-              Low clouds matter most &mdash; they sit directly between you and the mountain
+              Low clouds matter most. They sit directly between you and the mountain
             </p>
           </div>
         )}

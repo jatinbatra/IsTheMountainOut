@@ -383,7 +383,7 @@ export default function Dashboard({ initialData }: Props) {
                     <p className="text-xs text-slate-400 mt-1 leading-relaxed">
                       {data.alpenglow.isLikely
                         ? `High probability of Alpenglow in ~${data.alpenglow.minutesToSunset}min. Clear sightline + high cirrus = the mountain could turn pink.`
-                        : `Moderate chance (~${data.alpenglow.minutesToSunset}min to sunset). Conditions are favorable — keep watching.`}
+                        : `Moderate chance (~${data.alpenglow.minutesToSunset}min to sunset). Conditions are favorable, keep watching.`}
                     </p>
                   </div>
                 </div>
