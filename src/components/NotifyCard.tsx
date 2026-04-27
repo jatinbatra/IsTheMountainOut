@@ -62,6 +62,23 @@ export default function NotifyCard() {
   const canEnable = platform === "standard" || platform === "ios-pwa";
   const enabled = permission === "granted";
 
+  const fireTestPing = async (ep: string) => {
+    setTesting(true);
+    setTestResult("idle");
+    try {
+      const res = await fetch("/api/push/test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ endpoint: ep }),
+      });
+      setTestResult(res.ok ? "sent" : "failed");
+    } catch {
+      setTestResult("failed");
+    } finally {
+      setTesting(false);
+    }
+  };
+
   const handleEnable = async () => {
     setSubscribing(true);
     setError(null);
@@ -89,27 +106,15 @@ export default function NotifyCard() {
         return;
       }
       setEndpoint(sub.endpoint);
+      fireTestPing(sub.endpoint);
     } finally {
       setSubscribing(false);
     }
   };
 
-  const sendTest = async () => {
+  const sendTest = () => {
     if (!endpoint) return;
-    setTesting(true);
-    setTestResult("idle");
-    try {
-      const res = await fetch("/api/push/test", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ endpoint }),
-      });
-      setTestResult(res.ok ? "sent" : "failed");
-    } catch {
-      setTestResult("failed");
-    } finally {
-      setTesting(false);
-    }
+    fireTestPing(endpoint);
   };
 
   return (
@@ -130,19 +135,19 @@ export default function NotifyCard() {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-[10px] uppercase tracking-widest font-semibold text-blue-300/80">
-            {enabled ? "Alerts on" : "Never miss a clear day"}
+            {enabled ? "Alerts active" : "Never miss a clear day"}
           </p>
           <h3 className="text-sm font-display font-bold text-white mt-0.5">
             {enabled
-              ? "You'll get pinged when it matters."
-              : "Free push alerts. 6 types. No spam."}
+              ? "Push notifications are working."
+              : "Free push alerts. 7 types. No spam."}
           </h3>
           <p className="text-xs text-white/55 mt-1 leading-relaxed">
             {platform === "ios-safari-browser"
               ? "On iPhone: Safari blocks web push unless you install this app to your Home Screen first."
               : enabled
-                ? "We'll only ping you for genuinely worthwhile moments — alpenglow, rare clarity, or the gloom breaking."
-                : "Tap once. We'll ping you when Rainier is actually worth seeing — and never more than once every few hours."}
+                ? "We check conditions every 15 minutes. You’ll get a push when the mountain comes out after hiding, alpenglow is likely, or the gloom streak breaks. Max one alert every 4 hours."
+                : "Tap once. We’ll ping you when Rainier is actually worth seeing — and never more than once every few hours."}
           </p>
         </div>
       </div>
@@ -198,7 +203,7 @@ export default function NotifyCard() {
               <button
                 onClick={sendTest}
                 disabled={testing}
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-display font-semibold bg-white/[0.04] text-white/75 ring-1 ring-white/[0.08] hover:bg-white/[0.08] transition-all disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-display font-bold bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-400/30 hover:bg-emerald-500/30 transition-all disabled:opacity-50"
               >
                 {testing ? (
                   <>
@@ -208,12 +213,18 @@ export default function NotifyCard() {
                 ) : testResult === "sent" ? (
                   <>
                     <Check className="w-3.5 h-3.5 text-emerald-300" />
-                    Test sent — check your notifications
+                    Delivered — check your notifications
                   </>
                 ) : testResult === "failed" ? (
-                  "Test failed — retry"
+                  <>
+                    <Bell className="w-3.5 h-3.5" />
+                    Failed — tap to retry
+                  </>
                 ) : (
-                  "Send test ping"
+                  <>
+                    <Bell className="w-3.5 h-3.5" />
+                    Send test notification
+                  </>
                 )}
               </button>
             )}
