@@ -8,31 +8,25 @@ import {
   Mountain,
   Sunset,
   MapPin,
+  ChevronDown,
 } from "lucide-react";
 import HeroStatus from "@/components/HeroStatus";
 import MountainMoment from "@/components/MountainMoment";
-import MountainScene from "@/components/MountainScene";
 import WeatherDetails from "@/components/WeatherDetails";
 import ViewpointCard from "@/components/ViewpointCard";
 import LiveWebcams from "@/components/LiveWebcams";
 import NightSky from "@/components/NightSky";
-import ForecastTimeline from "@/components/ForecastTimeline";
 import FeaturedWebcam from "@/components/FeaturedWebcam";
-import VisibilityHistory from "@/components/VisibilityHistory";
-import OutdoorWidget from "@/components/OutdoorWidget";
 import NeighborhoodSelector from "@/components/NeighborhoodSelector";
 import NotifyCard from "@/components/NotifyCard";
-import MountainCalendar from "@/components/MountainCalendar";
-import HoodWars from "@/components/HoodWars";
-import MountainPool from "@/components/MountainPool";
-import GuessTheScore from "@/components/GuessTheScore";
+import ForecastHub from "@/components/ForecastHub";
+import CommunityGames from "@/components/CommunityGames";
 import PhotoDrop from "@/components/PhotoDrop";
 import GlobalStreakBadge from "@/components/GlobalStreakBadge";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import NextClearWindow from "@/components/NextClearWindow";
 import SpotterButton from "@/components/SpotterButton";
 import CountdownStrip from "@/components/CountdownStrip";
-import WeekendAtRainier from "@/components/WeekendAtRainier";
 import SmsShareButton from "@/components/SmsShareButton";
 import PrivacyCommitment from "@/components/PrivacyCommitment";
 import { WEBCAM_FEEDS } from "@/lib/webcams";
@@ -171,6 +165,7 @@ export default function Dashboard({ initialData }: Props) {
     searchParams.get("hood") || null
   );
   const [selectedViewpoint, setSelectedViewpoint] = useState(0);
+  const [showAllViewpoints, setShowAllViewpoints] = useState(false);
 
   const setNeighborhood = useCallback(
     (hood: string | null) => {
@@ -184,7 +179,6 @@ export default function Dashboard({ initialData }: Props) {
     [router]
   );
 
-  // Register service worker + fire beacon on mount
   useEffect(() => {
     registerSW();
     fetch("/api/beacon", {
@@ -199,10 +193,9 @@ export default function Dashboard({ initialData }: Props) {
   const webcamColorUrl = data.weather.isDay ? "/api/webcam/usgs-longmire" : null;
   const ambientColors = useAmbientColor(webcamColorUrl);
 
-  const sectionCount = 10;
+  const sectionCount = 6;
   const { containerRef, isRevealed } = useScrollReveal(sectionCount);
 
-  // ── Memoized computations ──────────────────────────────────────────
   const neighborhoodAdjustedScore = useMemo(
     () =>
       neighborhood
@@ -229,6 +222,10 @@ export default function Dashboard({ initialData }: Props) {
   });
 
   const isNight = !data.weather.isDay;
+
+  const visibleViewpoints = showAllViewpoints
+    ? data.viewpoints.slice(0, 8)
+    : data.viewpoints.slice(0, 3);
 
   return (
     <main
@@ -268,6 +265,12 @@ export default function Dashboard({ initialData }: Props) {
           </div>
           <div className="flex items-center gap-2">
             <GlobalStreakBadge />
+            <a
+              href="/almanac"
+              className="text-[11px] text-slate-600 hover:text-slate-400 transition-colors font-medium hidden sm:inline"
+            >
+              Almanac
+            </a>
             <span className="text-[11px] text-slate-500 font-medium tracking-wide hidden sm:inline">
               {timeStr} PT
             </span>
@@ -284,7 +287,7 @@ export default function Dashboard({ initialData }: Props) {
           </div>
         </header>
 
-        {/* ── Compact Neighborhood Selector ── */}
+        {/* ── Neighborhood Selector ── */}
         <section className="animate-fade-up">
           <NeighborhoodSelector
             selected={neighborhood}
@@ -311,25 +314,17 @@ export default function Dashboard({ initialData }: Props) {
           }}
         />
 
-        {/* ── "I see it!" live spotter ── */}
-        <section className="animate-fade-up">
+        {/* ── Spotter + Countdown + Next Clear ── */}
+        <section className="animate-fade-up space-y-4">
           <SpotterButton
             isVisible={adjustedIsVisible}
             score={neighborhoodAdjustedScore}
           />
-        </section>
-
-        {/* ── Countdown strip ── */}
-        <section className="animate-fade-up">
           <CountdownStrip
             sunrise={data.weather.sunrise}
             sunset={data.weather.sunset}
             alpenglow={data.alpenglow ?? null}
           />
-        </section>
-
-        {/* ── Next Clear Window ── */}
-        <section className="animate-fade-up">
           <NextClearWindow
             hourlyTimeline={data.hourlyTimeline}
             weeklyForecast={data.weeklyForecast}
@@ -337,7 +332,7 @@ export default function Dashboard({ initialData }: Props) {
           />
         </section>
 
-        {/* ── Best viewpoint + Notify + Share ── */}
+        {/* ── Best viewpoint + Share ── */}
         <section className="animate-fade-up space-y-4">
           {adjustedIsVisible && topViewpoint && (
             <p className="text-center text-sm text-slate-400">
@@ -347,7 +342,6 @@ export default function Dashboard({ initialData }: Props) {
               <span className="text-slate-600"> ({topViewpoint.distanceMiles}mi)</span>
             </p>
           )}
-
           <div className="flex items-center justify-center gap-3 flex-wrap">
             <MountainMoment
               isVisible={adjustedIsVisible}
@@ -360,16 +354,6 @@ export default function Dashboard({ initialData }: Props) {
               neighborhoodLabel={neighborhoodLabel}
             />
           </div>
-        </section>
-
-        {/* ── Notify card ── */}
-        <section className="animate-fade-up">
-          <NotifyCard />
-        </section>
-
-        {/* ── Privacy commitment ── */}
-        <section className="animate-fade-up">
-          <PrivacyCommitment />
         </section>
 
         {/* ── Alpenglow Alert ── */}
@@ -399,7 +383,7 @@ export default function Dashboard({ initialData }: Props) {
                     <p className="text-xs text-slate-400 mt-1 leading-relaxed">
                       {data.alpenglow.isLikely
                         ? `High probability of Alpenglow in ~${data.alpenglow.minutesToSunset}min. Clear sightline + high cirrus = the mountain could turn pink.`
-                        : `Moderate chance (~${data.alpenglow.minutesToSunset}min to sunset). Conditions are favorable \u2014 keep watching.`}
+                        : `Moderate chance (~${data.alpenglow.minutesToSunset}min to sunset). Conditions are favorable — keep watching.`}
                     </p>
                   </div>
                 </div>
@@ -417,87 +401,21 @@ export default function Dashboard({ initialData }: Props) {
           <FeaturedWebcam />
         </section>
 
-        {/* ── 24-Hour Forecast ── */}
-        {data.hourlyTimeline?.length > 0 && (
-          <section
-            data-reveal-index="2"
-            className={`transition-all duration-700 delay-200 ${
-              isRevealed(2) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-            }`}
-          >
-            <ForecastTimeline
-              hourlyTimeline={data.hourlyTimeline}
-              currentScore={data.visibility.score}
-            />
-          </section>
-        )}
-
-        {/* ── 7-Day Prediction ── */}
+        {/* ── Photo Drop (UGC — promoted from bottom) ── */}
         <section
-          data-reveal-index="3"
-          className={`transition-all duration-700 ${
-            isRevealed(3) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          data-reveal-index="1"
+          className={`transition-all duration-700 delay-200 ${
+            isRevealed(1) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <VisibilityHistory
-            isVisible={adjustedIsVisible}
-            weeklyForecast={data.weeklyForecast}
-          />
-        </section>
-
-        {/* ── Mountain Calendar ── */}
-        <section
-          data-reveal-index="4"
-          className={`transition-all duration-700 ${
-            isRevealed(4) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-        >
-          <MountainCalendar />
-        </section>
-
-        {/* ── Weekend at Rainier ── */}
-        <section
-          data-reveal-index="4"
-          className={`transition-all duration-700 ${
-            isRevealed(4) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-        >
-          <WeekendAtRainier weeklyForecast={data.weeklyForecast} />
-        </section>
-
-        {/* ── Golden Hour + Trails (when visible) ── */}
-        <section
-          data-reveal-index="5"
-          className={`transition-all duration-700 ${
-            isRevealed(5) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-        >
-          <OutdoorWidget
-            isVisible={adjustedIsVisible}
-            sunset={data.weather.sunset}
-          />
-        </section>
-
-        {/* ── Mountain Scene ── */}
-        <section
-          data-reveal-index="6"
-          className={`transition-all duration-700 ${
-            isRevealed(6) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-        >
-          <MountainScene
-            skyTheme={data.skyTheme}
-            isVisible={adjustedIsVisible}
-            viewpointName={topViewpoint?.name}
-            viewpointDistance={topViewpoint?.distanceMiles}
-          />
+          <PhotoDrop neighborhood={neighborhood} />
         </section>
 
         {/* ── Live Cameras ── */}
         <section
-          data-reveal-index="7"
+          data-reveal-index="2"
           className={`transition-all duration-700 ${
-            isRevealed(7) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            isRevealed(2) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
           <LiveWebcams feeds={WEBCAM_FEEDS} />
@@ -506,9 +424,9 @@ export default function Dashboard({ initialData }: Props) {
         {/* ── Night Sky (only at night) ── */}
         {isNight && (
           <section
-            data-reveal-index="8"
+            data-reveal-index="2"
             className={`transition-all duration-700 ${
-              isRevealed(8) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+              isRevealed(2) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
           >
             <NightSky
@@ -518,63 +436,57 @@ export default function Dashboard({ initialData }: Props) {
           </section>
         )}
 
-        {/* ── Hood Wars ── */}
+        {/* ── Notify ── */}
         <section
-          data-reveal-index="8"
+          data-reveal-index="3"
           className={`transition-all duration-700 ${
-            isRevealed(8) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            isRevealed(3) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <HoodWars
-            selected={neighborhood}
-            onSelect={setNeighborhood}
-            fallbackScores={allNeighborhoodScores}
-            fallbackLabels={NEIGHBORHOOD_LABELS}
+          <NotifyCard />
+        </section>
+
+        {/* ── Forecast Hub (24h / 7-Day / Calendar + Weekend + Golden Hour) ── */}
+        <section
+          data-reveal-index="3"
+          className={`transition-all duration-700 ${
+            isRevealed(3) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
+        >
+          <ForecastHub
+            hourlyTimeline={data.hourlyTimeline}
+            currentScore={data.visibility.score}
+            isVisible={adjustedIsVisible}
+            weeklyForecast={data.weeklyForecast}
+            sunset={data.weather.sunset}
           />
         </section>
 
-        {/* ── Guess the Score ── */}
+        {/* ── Conditions (collapsible) ── */}
         <section
-          data-reveal-index="8"
+          data-reveal-index="4"
           className={`transition-all duration-700 ${
-            isRevealed(8) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            isRevealed(4) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <GuessTheScore />
+          <WeatherDetails
+            weather={data.weather}
+            reasons={data.visibility.reasons}
+          />
         </section>
 
-        {/* ── Mountain Pool ── */}
+        {/* ── Viewpoints (collapsed — show 3, expand for more) ── */}
         <section
-          data-reveal-index="9"
+          data-reveal-index="4"
           className={`transition-all duration-700 ${
-            isRevealed(9) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-        >
-          <MountainPool />
-        </section>
-
-        {/* ── Photo Drop ── */}
-        <section
-          data-reveal-index="9"
-          className={`transition-all duration-700 ${
-            isRevealed(9) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-        >
-          <PhotoDrop neighborhood={neighborhood} />
-        </section>
-
-        {/* ── Top Viewpoints ── */}
-        <section
-          data-reveal-index="9"
-          className={`transition-all duration-700 ${
-            isRevealed(9) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            isRevealed(4) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
           <h2 className="font-display text-lg font-bold text-white mb-4">
             {adjustedIsVisible ? "Best Viewpoints" : "Viewpoints"}
           </h2>
           <div className="divide-y divide-white/[0.04]" role="list">
-            {data.viewpoints.slice(0, 8).map((vp, i) => (
+            {visibleViewpoints.map((vp, i) => (
               <ViewpointCard
                 key={vp.id}
                 viewpoint={vp}
@@ -585,23 +497,37 @@ export default function Dashboard({ initialData }: Props) {
               />
             ))}
           </div>
+          {data.viewpoints.length > 3 && (
+            <button
+              onClick={() => setShowAllViewpoints((v) => !v)}
+              className="mt-3 inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 transition-colors font-medium"
+            >
+              <span>{showAllViewpoints ? "Show fewer" : `Show all ${Math.min(8, data.viewpoints.length)} viewpoints`}</span>
+              <ChevronDown
+                className={`w-3 h-3 transition-transform duration-300 ${showAllViewpoints ? "rotate-180" : ""}`}
+              />
+            </button>
+          )}
         </section>
 
-        {/* ── Conditions ── */}
+        {/* ── Community Games (Hood Wars / Guess / Pool) ── */}
         <section
-          data-reveal-index="9"
+          data-reveal-index="5"
           className={`transition-all duration-700 ${
-            isRevealed(9) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            isRevealed(5) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <WeatherDetails
-            weather={data.weather}
-            reasons={data.visibility.reasons}
+          <CommunityGames
+            selectedHood={neighborhood}
+            onSelectHood={setNeighborhood}
+            fallbackScores={allNeighborhoodScores}
+            fallbackLabels={NEIGHBORHOOD_LABELS}
           />
         </section>
 
-        {/* ── About ── */}
+        {/* ── About + Privacy ── */}
         <section className="space-y-4 pt-4 border-t border-white/[0.06]">
+          <PrivacyCommitment />
           <p className="text-xs text-slate-500 leading-relaxed max-w-2xl">
             If you live in the Pacific Northwest, you know the question:{" "}
             <span className="text-slate-400">
