@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
       }
       return NextResponse.json({ error: "subscription_expired" }, { status: 410 });
     }
-    return NextResponse.json({ error: "send_failed" }, { status: 500 });
+    return NextResponse.json({ error: "send_failed", detail: String((err as Error)?.message || err) }, { status: 500 });
   }
 
   return NextResponse.json({ ok: true });

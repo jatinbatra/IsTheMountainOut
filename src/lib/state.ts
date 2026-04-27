@@ -251,7 +251,7 @@ export async function evaluateTransition(
       return {
         type: "record_visibility",
         shouldNotify: true,
-        message: `Exceptional visibility — Mt. Rainier at ${currentScore}/100. Conditions this good are rare. Drop what you're doing.`,
+        message: `Exceptional visibility. Mt. Rainier at ${currentScore}/100. Conditions this good are rare. Drop what you're doing.`,
         score: currentScore,
       };
     }
@@ -294,7 +294,7 @@ export async function evaluateTransition(
       return {
         type: "gloom_breaker",
         shouldNotify: true,
-        message: `After ${days} gloomy days, the Mountain is back — ${currentScore}/100. Seattle exhales.`,
+        message: `After ${days} gloomy days, the Mountain is back. ${currentScore}/100. Seattle exhales.`,
         score: currentScore,
       };
     }
@@ -357,8 +357,8 @@ export async function evaluateTransition(
             best.score >= 76
               ? `${best.dayLabel} looks clear (${best.score}/100).`
               : best.score >= 41
-                ? `Mixed weekend — best shot is ${best.dayLabel} at ${best.score}/100.`
-                : `Gloomy weekend ahead — peak ${best.score}/100 on ${best.dayLabel}.`;
+                ? `Mixed weekend. Best shot is ${best.dayLabel} at ${best.score}/100.`
+                : `Gloomy weekend ahead. Peak ${best.score}/100 on ${best.dayLabel}.`;
           return {
             type: "weekend_lookahead",
             shouldNotify: true,
@@ -378,7 +378,7 @@ export async function evaluateTransition(
       return {
         type: "golden_hour",
         shouldNotify: true,
-        message: `Mt. Rainier just hit ${currentScore}/100 — crystal clear visibility right now. Get outside!`,
+        message: `Mt. Rainier just hit ${currentScore}/100. Crystal clear visibility right now. Get outside!`,
         score: currentScore,
       };
     }

@@ -6,7 +6,7 @@ import AlmanacClient from "@/components/AlmanacClient";
 export const revalidate = 900;
 
 export const metadata: Metadata = {
-  title: "Mt. Rainier Almanac — Seattle visibility records & stats",
+  title: "Mt. Rainier Almanac: Seattle visibility records & stats",
   description:
     "Year-to-date clear days, longest gloom streaks, monthly averages, and record-book stats for Mt. Rainier visibility from Seattle. Free press API included.",
   openGraph: {

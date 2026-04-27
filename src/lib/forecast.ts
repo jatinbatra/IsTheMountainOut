@@ -146,7 +146,7 @@ export function describeWindow(w: ClearWindow): string {
     if (w.endIso) {
       return `${cap(w.dayLabel)} ${formatHourPT(w.startIso)}–${formatHourPT(w.endIso)}`;
     }
-    return `${cap(w.dayLabel)} — peak ${w.peakScore}/100`;
+    return `${cap(w.dayLabel)}, peak ${w.peakScore}/100`;
   }
   return "";
 }

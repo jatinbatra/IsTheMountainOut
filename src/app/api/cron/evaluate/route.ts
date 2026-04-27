@@ -128,13 +128,13 @@ export async function GET(request: Request) {
     if (transition.shouldNotify) {
       const titles: Record<string, string> = {
         alpenglow_alert: "Alpenglow incoming",
-        record_visibility: "Rare clarity — look up",
+        record_visibility: "Rare clarity. Look up",
         mountain_emerged: "The Mountain is OUT",
         gloom_breaker: "The gloom just broke",
         sunset_prime: "Prime sunset tonight",
         morning_brief: "Morning brief",
         weekend_lookahead: "Weekend look-ahead",
-        golden_hour: "Golden hour — get outside",
+        golden_hour: "Golden hour. Get outside",
         dawn_patrol: "Dawn patrol conditions",
       };
       const title = titles[transition.type] ?? "Is The Mountain Out?";

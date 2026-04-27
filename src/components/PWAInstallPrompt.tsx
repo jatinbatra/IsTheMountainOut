@@ -116,7 +116,7 @@ export default function PWAInstallPrompt() {
             </h3>
             <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
               {platform === "ios"
-                ? "Get one-tap mountain checks — install IsTheMountainOut as an app."
+                ? "Get one-tap mountain checks. Install IsTheMountainOut as an app."
                 : "One tap to see if Mt. Rainier is out. No browser, no clutter."}
             </p>
           </div>

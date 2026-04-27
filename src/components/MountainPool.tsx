@@ -154,7 +154,7 @@ export default function MountainPool() {
         const body = await res.json().catch(() => ({}));
         const code = typeof body?.error === "string" ? body.error : null;
         if (code === "week_locked") {
-          setSubmitError("Picks are locked for this week — try next Monday.");
+          setSubmitError("Picks are locked for this week. Try next Monday.");
         } else {
           setSavedLocally(true);
         }
@@ -304,7 +304,7 @@ export default function MountainPool() {
 
         {savedLocally && submitted && !isDirty && !submitError && (
           <p className="text-[11px] text-amber-300/80 font-medium -mt-1">
-            Saved on this device. Leaderboard is offline right now — your picks will sync when it&apos;s back.
+            Saved on this device. Leaderboard is offline right now. Your picks will sync when it&apos;s back.
           </p>
         )}
       </div>
