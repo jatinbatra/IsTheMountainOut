@@ -3,13 +3,7 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import useSWR from "swr";
-import {
-  RefreshCw,
-  Mountain,
-  Sunset,
-  MapPin,
-  ChevronDown,
-} from "lucide-react";
+import { RefreshCw, ChevronDown } from "lucide-react";
 import HeroStatus from "@/components/HeroStatus";
 import MountainMoment from "@/components/MountainMoment";
 import WeatherDetails from "@/components/WeatherDetails";
@@ -236,6 +230,7 @@ export default function Dashboard({ initialData }: Props) {
       role="main"
       aria-label="Mountain visibility dashboard"
     >
+      <div className="topo-bg" aria-hidden="true" />
       <div
         className="ambient-bg"
         aria-hidden="true"
@@ -247,47 +242,48 @@ export default function Dashboard({ initialData }: Props) {
       />
 
       <PWAInstallPrompt />
-      <div className="relative z-10 max-w-2xl mx-auto px-5 sm:px-8 py-8 sm:py-12 space-y-6">
-        {/* ── Header ── */}
-        <header className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Mountain className="w-5 h-5 text-white/50" aria-hidden="true" />
-            <div>
-              <h1 className="font-display font-bold text-white text-[15px] leading-tight">
-                IsTheMountainOut
-              </h1>
-              <p className="text-xs text-white/25">
-                Mt. Rainier &middot; {timeStr} PT
-              </p>
-            </div>
+      <div className="relative z-10 max-w-2xl mx-auto px-5 sm:px-8 py-6 sm:py-10 space-y-12 sm:space-y-16">
+        {/* ── Editorial Masthead ── */}
+        <header className="flex items-end justify-between border-b border-[var(--rule)] pb-4 stagger-1 animate-fade-up">
+          <div>
+            <p className="ticker mb-1.5">Vol. I &middot; Issue {new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}</p>
+            <h1 className="font-display font-medium text-[color:var(--type-1)] text-[22px] sm:text-[28px] leading-none tracking-[-0.02em]">
+              Is the Mountain Out
+              <span className="text-[color:var(--accent)]">?</span>
+            </h1>
+            <p className="font-mono text-[11px] text-[color:var(--type-3)] mt-1.5 tabular">
+              MT. RAINIER 14,411FT &middot; {timeStr} PT
+            </p>
           </div>
           <div className="flex items-center gap-3">
             <GlobalStreakBadge />
             <a
               href="/almanac"
-              className="text-xs text-white/25 hover:text-white/50 transition-colors hidden sm:inline"
+              className="ticker hover:text-[color:var(--type-1)] transition-colors hidden sm:inline"
             >
               Almanac
             </a>
             <button
               onClick={() => mutate()}
               disabled={isValidating}
-              className="p-2 rounded-full hover:bg-white/[0.06] transition-colors disabled:opacity-50"
+              className="p-2 hover:bg-[color:var(--rule)] transition-colors disabled:opacity-50"
               aria-label="Refresh data"
             >
               <RefreshCw
-                className={`w-4 h-4 text-white/25 ${isValidating ? "animate-spin" : ""}`}
+                className={`w-3.5 h-3.5 text-[color:var(--type-3)] ${isValidating ? "animate-spin" : ""}`}
               />
             </button>
           </div>
         </header>
 
         {/* ── Neighborhood Selector ── */}
-        <NeighborhoodSelector
-          selected={neighborhood}
-          onSelect={setNeighborhood}
-          scores={allNeighborhoodScores}
-        />
+        <div className="stagger-2 animate-fade-up">
+          <NeighborhoodSelector
+            selected={neighborhood}
+            onSelect={setNeighborhood}
+            scores={allNeighborhoodScores}
+          />
+        </div>
 
         {/* ── Hero ── */}
         <HeroStatus
@@ -307,8 +303,9 @@ export default function Dashboard({ initialData }: Props) {
           }}
         />
 
-        {/* ── Quick info strip ── */}
+        {/* ── II / Right Now ── */}
         <section className="space-y-0">
+          <p className="dateline mb-4">II &middot; Right Now</p>
           <SpotterButton
             isVisible={adjustedIsVisible}
             score={neighborhoodAdjustedScore}
@@ -325,14 +322,18 @@ export default function Dashboard({ initialData }: Props) {
           />
         </section>
 
-        {/* ── Share ── */}
-        <section className="space-y-3">
+        {/* ── Share + Best View ── */}
+        <section className="space-y-4">
           {adjustedIsVisible && topViewpoint && (
-            <p className="text-sm text-white/30">
-              <MapPin className="w-3.5 h-3.5 inline -mt-0.5 mr-1 text-white/20" />
-              Best view: <span className="text-white/60">{topViewpoint.name}</span>
-              <span className="text-white/15"> ({topViewpoint.distanceMiles}mi)</span>
-            </p>
+            <div className="border-l-2 border-[color:var(--accent)] pl-4 py-1">
+              <p className="ticker mb-1">Best vantage</p>
+              <p className="font-display text-[20px] font-light text-[color:var(--type-1)] leading-tight">
+                {topViewpoint.name}
+                <span className="font-mono text-xs text-[color:var(--type-3)] ml-2 tabular">
+                  {topViewpoint.distanceMiles}mi
+                </span>
+              </p>
+            </div>
           )}
           <div className="flex items-center gap-3 flex-wrap">
             <MountainMoment
@@ -348,90 +349,89 @@ export default function Dashboard({ initialData }: Props) {
           </div>
         </section>
 
-        {/* ── Alpenglow Alert ── */}
+        {/* ── Alpenglow Bulletin ── */}
         {data.alpenglow &&
           data.alpenglow.probability >= 40 &&
           data.alpenglow.minutesToSunset > 0 &&
           data.alpenglow.minutesToSunset <= 60 && (
-            <section className="py-4 border-y border-orange-400/10">
-              <div className="flex items-center gap-3">
-                <Sunset className="w-5 h-5 text-orange-400 flex-shrink-0" aria-hidden="true" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-orange-300">
-                    Alpenglow {data.alpenglow.probability}% likely in ~{data.alpenglow.minutesToSunset}min
-                  </p>
-                  <p className="text-xs text-white/30 mt-0.5">
-                    {data.alpenglow.isLikely
-                      ? "Clear sightline + high cirrus. The mountain could turn pink."
-                      : "Conditions are favorable, keep watching."}
-                  </p>
-                </div>
-              </div>
+            <section className="border-y border-[color:var(--accent-pink)]/30 py-5 bg-[color:var(--accent-pink)]/[0.03]">
+              <p className="dateline text-[color:var(--accent-pink)] mb-2">Bulletin &middot; Alpenglow</p>
+              <p className="font-display italic text-[20px] text-[color:var(--type-1)] leading-snug max-w-md">
+                The mountain could turn pink in ~{data.alpenglow.minutesToSunset} minutes.
+              </p>
+              <p className="text-sm text-[color:var(--type-3)] mt-1 max-w-md">
+                {data.alpenglow.probability}% probability.{" "}
+                {data.alpenglow.isLikely
+                  ? "Clear sightline plus high cirrus."
+                  : "Conditions are favorable."}
+              </p>
             </section>
           )}
 
-        {/* ── Featured Webcam ── */}
-        <section
-          data-reveal-index="1"
-          className={`transition-all duration-700 delay-100 ${
-            isRevealed(1) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-        >
-          <FeaturedWebcam />
-        </section>
+        {/* ── III / The View ── */}
+        <section className="space-y-6">
+          <p className="dateline">III &middot; The View</p>
+          <div
+            data-reveal-index="1"
+            className={`transition-all duration-700 ${
+              isRevealed(1) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            }`}
+          >
+            <FeaturedWebcam />
+          </div>
 
-        {/* ── Photo Drop (UGC — promoted from bottom) ── */}
-        <section
-          data-reveal-index="1"
-          className={`transition-all duration-700 delay-200 ${
-            isRevealed(1) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-        >
-          <PhotoDrop neighborhood={neighborhood} />
-        </section>
+          <div
+            data-reveal-index="1"
+            className={`transition-all duration-700 delay-200 ${
+              isRevealed(1) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            }`}
+          >
+            <PhotoDrop neighborhood={neighborhood} />
+          </div>
 
-        {/* ── Live Cameras ── */}
-        <section
-          data-reveal-index="2"
-          className={`transition-all duration-700 ${
-            isRevealed(2) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-        >
-          <LiveWebcams feeds={WEBCAM_FEEDS} />
-        </section>
-
-        {/* ── Night Sky (only at night) ── */}
-        {isNight && (
-          <section
+          <div
             data-reveal-index="2"
             className={`transition-all duration-700 ${
               isRevealed(2) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
           >
-            <NightSky
-              sunrise={data.weather.sunrise || ""}
-              isDay={data.weather.isDay}
-            />
-          </section>
-        )}
+            <LiveWebcams feeds={WEBCAM_FEEDS} />
+          </div>
 
-        {/* ── Notify ── */}
-        <section
-          data-reveal-index="3"
-          className={`py-6 border-t border-white/[0.06] transition-all duration-700 ${
-            isRevealed(3) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-        >
-          <NotifyCard />
+          {isNight && (
+            <div
+              data-reveal-index="2"
+              className={`transition-all duration-700 ${
+                isRevealed(2) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+              }`}
+            >
+              <NightSky
+                sunrise={data.weather.sunrise || ""}
+                isDay={data.weather.isDay}
+              />
+            </div>
+          )}
         </section>
 
-        {/* ── Forecast Hub (24h / 7-Day / Calendar + Weekend + Golden Hour) ── */}
+        {/* ── IV / Field Notifications ── */}
         <section
           data-reveal-index="3"
           className={`transition-all duration-700 ${
             isRevealed(3) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
+          <p className="dateline mb-4">IV &middot; Field Notifications</p>
+          <NotifyCard />
+        </section>
+
+        {/* ── V / Forecast ── */}
+        <section
+          data-reveal-index="3"
+          className={`transition-all duration-700 ${
+            isRevealed(3) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
+        >
+          <p className="dateline mb-4">V &middot; Forecast</p>
           <ForecastHub
             hourlyTimeline={data.hourlyTimeline}
             currentScore={data.visibility.score}
@@ -441,30 +441,34 @@ export default function Dashboard({ initialData }: Props) {
           />
         </section>
 
-        {/* ── Conditions (collapsible) ── */}
+        {/* ── VI / Conditions ── */}
         <section
           data-reveal-index="4"
           className={`transition-all duration-700 ${
             isRevealed(4) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
+          <p className="dateline mb-4">VI &middot; Conditions</p>
           <WeatherDetails
             weather={data.weather}
             reasons={data.visibility.reasons}
           />
         </section>
 
-        {/* ── Viewpoints (collapsed — show 3, expand for more) ── */}
+        {/* ── VII / Viewpoints ── */}
         <section
           data-reveal-index="4"
           className={`transition-all duration-700 ${
             isRevealed(4) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <h2 className="font-display text-lg font-bold text-white mb-4">
-            {adjustedIsVisible ? "Best Viewpoints" : "Viewpoints"}
-          </h2>
-          <div className="divide-y divide-white/[0.04]" role="list">
+          <div className="flex items-baseline justify-between mb-4">
+            <p className="dateline">VII &middot; Vantage Points</p>
+            <span className="font-mono text-[10px] text-[color:var(--type-4)] tabular">
+              {Math.min(8, data.viewpoints.length)} stations
+            </span>
+          </div>
+          <div className="divide-y divide-[var(--rule)]" role="list">
             {visibleViewpoints.map((vp, i) => (
               <ViewpointCard
                 key={vp.id}
@@ -479,9 +483,9 @@ export default function Dashboard({ initialData }: Props) {
           {data.viewpoints.length > 3 && (
             <button
               onClick={() => setShowAllViewpoints((v) => !v)}
-              className="mt-3 inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 transition-colors font-medium"
+              className="mt-4 inline-flex items-center gap-1.5 ticker hover:text-[color:var(--type-1)] transition-colors"
             >
-              <span>{showAllViewpoints ? "Show fewer" : `Show all ${Math.min(8, data.viewpoints.length)} viewpoints`}</span>
+              <span>{showAllViewpoints ? "Show fewer" : `+${Math.min(8, data.viewpoints.length) - 3} more vantage points`}</span>
               <ChevronDown
                 className={`w-3 h-3 transition-transform duration-300 ${showAllViewpoints ? "rotate-180" : ""}`}
               />
@@ -489,13 +493,14 @@ export default function Dashboard({ initialData }: Props) {
           )}
         </section>
 
-        {/* ── Community Games (Hood Wars / Guess / Pool) ── */}
+        {/* ── VIII / Community ── */}
         <section
           data-reveal-index="5"
           className={`transition-all duration-700 ${
             isRevealed(5) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
+          <p className="dateline mb-4">VIII &middot; Community</p>
           <CommunityGames
             selectedHood={neighborhood}
             onSelectHood={setNeighborhood}
@@ -504,24 +509,25 @@ export default function Dashboard({ initialData }: Props) {
           />
         </section>
 
-        {/* ── About ── */}
-        <section className="pt-8 border-t border-white/[0.06] space-y-5">
+        {/* ── Colophon ── */}
+        <section className="pt-10 border-t border-[var(--rule)] space-y-6">
+          <p className="dateline">Colophon</p>
           <PrivacyCommitment />
-          <p className="text-sm text-white/25 leading-relaxed">
-            Scores Mt. Rainier visibility using real-time cloud layers,
-            atmospheric visibility, and PM2.5. Free public data from Open-Meteo.
-            No cookies, no login, no tracking.
+          <p className="text-[15px] text-[color:var(--type-2)] leading-relaxed font-display font-light italic max-w-xl">
+            A Pacific Northwest field report. Mt. Rainier visibility scored from
+            real-time cloud layers, atmospheric clarity, and particulate matter.
+            All data public, all code open, no tracking, no login.
           </p>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-white/40">
+          <div className="flex items-baseline gap-3">
+            <span className="font-mono text-xs text-[color:var(--type-3)] tabular">EDITOR</span>
+            <span className="font-display text-[15px] text-[color:var(--type-1)]">
               Jatin Batra
             </span>
-            <span className="text-white/10">&middot;</span>
             <a
               href="https://x.com/jatin_batra1"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-white/25 hover:text-white/50 transition-colors"
+              className="font-mono text-xs text-[color:var(--type-3)] hover:text-[color:var(--type-1)] transition-colors"
             >
               @jatin_batra1
             </a>
@@ -529,24 +535,17 @@ export default function Dashboard({ initialData }: Props) {
         </section>
 
         {/* ── Footer ── */}
-        <footer className="py-10 text-center space-y-3 text-xs text-white/15">
-          <div className="flex items-center justify-center gap-4">
-            <a href="/almanac" className="hover:text-white/40 transition-colors">Almanac</a>
-            <a href="/embed" className="hover:text-white/40 transition-colors">Embed</a>
-            <a href="/api/stats.json" className="hover:text-white/40 transition-colors">API</a>
+        <footer className="pt-8 pb-10 border-t border-[var(--rule)]">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-5">
+              <a href="/almanac" className="ticker hover:text-[color:var(--type-1)] transition-colors">Almanac</a>
+              <a href="/embed" className="ticker hover:text-[color:var(--type-1)] transition-colors">Embed</a>
+              <a href="/api/stats.json" className="ticker hover:text-[color:var(--type-1)] transition-colors">Press API</a>
+            </div>
+            <p className="font-mono text-[10px] text-[color:var(--type-4)] tabular">
+              DATA / Open-Meteo &middot; REFRESH 15min
+            </p>
           </div>
-          <p>
-            Data from{" "}
-            <a
-              href="https://open-meteo.com/"
-              className="underline hover:text-white/40 transition-colors"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Open-Meteo
-            </a>
-            {" "}&middot; Refreshes every 15 min
-          </p>
         </footer>
       </div>
     </main>

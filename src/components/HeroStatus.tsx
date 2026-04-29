@@ -23,25 +23,22 @@ interface Props {
 
 const STATUS_COPY: Record<
   VisibilityStatus,
-  { label: string; color: string; aria: string; caption: string }
+  { label: string; verdict: string; aria: string }
 > = {
   out: {
-    label: "OUT!",
-    color: "text-emerald-400",
+    label: "Out.",
+    verdict: "The mountain is here.",
     aria: "Mountain is out",
-    caption: "clearly visible",
   },
   peeking: {
-    label: "PEEKING",
-    color: "text-amber-400",
+    label: "Peeking.",
+    verdict: "Almost. Step outside.",
     aria: "Mountain is peeking through",
-    caption: "partially visible",
   },
   hiding: {
-    label: "HIDING",
-    color: "text-red-400/80",
+    label: "Hiding.",
+    verdict: "The mountain has gone home.",
     aria: "Mountain is hiding",
-    caption: "not visible",
   },
 };
 
@@ -75,6 +72,31 @@ function getWeatherSentence(
   return `Completely socked in: ${cloudLow}% cloud cover and only ${visMiles}mi visibility.`;
 }
 
+function ContourMark() {
+  return (
+    <svg
+      width="280"
+      height="280"
+      viewBox="0 0 280 280"
+      className="absolute -right-12 top-8 opacity-[0.10] pointer-events-none animate-fade-in"
+      aria-hidden="true"
+    >
+      <g fill="none" stroke="currentColor" strokeWidth="0.6">
+        <circle cx="140" cy="140" r="20" />
+        <circle cx="140" cy="140" r="42" />
+        <circle cx="140" cy="140" r="68" strokeDasharray="2 4" />
+        <circle cx="140" cy="140" r="96" />
+        <circle cx="140" cy="140" r="125" strokeDasharray="3 5" />
+        <path d="M50 140 Q90 120 130 140" strokeWidth="0.4" />
+        <path d="M150 140 Q190 160 230 140" strokeWidth="0.4" />
+      </g>
+      <text x="140" y="145" textAnchor="middle" fontSize="9" fill="currentColor" fontFamily="var(--font-mono)">
+        14,411
+      </text>
+    </svg>
+  );
+}
+
 export default function HeroStatus({
   isVisible,
   score,
@@ -106,132 +128,175 @@ export default function HeroStatus({
       )
     : null;
 
-  return (
-    <div className="relative py-10 sm:py-16" role="region" aria-label="Mountain visibility status">
-      <div className="relative text-center">
-        <p className="text-[13px] font-medium tracking-[0.15em] uppercase text-white/25 mb-10">
-          Is the Mountain Out?
-        </p>
+  const accentColor =
+    status === "out"
+      ? "text-[color:var(--accent-clear)]"
+      : status === "peeking"
+        ? "text-[color:var(--accent)]"
+        : "text-[color:var(--accent-fog)]";
 
-        <div className="mb-10">
+  return (
+    <article
+      className="relative py-10 sm:py-16"
+      role="region"
+      aria-label="Mountain visibility status"
+    >
+      <ContourMark />
+
+      {/* Editorial dateline */}
+      <header className="dateline-rule mb-12 stagger-1 animate-fade-up">
+        <span className="dateline">No. 001 / Mt. Rainier Field Report</span>
+      </header>
+
+      {/* Headline grid: serif verdict left, score right */}
+      <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-x-10 gap-y-6 items-end mb-10">
+        <div className="stagger-2 animate-fade-up">
           {nightWithClearSkies ? (
             <>
               <h1
-                className="font-display font-black leading-[0.85] tracking-[-0.04em] text-emerald-400"
-                style={{ fontSize: "clamp(5rem, 16vw, 12rem)" }}
+                className="font-display font-light leading-[0.95] tracking-[-0.03em] text-[color:var(--type-1)]"
+                style={{ fontSize: "clamp(3.5rem, 11vw, 8rem)" }}
                 aria-label="Clear skies tonight"
               >
-                CLEAR
+                Clear<span className={accentColor}>.</span>
               </h1>
-              <p className="text-white/35 text-sm mt-6">
-                Clear skies tonight. Check at {sunriseStr}
+              <p className="text-[color:var(--type-3)] text-[15px] mt-4 max-w-md">
+                Skies are clear tonight. The mountain returns at {sunriseStr}.
               </p>
             </>
           ) : (
-            <h1
-              className={`font-display font-black leading-[0.85] tracking-[-0.04em] ${statusCopy.color}`}
-              style={{
-                fontSize:
-                  status === "peeking"
-                    ? "clamp(5rem, 16vw, 12rem)"
-                    : "clamp(7rem, 22vw, 16rem)",
-              }}
-              aria-label={statusCopy.aria}
-            >
-              {statusCopy.label}
-            </h1>
+            <>
+              <h1
+                className={`font-display font-light leading-[0.95] tracking-[-0.03em] text-[color:var(--type-1)]`}
+                style={{ fontSize: "clamp(3.5rem, 11vw, 8rem)" }}
+                aria-label={statusCopy.aria}
+              >
+                {statusCopy.label.replace(".", "")}
+                <span className={accentColor}>.</span>
+              </h1>
+              <p className="text-[color:var(--type-2)] text-[17px] mt-4 max-w-md font-display italic font-light leading-snug">
+                {statusCopy.verdict}
+              </p>
+            </>
           )}
         </div>
 
-        <div className="flex items-center justify-center gap-5 mb-8">
-          <span
-            className="font-display text-[56px] font-black text-white tabular-nums leading-none"
-            aria-label={`Score: ${score} out of 100`}
-          >
-            {score}
-          </span>
-          <div className="text-left">
-            <span className="text-white/15 text-xl font-extralight block leading-none">/100</span>
+        {/* Score block — editorial number, not a gauge */}
+        <div className="stagger-3 animate-fade-up flex sm:flex-col items-baseline sm:items-end gap-3 sm:gap-1">
+          <span className="ticker text-[color:var(--type-3)]">Visibility Index</span>
+          <div className="flex items-baseline gap-1">
             <span
-              className={`text-[11px] font-semibold mt-1 block ${
-                confidence === "high"
-                  ? "text-emerald-400/70"
-                  : confidence === "moderate"
-                    ? "text-amber-400/70"
-                    : "text-red-400/70"
-              }`}
+              className="font-display font-light text-[color:var(--type-1)] tabular leading-none"
+              style={{ fontSize: "clamp(3rem, 8vw, 5rem)" }}
+              aria-label={`Score: ${score} out of 100`}
             >
-              {confidence}
+              {score}
             </span>
+            <span className="font-mono text-sm text-[color:var(--type-3)]">/100</span>
           </div>
         </div>
-
-        <div className="max-w-[280px] mx-auto mb-8">
-          <div
-            className="w-full h-[3px] rounded-full bg-white/[0.06] overflow-hidden"
-            role="progressbar"
-            aria-valuenow={score}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-label="Visibility score"
-          >
-            <div
-              className={`h-full rounded-full animate-score-fill ${
-                status === "out"
-                  ? "bg-emerald-400"
-                  : status === "peeking"
-                    ? "bg-amber-400"
-                    : "bg-red-400/80"
-              }`}
-              style={{ width: `${score}%` }}
-            />
-          </div>
-        </div>
-
-        {weatherSentence && (
-          <p className="text-[15px] text-white/40 max-w-sm mx-auto leading-relaxed mb-6">
-            {weatherSentence}
-          </p>
-        )}
-
-        <p className="text-white/25 text-sm mb-6">{durationMessage}</p>
-
-        {scoreBreakdown && (
-          <>
-            <button
-              onClick={() => setShowMath(!showMath)}
-              className="inline-flex items-center gap-1.5 text-xs text-white/15 hover:text-white/35 transition-colors"
-              aria-expanded={showMath}
-              aria-controls="score-math"
-            >
-              <span>Show math</span>
-              <ChevronDown
-                className={`w-3 h-3 transition-transform duration-300 ${showMath ? "rotate-180" : ""}`}
-                aria-hidden="true"
-              />
-            </button>
-
-            <div
-              id="score-math"
-              className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                showMath ? "max-h-[200px] opacity-100 mt-4" : "max-h-0 opacity-0"
-              }`}
-            >
-              <div className="flex items-center justify-center gap-6 flex-wrap text-xs text-white/25">
-                <span>Low clouds: {scoreBreakdown.cloudLow}%</span>
-                <span>Mid: {scoreBreakdown.cloudMid}%</span>
-                <span>High: {scoreBreakdown.cloudHigh}%</span>
-                <span>
-                  Vis: {Math.round(scoreBreakdown.visibilityMeters / 1609.34)}mi
-                </span>
-                {scoreBreakdown.pm25 !== undefined && (
-                  <span>PM2.5: {scoreBreakdown.pm25.toFixed(1)}</span>
-                )}
-              </div>
-            </div>
-          </>
-        )}
       </div>
-    </div>
+
+      {/* Score bar — thin, single rule */}
+      <div className="mb-8 stagger-3 animate-fade-up">
+        <div
+          className="w-full h-px bg-[var(--rule)] relative overflow-hidden"
+          role="progressbar"
+          aria-valuenow={score}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label="Visibility score"
+        >
+          <div
+            className={`absolute left-0 top-[-1px] h-[3px] animate-score-fill ${
+              status === "out"
+                ? "bg-[color:var(--accent-clear)]"
+                : status === "peeking"
+                  ? "bg-[color:var(--accent)]"
+                  : "bg-[color:var(--accent-fog)]"
+            }`}
+            style={{ width: `${score}%` }}
+          />
+        </div>
+        <div className="flex justify-between mt-2 ticker text-[color:var(--type-4)]">
+          <span>0 / Hidden</span>
+          <span>50 / Peeking</span>
+          <span>100 / Out</span>
+        </div>
+      </div>
+
+      {/* Editorial body copy */}
+      {weatherSentence && (
+        <p className="text-[color:var(--type-2)] text-[17px] leading-[1.55] max-w-xl font-display font-light mb-4 stagger-4 animate-fade-up">
+          {weatherSentence}
+        </p>
+      )}
+
+      {/* Metadata strip — like a magazine byline */}
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[color:var(--type-3)] stagger-5 animate-fade-up">
+        <span className="ticker">
+          Confidence{" "}
+          <span className="font-mono text-[color:var(--type-1)] normal-case tracking-normal">
+            {confidence}
+          </span>
+        </span>
+        <span className="text-[color:var(--type-4)]">·</span>
+        <span className="text-[14px]">{durationMessage}</span>
+      </div>
+
+      {scoreBreakdown && (
+        <div className="mt-8 stagger-6 animate-fade-up">
+          <button
+            onClick={() => setShowMath(!showMath)}
+            className="inline-flex items-center gap-2 ticker hover:text-[color:var(--type-2)] transition-colors"
+            aria-expanded={showMath}
+            aria-controls="score-math"
+          >
+            <span>Read the math</span>
+            <ChevronDown
+              className={`w-3 h-3 transition-transform duration-300 ${showMath ? "rotate-180" : ""}`}
+              aria-hidden="true"
+            />
+          </button>
+
+          <div
+            id="score-math"
+            className={`overflow-hidden transition-all duration-500 ease-in-out ${
+              showMath ? "max-h-[300px] opacity-100 mt-6" : "max-h-0 opacity-0"
+            }`}
+          >
+            <dl className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-4 max-w-2xl border-t border-[var(--rule)] pt-5">
+              <div>
+                <dt className="ticker mb-1">Low Cloud</dt>
+                <dd className="font-mono text-sm text-[color:var(--type-1)] tabular">{scoreBreakdown.cloudLow}%</dd>
+              </div>
+              <div>
+                <dt className="ticker mb-1">Mid Cloud</dt>
+                <dd className="font-mono text-sm text-[color:var(--type-1)] tabular">{scoreBreakdown.cloudMid}%</dd>
+              </div>
+              <div>
+                <dt className="ticker mb-1">High Cloud</dt>
+                <dd className="font-mono text-sm text-[color:var(--type-1)] tabular">{scoreBreakdown.cloudHigh}%</dd>
+              </div>
+              <div>
+                <dt className="ticker mb-1">Visibility</dt>
+                <dd className="font-mono text-sm text-[color:var(--type-1)] tabular">
+                  {Math.round(scoreBreakdown.visibilityMeters / 1609.34)}mi
+                </dd>
+              </div>
+              {scoreBreakdown.pm25 !== undefined && (
+                <div>
+                  <dt className="ticker mb-1">PM 2.5</dt>
+                  <dd className="font-mono text-sm text-[color:var(--type-1)] tabular">{scoreBreakdown.pm25.toFixed(1)}</dd>
+                </div>
+              )}
+            </dl>
+            <p className="font-display italic text-[color:var(--type-3)] text-sm mt-4 max-w-md">
+              Low clouds matter most. They sit directly between you and the mountain.
+            </p>
+          </div>
+        </div>
+      )}
+    </article>
   );
 }
