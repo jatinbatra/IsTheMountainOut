@@ -82,67 +82,40 @@ export default function SpotterButton({ isVisible, score }: Props) {
   const count = Math.max(data?.count ?? 0, confirmed ? 1 : 0);
 
   return (
-    <div
-      className={`rounded-2xl p-4 sm:p-5 ring-1 transition-all ${
-        confirmed
-          ? "bg-gradient-to-br from-emerald-500/[0.08] to-blue-500/[0.06] ring-emerald-400/25"
-          : "bg-gradient-to-br from-emerald-500/[0.06] via-white/[0.02] to-blue-500/[0.04] ring-emerald-400/15"
-      }`}
-    >
-      <div className="flex items-center gap-3">
-        <div
-          className={`flex-shrink-0 p-2.5 rounded-xl ring-1 ${
-            confirmed
-              ? "bg-emerald-500/20 ring-emerald-400/30"
-              : "bg-emerald-500/10 ring-emerald-400/20"
-          }`}
-        >
-          {confirmed ? (
-            <Check className="w-4 h-4 text-emerald-300" aria-hidden="true" />
-          ) : (
-            <Eye className="w-4 h-4 text-emerald-300" aria-hidden="true" />
-          )}
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-[10px] uppercase tracking-widest font-semibold text-emerald-300/80">
-            {confirmed ? "You spotted it" : "Can you see it right now?"}
-          </p>
-          <p className="text-sm font-display font-bold text-white mt-0.5 truncate">
+    <div className="flex items-center justify-between py-4 border-b border-white/[0.06]">
+      <div className="flex items-center gap-3 min-w-0">
+        {confirmed ? (
+          <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" aria-hidden="true" />
+        ) : (
+          <Eye className="w-4 h-4 text-white/30 flex-shrink-0" aria-hidden="true" />
+        )}
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-white truncate">
             {count > 0 ? (
               <span className="inline-flex items-center gap-1.5">
-                <Users className="w-3.5 h-3.5 text-white/60" aria-hidden="true" />
+                <Users className="w-3.5 h-3.5 text-white/40" aria-hidden="true" />
                 {count.toLocaleString()} {count === 1 ? "person sees" : "people see"} Rainier now
               </span>
             ) : confirmed ? (
-              "First one in the last hour."
+              "First spotter this hour"
             ) : (
-              "Tap to confirm a live sighting."
+              "Can you see the mountain right now?"
             )}
           </p>
         </div>
-        <button
-          onClick={submit}
-          disabled={confirmed || submitting}
-          className={`flex-shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-display font-bold transition-all disabled:cursor-default ${
-            confirmed
-              ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/30"
-              : "bg-gradient-to-br from-emerald-400/30 to-blue-400/25 text-white ring-1 ring-emerald-400/45 shadow-lg shadow-emerald-500/10 hover:ring-emerald-300/60"
-          }`}
-          aria-label={confirmed ? "You already confirmed" : "I see the mountain"}
-        >
-          {confirmed ? (
-            <>
-              <Check className="w-3.5 h-3.5" />
-              Seen
-            </>
-          ) : (
-            <>
-              <Eye className="w-3.5 h-3.5" />
-              I see it
-            </>
-          )}
-        </button>
       </div>
+      <button
+        onClick={submit}
+        disabled={confirmed || submitting}
+        className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
+          confirmed
+            ? "text-emerald-400/60 bg-emerald-500/10"
+            : "text-white bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.08]"
+        } disabled:cursor-default`}
+        aria-label={confirmed ? "You already confirmed" : "I see the mountain"}
+      >
+        {confirmed ? "Spotted" : "I see it"}
+      </button>
     </div>
   );
 }

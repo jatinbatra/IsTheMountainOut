@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import useSWR from "swr";
-import { Camera, Crown, Check, Loader2, Sparkles, AlertCircle } from "lucide-react";
+import { Camera, Crown, Check, Loader2, AlertCircle } from "lucide-react";
 import { getUserId, getHandle, setHandle as persistHandle } from "@/lib/identity";
 import { NEIGHBORHOOD_LABELS } from "@/lib/visibility";
 
@@ -135,20 +135,16 @@ export default function PhotoDrop({ neighborhood }: Props) {
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-3 mb-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-amber-500/10 ring-1 ring-amber-400/15">
-            <Crown className="w-4 h-4 text-amber-400" aria-hidden="true" />
-          </div>
-          <div>
-            <h2 className="font-display text-base font-bold text-white">Photo Drop</h2>
-            <p className="text-[11px] text-slate-500 font-medium tracking-wide mt-0.5">
-              First verified photo per hood wins the Daily Crown
-            </p>
-          </div>
+      <div className="flex items-baseline justify-between gap-3 mb-4">
+        <div className="flex items-baseline gap-2">
+          <Crown className="w-4 h-4 text-amber-400 self-center" aria-hidden="true" />
+          <h2 className="font-display text-sm font-bold text-white">Photo Drop</h2>
+          <p className="text-xs text-white/30">
+            First photo per hood wins the Daily Crown
+          </p>
         </div>
         {crownCount > 0 && (
-          <span className="text-[10px] text-amber-300/80 font-mono font-bold tabular-nums">
+          <span className="text-xs text-amber-400/70 tabular-nums">
             {crownCount} crowned
           </span>
         )}
@@ -186,22 +182,16 @@ export default function PhotoDrop({ neighborhood }: Props) {
         </div>
       )}
 
-      <div className="rounded-2xl ring-1 ring-white/[0.06] bg-white/[0.02] p-4 mb-4">
-        {!hoodId && (
-          <p className="text-xs text-slate-500 mb-3">
-            Pick a neighborhood above to drop a photo.
-          </p>
-        )}
-        <div className="flex items-center gap-2 mb-3">
-          <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-          <p className="text-[11px] font-semibold text-white/80">
-            {hoodCrown
-              ? `Too late for the crown in ${hoodLabel}. Drop anyway to make the feed.`
-              : hoodId
-                ? `Be the first in ${hoodLabel}. Mountain must be clearly visible.`
+      <div className="space-y-3 mb-6">
+        <p className="text-sm text-white/50">
+          {hoodCrown
+            ? `Crown is claimed in ${hoodLabel}. Drop anyway to make the feed.`
+            : hoodId
+              ? `Be the first in ${hoodLabel}. Mountain must be clearly visible.`
+              : !hoodId
+                ? "Pick a neighborhood above to drop a photo."
                 : "Claim the Daily Crown for your hood."}
-          </p>
-        </div>
+        </p>
         <input
           type="text"
           placeholder="@yourname (optional)"
@@ -211,7 +201,7 @@ export default function PhotoDrop({ neighborhood }: Props) {
             setHandleInput(v);
             persistHandle(v);
           }}
-          className="w-full mb-3 px-3 py-2 rounded-lg bg-white/[0.04] ring-1 ring-white/[0.08] text-xs text-white placeholder:text-slate-600 focus:outline-none focus:ring-emerald-400/30"
+          className="w-full px-4 py-2.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-white/20"
           maxLength={24}
         />
         <input
@@ -229,30 +219,30 @@ export default function PhotoDrop({ neighborhood }: Props) {
         <button
           onClick={() => fileRef.current?.click()}
           disabled={busy || !hoodId}
-          className={`w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-display font-bold transition-all ${
+          className={`w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-sm font-semibold transition-colors ${
             busy
-              ? "bg-white/[0.04] text-slate-500 cursor-wait"
+              ? "bg-white/[0.04] text-white/30 cursor-wait"
               : state === "success"
-                ? "bg-emerald-500/20 text-emerald-200 ring-1 ring-emerald-400/40"
+                ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
                 : !hoodId
-                  ? "bg-white/[0.04] text-slate-600 cursor-not-allowed"
-                  : "bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-400 hover:to-orange-400"
+                  ? "bg-white/[0.04] text-white/25 cursor-not-allowed"
+                  : "bg-white text-black hover:bg-white/90"
           }`}
         >
           {state === "uploading" ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              Uploading…
+              Uploading...
             </>
           ) : state === "verifying" ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              AI verifying the mountain…
+              Verifying...
             </>
           ) : state === "success" ? (
             <>
               <Check className="w-4 h-4" />
-              {lastDrop?.isCrown ? "Crown claimed!" : "Drop verified!"}
+              {lastDrop?.isCrown ? "Crown claimed" : "Drop verified"}
             </>
           ) : (
             <>
@@ -262,8 +252,8 @@ export default function PhotoDrop({ neighborhood }: Props) {
           )}
         </button>
         {state === "error" && error && (
-          <div className="mt-3 flex items-start gap-2 text-xs text-red-300 bg-red-500/10 ring-1 ring-red-400/20 rounded-lg px-3 py-2">
-            <AlertCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+          <div className="flex items-start gap-2 text-sm text-red-400/80">
+            <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
             <span>{error}</span>
           </div>
         )}
@@ -271,7 +261,7 @@ export default function PhotoDrop({ neighborhood }: Props) {
 
       {recent.length > 0 && (
         <div>
-          <p className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold mb-2.5">
+          <p className="text-xs text-white/30 mb-3">
             Today&apos;s feed
           </p>
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">

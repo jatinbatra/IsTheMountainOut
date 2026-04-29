@@ -85,16 +85,11 @@ export default function ForecastTimeline({ hourlyTimeline, currentScore }: Props
   const activeData = activeHour !== null ? hourlyTimeline[activeHour] : null;
 
   return (
-    <div className="glass rounded-3xl p-5 sm:p-6 space-y-4">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="p-1.5 rounded-lg bg-violet-500/10">
-            <Clock className="w-4 h-4 text-violet-300" />
-          </div>
-          <h2 className="font-display text-lg font-bold text-white">24-Hour Forecast</h2>
-        </div>
-        <span className="text-xs text-white/25 font-medium">
-          {activeHour !== null ? "Viewing" : "Drag or tap"} to explore
+        <h2 className="font-display text-sm font-bold text-white">24-Hour Forecast</h2>
+        <span className="text-xs text-white/15">
+          {activeHour !== null ? "Viewing" : "Tap"} to explore
         </span>
       </div>
 
