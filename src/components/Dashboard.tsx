@@ -247,54 +247,47 @@ export default function Dashboard({ initialData }: Props) {
       />
 
       <PWAInstallPrompt />
-      <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-8">
+      <div className="relative z-10 max-w-2xl mx-auto px-5 sm:px-8 py-8 sm:py-12 space-y-6">
         {/* ── Header ── */}
-        <header className="flex items-center justify-between animate-fade-up">
-          <div className="flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500/80 to-violet-600/80 flex items-center justify-center shadow-lg shadow-blue-500/15 ring-1 ring-white/10">
-              <Mountain className="w-5 h-5 text-white" aria-hidden="true" />
-            </div>
+        <header className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Mountain className="w-5 h-5 text-white/50" aria-hidden="true" />
             <div>
-              <h1 className="font-display font-bold text-white text-base leading-tight">
+              <h1 className="font-display font-bold text-white text-[15px] leading-tight">
                 IsTheMountainOut
               </h1>
-              <p className="text-[11px] text-slate-500 font-medium tracking-wide">
-                Mt. Rainier &middot; 14,411 ft
+              <p className="text-xs text-white/25">
+                Mt. Rainier &middot; {timeStr} PT
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <GlobalStreakBadge />
             <a
               href="/almanac"
-              className="text-[11px] text-slate-600 hover:text-slate-400 transition-colors font-medium hidden sm:inline"
+              className="text-xs text-white/25 hover:text-white/50 transition-colors hidden sm:inline"
             >
               Almanac
             </a>
-            <span className="text-[11px] text-slate-500 font-medium tracking-wide hidden sm:inline">
-              {timeStr} PT
-            </span>
             <button
               onClick={() => mutate()}
               disabled={isValidating}
-              className="p-2.5 rounded-xl glass hover:bg-white/[0.06] transition-all disabled:opacity-50"
+              className="p-2 rounded-full hover:bg-white/[0.06] transition-colors disabled:opacity-50"
               aria-label="Refresh data"
             >
               <RefreshCw
-                className={`w-4 h-4 text-white/40 ${isValidating ? "animate-spin" : ""}`}
+                className={`w-4 h-4 text-white/25 ${isValidating ? "animate-spin" : ""}`}
               />
             </button>
           </div>
         </header>
 
         {/* ── Neighborhood Selector ── */}
-        <section className="animate-fade-up">
-          <NeighborhoodSelector
-            selected={neighborhood}
-            onSelect={setNeighborhood}
-            scores={allNeighborhoodScores}
-          />
-        </section>
+        <NeighborhoodSelector
+          selected={neighborhood}
+          onSelect={setNeighborhood}
+          scores={allNeighborhoodScores}
+        />
 
         {/* ── Hero ── */}
         <HeroStatus
@@ -314,8 +307,8 @@ export default function Dashboard({ initialData }: Props) {
           }}
         />
 
-        {/* ── Spotter + Countdown + Next Clear ── */}
-        <section className="animate-fade-up space-y-4">
+        {/* ── Quick info strip ── */}
+        <section className="space-y-0">
           <SpotterButton
             isVisible={adjustedIsVisible}
             score={neighborhoodAdjustedScore}
@@ -332,17 +325,16 @@ export default function Dashboard({ initialData }: Props) {
           />
         </section>
 
-        {/* ── Best viewpoint + Share ── */}
-        <section className="animate-fade-up space-y-4">
+        {/* ── Share ── */}
+        <section className="space-y-3">
           {adjustedIsVisible && topViewpoint && (
-            <p className="text-center text-sm text-slate-400">
-              <MapPin className="w-3.5 h-3.5 inline -mt-0.5 mr-1 text-emerald-400/60" />
-              Best view right now:{" "}
-              <span className="text-white font-semibold">{topViewpoint.name}</span>
-              <span className="text-slate-600"> ({topViewpoint.distanceMiles}mi)</span>
+            <p className="text-sm text-white/30">
+              <MapPin className="w-3.5 h-3.5 inline -mt-0.5 mr-1 text-white/20" />
+              Best view: <span className="text-white/60">{topViewpoint.name}</span>
+              <span className="text-white/15"> ({topViewpoint.distanceMiles}mi)</span>
             </p>
           )}
-          <div className="flex items-center justify-center gap-3 flex-wrap">
+          <div className="flex items-center gap-3 flex-wrap">
             <MountainMoment
               isVisible={adjustedIsVisible}
               score={neighborhoodAdjustedScore}
@@ -361,31 +353,18 @@ export default function Dashboard({ initialData }: Props) {
           data.alpenglow.probability >= 40 &&
           data.alpenglow.minutesToSunset > 0 &&
           data.alpenglow.minutesToSunset <= 60 && (
-            <section className="animate-fade-up">
-              <div className="relative overflow-hidden rounded-2xl ring-1 ring-orange-400/20 bg-gradient-to-r from-orange-500/10 via-pink-500/10 to-violet-500/10 px-6 py-5">
-                <div
-                  className="absolute inset-0 bg-gradient-to-r from-orange-400/5 via-pink-400/5 to-transparent animate-shimmer pointer-events-none"
-                  aria-hidden="true"
-                />
-                <div className="relative flex items-center gap-4">
-                  <div className="flex-shrink-0 p-2.5 rounded-xl bg-orange-500/15 ring-1 ring-orange-400/20">
-                    <Sunset className="w-5 h-5 text-orange-400" aria-hidden="true" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-display font-bold text-orange-300 text-sm">
-                        Alpenglow Alert
-                      </h3>
-                      <span className="font-display font-bold text-orange-400/80 text-xs tabular-nums">
-                        {data.alpenglow.probability}%
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                      {data.alpenglow.isLikely
-                        ? `High probability of Alpenglow in ~${data.alpenglow.minutesToSunset}min. Clear sightline + high cirrus = the mountain could turn pink.`
-                        : `Moderate chance (~${data.alpenglow.minutesToSunset}min to sunset). Conditions are favorable, keep watching.`}
-                    </p>
-                  </div>
+            <section className="py-4 border-y border-orange-400/10">
+              <div className="flex items-center gap-3">
+                <Sunset className="w-5 h-5 text-orange-400 flex-shrink-0" aria-hidden="true" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-orange-300">
+                    Alpenglow {data.alpenglow.probability}% likely in ~{data.alpenglow.minutesToSunset}min
+                  </p>
+                  <p className="text-xs text-white/30 mt-0.5">
+                    {data.alpenglow.isLikely
+                      ? "Clear sightline + high cirrus. The mountain could turn pink."
+                      : "Conditions are favorable, keep watching."}
+                  </p>
                 </div>
               </div>
             </section>
@@ -439,7 +418,7 @@ export default function Dashboard({ initialData }: Props) {
         {/* ── Notify ── */}
         <section
           data-reveal-index="3"
-          className={`transition-all duration-700 ${
+          className={`py-6 border-t border-white/[0.06] transition-all duration-700 ${
             isRevealed(3) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
@@ -525,60 +504,39 @@ export default function Dashboard({ initialData }: Props) {
           />
         </section>
 
-        {/* ── About + Privacy ── */}
-        <section className="space-y-4 pt-4 border-t border-white/[0.06]">
+        {/* ── About ── */}
+        <section className="pt-8 border-t border-white/[0.06] space-y-5">
           <PrivacyCommitment />
-          <p className="text-xs text-slate-500 leading-relaxed max-w-2xl">
-            If you live in the Pacific Northwest, you know the question:{" "}
-            <span className="text-slate-400">
-              &quot;Is the mountain out?&quot;
-            </span>{" "}
-            This app scores Mt. Rainier visibility using real-time cloud layers,
-            atmospheric visibility, and PM2.5 data. Everything runs on free
-            public data from Open-Meteo and government webcam feeds.
+          <p className="text-sm text-white/25 leading-relaxed">
+            Scores Mt. Rainier visibility using real-time cloud layers,
+            atmospheric visibility, and PM2.5. Free public data from Open-Meteo.
+            No cookies, no login, no tracking.
           </p>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[10px] text-slate-600 tracking-wide uppercase font-medium">
-            <span>No cookies</span>
-            <span className="text-white/[0.08]" aria-hidden="true">
-              &middot;
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-white/40">
+              Jatin Batra
             </span>
-            <span>Privacy-first analytics</span>
-            <span className="text-white/[0.08]" aria-hidden="true">
-              &middot;
-            </span>
-            <span>No login required</span>
-            <span className="text-white/[0.08]" aria-hidden="true">
-              &middot;
-            </span>
-            <span>100% free</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-400/50 to-violet-500/50 flex items-center justify-center text-[9px] font-bold text-white/70 ring-1 ring-white/[0.06]">
-              JB
-            </div>
-            <div>
-              <span className="text-xs text-slate-400 font-medium">
-                Jatin Batra
-              </span>
-              <span className="text-slate-700 mx-2" aria-hidden="true">
-                &middot;
-              </span>
-              <a
-                href="https://x.com/jatin_batra1"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-blue-400/40 hover:text-blue-300 transition-colors"
-              >
-                @jatin_batra1
-              </a>
-            </div>
+            <span className="text-white/10">&middot;</span>
+            <a
+              href="https://x.com/jatin_batra1"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-white/25 hover:text-white/50 transition-colors"
+            >
+              @jatin_batra1
+            </a>
           </div>
         </section>
 
         {/* ── Footer ── */}
-        <footer className="text-center text-[11px] text-slate-600 py-10 border-t border-white/[0.06] space-y-1.5 font-medium tracking-wide">
+        <footer className="py-10 text-center space-y-3 text-xs text-white/15">
+          <div className="flex items-center justify-center gap-4">
+            <a href="/almanac" className="hover:text-white/40 transition-colors">Almanac</a>
+            <a href="/embed" className="hover:text-white/40 transition-colors">Embed</a>
+            <a href="/api/stats.json" className="hover:text-white/40 transition-colors">API</a>
+          </div>
           <p>
-            Weather data from{" "}
+            Data from{" "}
             <a
               href="https://open-meteo.com/"
               className="underline hover:text-white/40 transition-colors"
@@ -586,34 +544,8 @@ export default function Dashboard({ initialData }: Props) {
               rel="noopener noreferrer"
             >
               Open-Meteo
-            </a>{" "}
-            &middot; Air quality from Open-Meteo AQ API
-          </p>
-          <p>
-            Refreshes every 15 minutes &middot; Built with Next.js &amp;
-            Tailwind
-          </p>
-          <p className="mt-3 flex items-center justify-center gap-3">
-            <a
-              href="/almanac"
-              className="text-blue-400/50 hover:text-blue-300 transition-colors"
-            >
-              Mountain Almanac
             </a>
-            <span className="text-white/[0.08]">·</span>
-            <a
-              href="/embed"
-              className="text-blue-400/30 hover:text-blue-300 transition-colors"
-            >
-              Embed widget
-            </a>
-            <span className="text-white/[0.08]">·</span>
-            <a
-              href="/api/stats.json"
-              className="text-blue-400/30 hover:text-blue-300 transition-colors"
-            >
-              Press API
-            </a>
+            {" "}&middot; Refreshes every 15 min
           </p>
         </footer>
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { TrendingUp, TrendingDown, ChevronDown, AlertTriangle } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { WMO, getVisibilityStatus, type VisibilityStatus } from "@/lib/visibility";
 
 interface Props {
@@ -23,27 +23,24 @@ interface Props {
 
 const STATUS_COPY: Record<
   VisibilityStatus,
-  { label: string; gradient: string; aria: string; range: string; caption: string }
+  { label: string; color: string; aria: string; caption: string }
 > = {
   out: {
     label: "OUT!",
-    gradient: "gradient-text",
+    color: "text-emerald-400",
     aria: "Mountain is out",
-    range: "76–100",
     caption: "clearly visible",
   },
   peeking: {
     label: "PEEKING",
-    gradient: "gradient-text-amber",
+    color: "text-amber-400",
     aria: "Mountain is peeking through",
-    range: "41–75",
     caption: "partially visible",
   },
   hiding: {
     label: "HIDING",
-    gradient: "gradient-text-red",
+    color: "text-red-400/80",
     aria: "Mountain is hiding",
-    range: "0–40",
     caption: "not visible",
   },
 };
@@ -110,189 +107,130 @@ export default function HeroStatus({
     : null;
 
   return (
-    <div className="relative animate-fade-up" role="region" aria-label="Mountain visibility status">
-      <div className="flex justify-center mb-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] ring-1 ring-white/[0.06]">
-          <AlertTriangle className="w-3 h-3 text-amber-400/60" aria-hidden="true" />
-          <span className="text-[10px] text-white/35 font-medium">
-            Weather-based prediction
-          </span>
-        </div>
-      </div>
-
-      <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] rounded-full pointer-events-none animate-hero-glow"
-        style={{
-          background:
-            status === "out"
-              ? `radial-gradient(ellipse, rgba(52,211,153,${0.15 + score / 400}) 0%, rgba(59,130,246,0.03) 40%, transparent 65%)`
-              : status === "peeking"
-                ? "radial-gradient(ellipse, rgba(251,191,36,0.12) 0%, rgba(251,146,60,0.04) 40%, transparent 65%)"
-                : "radial-gradient(ellipse, rgba(248,113,113,0.10) 0%, rgba(251,146,60,0.03) 40%, transparent 65%)",
-        }}
-        aria-hidden="true"
-      />
-
-      <div className="relative text-center space-y-6">
-        <p className="font-display text-[11px] font-semibold tracking-[0.35em] uppercase text-slate-500">
+    <div className="relative py-10 sm:py-16" role="region" aria-label="Mountain visibility status">
+      <div className="relative text-center">
+        <p className="text-[13px] font-medium tracking-[0.15em] uppercase text-white/25 mb-10">
           Is the Mountain Out?
         </p>
 
-        <div className="relative py-4">
+        <div className="mb-10">
           {nightWithClearSkies ? (
             <>
               <h1
-                className="font-display font-black leading-[0.8] tracking-[-0.06em] gradient-text"
-                style={{ fontSize: "clamp(4rem, 14vw, 10rem)" }}
+                className="font-display font-black leading-[0.85] tracking-[-0.04em] text-emerald-400"
+                style={{ fontSize: "clamp(5rem, 16vw, 12rem)" }}
                 aria-label="Clear skies tonight"
               >
                 CLEAR
               </h1>
-              <p className="text-white/40 text-sm mt-4 font-medium">
+              <p className="text-white/35 text-sm mt-6">
                 Clear skies tonight. Check at {sunriseStr}
               </p>
             </>
           ) : (
-            <>
-              <h1
-                className={`font-display font-black leading-[0.8] tracking-[-0.06em] ${statusCopy.gradient}`}
-                style={{
-                  fontSize:
-                    status === "peeking"
-                      ? "clamp(4.5rem, 15vw, 11rem)"
-                      : "clamp(7rem, 22vw, 16rem)",
-                }}
-                aria-label={statusCopy.aria}
-              >
-                {statusCopy.label}
-              </h1>
-              <p className="mt-3 text-[11px] uppercase tracking-[0.3em] font-semibold text-slate-500">
-                <span className="font-mono text-white/40 tabular-nums">
-                  {statusCopy.range}
-                </span>
-                <span className="mx-2 text-white/10">·</span>
-                <span>{statusCopy.caption}</span>
-              </p>
-            </>
+            <h1
+              className={`font-display font-black leading-[0.85] tracking-[-0.04em] ${statusCopy.color}`}
+              style={{
+                fontSize:
+                  status === "peeking"
+                    ? "clamp(5rem, 16vw, 12rem)"
+                    : "clamp(7rem, 22vw, 16rem)",
+              }}
+              aria-label={statusCopy.aria}
+            >
+              {statusCopy.label}
+            </h1>
           )}
         </div>
 
-        <div className="space-y-4">
-          <div className="flex items-center justify-center gap-4">
+        <div className="flex items-center justify-center gap-5 mb-8">
+          <span
+            className="font-display text-[56px] font-black text-white tabular-nums leading-none"
+            aria-label={`Score: ${score} out of 100`}
+          >
+            {score}
+          </span>
+          <div className="text-left">
+            <span className="text-white/15 text-xl font-extralight block leading-none">/100</span>
             <span
-              className="font-display text-5xl font-black text-white tracking-tight"
-              aria-label={`Score: ${score} out of 100`}
+              className={`text-[11px] font-semibold mt-1 block ${
+                confidence === "high"
+                  ? "text-emerald-400/70"
+                  : confidence === "moderate"
+                    ? "text-amber-400/70"
+                    : "text-red-400/70"
+              }`}
             >
-              {score}
+              {confidence}
             </span>
-            <div className="text-left">
-              <span className="text-slate-600 text-lg font-light block leading-none">/100</span>
-              <span
-                className={`text-[10px] font-bold uppercase tracking-widest ${
-                  confidence === "high"
-                    ? "text-emerald-400/70"
-                    : confidence === "moderate"
-                      ? "text-amber-400/70"
-                      : "text-red-400/70"
-                }`}
-              >
-                {confidence}
-              </span>
-            </div>
           </div>
+        </div>
 
+        <div className="max-w-[280px] mx-auto mb-8">
           <div
-            className="max-w-xs mx-auto"
+            className="w-full h-[3px] rounded-full bg-white/[0.06] overflow-hidden"
             role="progressbar"
             aria-valuenow={score}
             aria-valuemin={0}
             aria-valuemax={100}
             aria-label="Visibility score"
           >
-            <div className="w-full h-[3px] rounded-full bg-white/[0.06] overflow-hidden">
-              <div
-                className={`h-full rounded-full animate-score-fill ${
-                  status === "out"
-                    ? "bg-emerald-400/70"
-                    : status === "peeking"
-                      ? "bg-amber-400/70"
-                      : "bg-red-400/60"
-                }`}
-                style={{ width: `${score}%` }}
-              />
-            </div>
+            <div
+              className={`h-full rounded-full animate-score-fill ${
+                status === "out"
+                  ? "bg-emerald-400"
+                  : status === "peeking"
+                    ? "bg-amber-400"
+                    : "bg-red-400/80"
+              }`}
+              style={{ width: `${score}%` }}
+            />
           </div>
         </div>
 
         {weatherSentence && (
-          <p className="text-sm text-slate-400 max-w-md mx-auto leading-relaxed">
+          <p className="text-[15px] text-white/40 max-w-sm mx-auto leading-relaxed mb-6">
             {weatherSentence}
           </p>
         )}
 
-        {scoreBreakdown && (
-          <button
-            onClick={() => setShowMath(!showMath)}
-            className="inline-flex items-center gap-2 text-xs text-slate-600 hover:text-slate-400 transition-colors font-medium"
-            aria-expanded={showMath}
-            aria-controls="score-math"
-          >
-            <span>Show math</span>
-            <ChevronDown
-              className={`w-3 h-3 transition-transform duration-300 ${showMath ? "rotate-180" : ""}`}
-              aria-hidden="true"
-            />
-          </button>
-        )}
+        <p className="text-white/25 text-sm mb-6">{durationMessage}</p>
 
         {scoreBreakdown && (
-          <div
-            id="score-math"
-            className={`overflow-hidden transition-all duration-500 ease-in-out ${
-              showMath ? "max-h-[200px] opacity-100" : "max-h-0 opacity-0"
-            }`}
-          >
-            <div className="flex items-center justify-center gap-6 flex-wrap text-xs text-slate-500">
-              <span>Low clouds: {scoreBreakdown.cloudLow}%</span>
-              <span>Mid clouds: {scoreBreakdown.cloudMid}%</span>
-              <span>High clouds: {scoreBreakdown.cloudHigh}%</span>
-              <span>
-                Visibility: {Math.round(scoreBreakdown.visibilityMeters / 1609.34)}mi
-              </span>
-              {scoreBreakdown.pm25 !== undefined && (
-                <span>PM2.5: {scoreBreakdown.pm25.toFixed(1)}</span>
-              )}
-            </div>
-            <p className="text-[10px] text-slate-600 mt-3 tracking-wide">
-              Low clouds matter most. They sit directly between you and the mountain
-            </p>
-          </div>
-        )}
-
-        <div className="flex items-center justify-center gap-2.5 pt-2">
-          {nightWithClearSkies ? (
-            <>
-              <TrendingUp className="w-4 h-4 text-emerald-400/50" aria-hidden="true" />
-              <p className="text-white/45 text-sm leading-relaxed">
-                Conditions are clear. If this holds, the mountain should be visible at{" "}
-                {sunriseStr}.
-              </p>
-            </>
-          ) : status === "hiding" ? (
-            <>
-              <TrendingDown className="w-4 h-4 text-red-400/50" aria-hidden="true" />
-              <p className="text-white/45 text-sm leading-relaxed">{durationMessage}</p>
-            </>
-          ) : (
-            <>
-              <TrendingUp
-                className={`w-4 h-4 ${status === "out" ? "text-emerald-400/50" : "text-amber-400/50"}`}
+          <>
+            <button
+              onClick={() => setShowMath(!showMath)}
+              className="inline-flex items-center gap-1.5 text-xs text-white/15 hover:text-white/35 transition-colors"
+              aria-expanded={showMath}
+              aria-controls="score-math"
+            >
+              <span>Show math</span>
+              <ChevronDown
+                className={`w-3 h-3 transition-transform duration-300 ${showMath ? "rotate-180" : ""}`}
                 aria-hidden="true"
               />
-              <p className="text-white/45 text-sm leading-relaxed">{durationMessage}</p>
-            </>
-          )}
-        </div>
+            </button>
+
+            <div
+              id="score-math"
+              className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                showMath ? "max-h-[200px] opacity-100 mt-4" : "max-h-0 opacity-0"
+              }`}
+            >
+              <div className="flex items-center justify-center gap-6 flex-wrap text-xs text-white/25">
+                <span>Low clouds: {scoreBreakdown.cloudLow}%</span>
+                <span>Mid: {scoreBreakdown.cloudMid}%</span>
+                <span>High: {scoreBreakdown.cloudHigh}%</span>
+                <span>
+                  Vis: {Math.round(scoreBreakdown.visibilityMeters / 1609.34)}mi
+                </span>
+                {scoreBreakdown.pm25 !== undefined && (
+                  <span>PM2.5: {scoreBreakdown.pm25.toFixed(1)}</span>
+                )}
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

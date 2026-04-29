@@ -40,12 +40,13 @@ async function saveCalendarSnapshot(score: number, isVisible: boolean) {
 }
 
 async function sendPushToAll(title: string, body: string) {
-  const vapidEmail = process.env.VAPID_EMAIL;
+  const rawEmail = process.env.VAPID_EMAIL;
   const vapidPublic = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
   const vapidPrivate = process.env.VAPID_PRIVATE_KEY;
 
-  if (!vapidEmail || !vapidPublic || !vapidPrivate) return;
+  if (!rawEmail || !vapidPublic || !vapidPrivate) return;
 
+  const vapidEmail = rawEmail.startsWith("mailto:") ? rawEmail : `mailto:${rawEmail}`;
   webpush.setVapidDetails(vapidEmail, vapidPublic, vapidPrivate);
 
   try {

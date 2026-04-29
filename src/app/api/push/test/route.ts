@@ -13,14 +13,19 @@ export async function POST(req: NextRequest) {
   const endpoint = String(body.endpoint || "");
   if (!endpoint) return NextResponse.json({ error: "missing_endpoint" }, { status: 400 });
 
-  const vapidEmail = process.env.VAPID_EMAIL;
+  const rawEmail = process.env.VAPID_EMAIL;
   const vapidPublic = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
   const vapidPrivate = process.env.VAPID_PRIVATE_KEY;
-  if (!vapidEmail || !vapidPublic || !vapidPrivate) {
+  if (!rawEmail || !vapidPublic || !vapidPrivate) {
     return NextResponse.json({ error: "push_not_configured" }, { status: 503 });
   }
 
-  webpush.setVapidDetails(vapidEmail, vapidPublic, vapidPrivate);
+  const vapidEmail = rawEmail.startsWith("mailto:") ? rawEmail : `mailto:${rawEmail}`;
+  try {
+    webpush.setVapidDetails(vapidEmail, vapidPublic, vapidPrivate);
+  } catch (err: unknown) {
+    return NextResponse.json({ error: "vapid_config_error", detail: String((err as Error)?.message || err) }, { status: 500 });
+  }
 
   let subJson: string | null = null;
   try {
