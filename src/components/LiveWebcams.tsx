@@ -6,7 +6,6 @@ import {
   RefreshCw,
   ExternalLink,
   MapPin,
-  Mountain,
   ChevronLeft,
   ChevronRight,
   Maximize2,
@@ -66,7 +65,6 @@ export default function LiveWebcams({ feeds }: Props) {
 
   const getImageSrc = (feed: WebcamFeed) => {
     const ts = imageTimestamps[feed.id] || Date.now();
-    // Load directly from government URL — server proxy gets blocked by USGS/NPS
     return `${feed.imageUrl}?t=${ts}`;
   };
 
@@ -76,23 +74,18 @@ export default function LiveWebcams({ feeds }: Props) {
   return (
     <section className="space-y-5">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-red-500/10 ring-1 ring-red-400/15">
-            <Camera className="w-4 h-4 text-red-400" />
-          </div>
-          <div>
-            <h2 className="font-display text-lg font-bold text-white">
-              Live Cameras
-            </h2>
-            <div className="flex items-center gap-2 mt-0.5">
-              <div className="relative">
-                <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
-                <div className="absolute inset-0 w-1.5 h-1.5 rounded-full bg-red-500 animate-ping opacity-75" />
-              </div>
-              <span className="text-[11px] text-white/30 font-medium">
-                Auto-refreshes every 3 min
-              </span>
+        <div>
+          <h2 className="font-display text-lg font-medium text-[color:var(--type-1)]">
+            Live Cameras
+          </h2>
+          <div className="flex items-center gap-2 mt-1">
+            <div className="relative">
+              <div className="w-1.5 h-1.5 rounded-full bg-[color:var(--accent)]" />
+              <div className="absolute inset-0 w-1.5 h-1.5 rounded-full bg-[color:var(--accent)] animate-ping opacity-75" />
             </div>
+            <span className="ticker">
+              Auto-refreshes every 3 min
+            </span>
           </div>
         </div>
       </div>
@@ -103,10 +96,10 @@ export default function LiveWebcams({ feeds }: Props) {
           <button
             key={feed.id}
             onClick={() => setSelectedCam(i)}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs whitespace-nowrap transition-all font-medium ${
+            className={`flex items-center gap-2 px-3.5 py-2 text-xs whitespace-nowrap transition-all font-mono tracking-wide ${
               selectedCam === i
-                ? "bg-blue-500/15 text-blue-300 ring-1 ring-blue-400/25"
-                : "glass text-white/35 hover:text-white/50 hover:bg-white/[0.06]"
+                ? "bg-[color:var(--accent)]/[0.1] text-[color:var(--accent)] border border-[color:var(--accent)]/25"
+                : "border border-[var(--rule)] text-[color:var(--type-4)] hover:text-[color:var(--type-2)] hover:border-[var(--rule-strong)]"
             }`}
           >
             <Camera className="w-3 h-3" />
@@ -116,22 +109,20 @@ export default function LiveWebcams({ feeds }: Props) {
       </div>
 
       {/* Main webcam display */}
-      <div className={`relative rounded-3xl overflow-hidden ring-1 ring-white/[0.08] bg-black/40 ${expanded ? "fixed inset-4 z-50 rounded-3xl" : ""}`}>
-        <div className={`relative ${expanded ? "h-full" : "aspect-video"} bg-black`}>
+      <div className={`relative overflow-hidden ring-1 ring-[var(--rule-strong)] bg-[var(--ink-deep)] ${expanded ? "fixed inset-4 z-50" : ""}`}>
+        <div className={`relative ${expanded ? "h-full" : "aspect-video"} bg-[var(--ink-deep)]`}>
           {loadErrors[currentFeed.id] ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-slate-900/80">
-              <div className="p-4 rounded-2xl bg-white/[0.03] ring-1 ring-white/[0.06]">
-                <AlertCircle className="w-8 h-8 text-white/15" />
-              </div>
-              <p className="text-sm text-white/35 font-medium">
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
+              <AlertCircle className="w-8 h-8 text-[color:var(--type-4)]" />
+              <p className="text-sm text-[color:var(--type-3)]">
                 Camera feed temporarily unavailable
               </p>
-              <p className="text-xs text-white/20 max-w-sm text-center">
+              <p className="text-xs text-[color:var(--type-4)] max-w-sm text-center">
                 This may happen during maintenance or severe weather.
               </p>
               <button
                 onClick={() => refreshImage(currentFeed.id)}
-                className="mt-1 px-5 py-2 glass rounded-xl text-xs text-white/50 hover:bg-white/[0.08] transition-colors font-medium"
+                className="mt-1 px-5 py-2 border border-[var(--rule)] text-xs text-[color:var(--type-3)] hover:border-[var(--rule-strong)] transition-colors"
               >
                 Try Again
               </button>
@@ -152,33 +143,33 @@ export default function LiveWebcams({ feeds }: Props) {
             {/* Top bar */}
             <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-4 bg-gradient-to-b from-black/70 via-black/30 to-transparent pointer-events-auto">
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1.5 bg-red-500/20 ring-1 ring-red-400/25 backdrop-blur-md rounded-lg px-2.5 py-1">
+                <div className="flex items-center gap-1.5 bg-[color:var(--accent)]/20 ring-1 ring-[color:var(--accent)]/25 backdrop-blur-md px-2.5 py-1">
                   <div className="relative">
-                    <div className="w-1.5 h-1.5 rounded-full bg-red-400" />
-                    <div className="absolute inset-0 w-1.5 h-1.5 rounded-full bg-red-400 animate-ping opacity-75" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-[color:var(--accent)]" />
+                    <div className="absolute inset-0 w-1.5 h-1.5 rounded-full bg-[color:var(--accent)] animate-ping opacity-75" />
                   </div>
-                  <span className="text-[11px] font-semibold text-red-300">LIVE</span>
+                  <span className="font-mono text-[11px] font-semibold text-[color:var(--accent)]">LIVE</span>
                 </div>
-                <span className="text-sm font-semibold text-white drop-shadow-lg">
+                <span className="text-sm font-display font-medium text-[color:var(--type-1)] drop-shadow-lg">
                   {currentFeed.name}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => refreshImage(currentFeed.id)}
-                  className="p-2 rounded-xl bg-black/30 backdrop-blur-md hover:bg-black/50 transition-colors ring-1 ring-white/10"
+                  className="p-2 bg-black/30 backdrop-blur-md hover:bg-black/50 transition-colors ring-1 ring-[var(--rule)]"
                   title="Refresh image"
                 >
                   <RefreshCw
-                    className={`w-4 h-4 text-white/60 ${refreshing ? "animate-spin" : ""}`}
+                    className={`w-4 h-4 text-[color:var(--type-3)] ${refreshing ? "animate-spin" : ""}`}
                   />
                 </button>
                 <button
                   onClick={() => setExpanded(!expanded)}
-                  className="p-2 rounded-xl bg-black/30 backdrop-blur-md hover:bg-black/50 transition-colors ring-1 ring-white/10"
+                  className="p-2 bg-black/30 backdrop-blur-md hover:bg-black/50 transition-colors ring-1 ring-[var(--rule)]"
                   title={expanded ? "Exit fullscreen" : "Fullscreen"}
                 >
-                  <Maximize2 className="w-4 h-4 text-white/60" />
+                  <Maximize2 className="w-4 h-4 text-[color:var(--type-3)]" />
                 </button>
               </div>
             </div>
@@ -188,15 +179,15 @@ export default function LiveWebcams({ feeds }: Props) {
               <>
                 <button
                   onClick={goPrev}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-2xl bg-black/30 backdrop-blur-md hover:bg-black/50 transition-all ring-1 ring-white/10 pointer-events-auto hover:scale-105"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 bg-black/30 backdrop-blur-md hover:bg-black/50 transition-all ring-1 ring-[var(--rule)] pointer-events-auto"
                 >
-                  <ChevronLeft className="w-5 h-5 text-white/70" />
+                  <ChevronLeft className="w-5 h-5 text-[color:var(--type-2)]" />
                 </button>
                 <button
                   onClick={goNext}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 rounded-2xl bg-black/30 backdrop-blur-md hover:bg-black/50 transition-all ring-1 ring-white/10 pointer-events-auto hover:scale-105"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 bg-black/30 backdrop-blur-md hover:bg-black/50 transition-all ring-1 ring-[var(--rule)] pointer-events-auto"
                 >
-                  <ChevronRight className="w-5 h-5 text-white/70" />
+                  <ChevronRight className="w-5 h-5 text-[color:var(--type-2)]" />
                 </button>
               </>
             )}
@@ -206,12 +197,12 @@ export default function LiveWebcams({ feeds }: Props) {
               <div className="flex items-end justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <MapPin className="w-3.5 h-3.5 text-white/40" />
-                    <span className="text-xs text-white/40 font-medium">
+                    <MapPin className="w-3.5 h-3.5 text-[color:var(--type-3)]" />
+                    <span className="ticker text-[color:var(--type-3)]">
                       {currentFeed.location}
                     </span>
                   </div>
-                  <p className="text-sm text-white/60 line-clamp-2">
+                  <p className="text-sm text-[color:var(--type-2)] line-clamp-2 font-display font-light">
                     {currentFeed.description}
                   </p>
                 </div>
@@ -219,7 +210,7 @@ export default function LiveWebcams({ feeds }: Props) {
                   href={currentFeed.sourceUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs text-blue-400/60 hover:text-blue-300 transition-colors whitespace-nowrap shrink-0 font-medium"
+                  className="flex items-center gap-1.5 ticker text-[color:var(--accent)] hover:text-[color:var(--type-1)] transition-colors whitespace-nowrap shrink-0"
                 >
                   <ExternalLink className="w-3 h-3" />
                   {currentFeed.sourceName}
@@ -237,8 +228,8 @@ export default function LiveWebcams({ feeds }: Props) {
                   onClick={() => setSelectedCam(i)}
                   className={`h-1.5 rounded-full transition-all duration-300 ${
                     selectedCam === i
-                      ? "bg-white w-6"
-                      : "bg-white/25 w-1.5 hover:bg-white/40"
+                      ? "bg-[color:var(--type-1)] w-6"
+                      : "bg-[color:var(--type-4)] w-1.5 hover:bg-[color:var(--type-3)]"
                   }`}
                 />
               ))}
@@ -253,16 +244,16 @@ export default function LiveWebcams({ feeds }: Props) {
           <button
             key={feed.id}
             onClick={() => setSelectedCam(i)}
-            className={`relative rounded-2xl overflow-hidden transition-all duration-300 ${
+            className={`relative overflow-hidden transition-all duration-300 ${
               selectedCam === i
-                ? "ring-2 ring-blue-400/40 scale-[1.02]"
-                : "ring-1 ring-white/[0.06] hover:ring-white/[0.12] hover:scale-[1.01]"
+                ? "ring-1 ring-[color:var(--accent)]/40"
+                : "ring-1 ring-[var(--rule)] hover:ring-[var(--rule-strong)]"
             }`}
           >
-            <div className="aspect-video bg-black/40 relative">
+            <div className="aspect-video bg-[var(--ink-deep)] relative">
               {loadErrors[feed.id] ? (
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <AlertCircle className="w-5 h-5 text-white/10" />
+                  <AlertCircle className="w-5 h-5 text-[color:var(--type-4)]" />
                 </div>
               ) : (
                 /* eslint-disable-next-line @next/next/no-img-element */
@@ -274,24 +265,24 @@ export default function LiveWebcams({ feeds }: Props) {
                 />
               )}
               {selectedCam === i && (
-                <div className="absolute top-1.5 left-1.5 flex items-center gap-1 bg-red-500/25 backdrop-blur-sm rounded-md px-1.5 py-0.5">
+                <div className="absolute top-1.5 left-1.5 flex items-center gap-1 bg-[color:var(--accent)]/25 backdrop-blur-sm px-1.5 py-0.5">
                   <div className="relative">
-                    <div className="w-1 h-1 rounded-full bg-red-400" />
-                    <div className="absolute inset-0 w-1 h-1 rounded-full bg-red-400 animate-ping opacity-75" />
+                    <div className="w-1 h-1 rounded-full bg-[color:var(--accent)]" />
+                    <div className="absolute inset-0 w-1 h-1 rounded-full bg-[color:var(--accent)] animate-ping opacity-75" />
                   </div>
-                  <span className="text-[9px] text-red-300 font-semibold">LIVE</span>
+                  <span className="font-mono text-[9px] text-[color:var(--accent)] font-semibold">LIVE</span>
                 </div>
               )}
             </div>
-            <div className="p-2.5 bg-white/[0.02]">
+            <div className="p-2.5 bg-[color:var(--type-1)]/[0.02]">
               <div className="flex items-center gap-1.5">
-                <Mountain className="w-3 h-3 text-white/25" />
-                <span className="text-xs font-medium text-white/50 truncate">
+                <Camera className="w-3 h-3 text-[color:var(--type-4)]" />
+                <span className="font-mono text-xs text-[color:var(--type-3)] truncate">
                   {feed.name}
                 </span>
               </div>
               {feed.elevation && (
-                <span className="text-[10px] text-white/20 font-medium">
+                <span className="font-mono text-[10px] text-[color:var(--type-4)] tabular">
                   {feed.elevation.toLocaleString()} ft
                 </span>
               )}
@@ -300,7 +291,7 @@ export default function LiveWebcams({ feeds }: Props) {
         ))}
       </div>
 
-      <p className="text-[11px] text-white/15 text-center font-medium">
+      <p className="ticker text-center">
         Live feeds from USGS Cascades Volcano Observatory and National Park Service
       </p>
 

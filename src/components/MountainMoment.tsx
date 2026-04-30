@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  Sparkles,
   Share2,
   Download,
   X,
@@ -85,8 +84,8 @@ function drawCard(
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, CARD_W, CARD_H);
 
-  const accent = isVisible ? "#34d399" : "#f87171";
-  const accentSoft = isVisible ? "rgba(52,211,153,0.18)" : "rgba(248,113,113,0.14)";
+  const accent = isVisible ? "#94c8a3" : "#8a99a6";
+  const accentSoft = isVisible ? "rgba(148,200,163,0.18)" : "rgba(138,153,166,0.14)";
 
   const glow = ctx.createRadialGradient(CARD_W / 2, CARD_H * 0.42, 40, CARD_W / 2, CARD_H * 0.42, 720);
   glow.addColorStop(0, accentSoft);
@@ -94,19 +93,19 @@ function drawCard(
   ctx.fillStyle = glow;
   ctx.fillRect(0, 0, CARD_W, CARD_H);
 
-  ctx.fillStyle = "rgba(255,255,255,0.45)";
-  ctx.font = "600 28px 'Inter', system-ui, sans-serif";
+  ctx.fillStyle = "rgba(246,241,231,0.45)";
+  ctx.font = "500 28px 'Inter', system-ui, sans-serif";
   ctx.textAlign = "left";
   ctx.fillText("IS THE MOUNTAIN OUT?", 72, 120);
 
   ctx.textAlign = "right";
-  ctx.fillStyle = "rgba(255,255,255,0.35)";
-  ctx.font = "500 26px 'Inter', system-ui, sans-serif";
+  ctx.fillStyle = "rgba(246,241,231,0.35)";
+  ctx.font = "400 26px 'Inter', system-ui, sans-serif";
   ctx.fillText(date, CARD_W - 72, 120);
 
   ctx.textAlign = "center";
-  ctx.fillStyle = "rgba(255,255,255,0.55)";
-  ctx.font = "600 34px 'Inter', system-ui, sans-serif";
+  ctx.fillStyle = "rgba(246,241,231,0.55)";
+  ctx.font = "500 34px 'Inter', system-ui, sans-serif";
   const subHeader = neighborhoodLabel
     ? `From ${neighborhoodLabel}, Seattle`
     : "From Seattle";
@@ -116,7 +115,7 @@ function drawCard(
   ctx.shadowColor = accent;
   ctx.shadowBlur = 60;
   ctx.fillStyle = accent;
-  ctx.font = "900 520px 'Space Grotesk', 'Inter', system-ui, sans-serif";
+  ctx.font = "300 520px 'Georgia', serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText(isVisible ? "YES" : "NO", CARD_W / 2, CARD_H * 0.42);
@@ -124,17 +123,17 @@ function drawCard(
 
   ctx.textBaseline = "alphabetic";
 
-  ctx.fillStyle = "#ffffff";
-  ctx.font = "800 140px 'Space Grotesk', 'Inter', system-ui, sans-serif";
+  ctx.fillStyle = "#f6f1e7";
+  ctx.font = "300 140px 'Georgia', serif";
   ctx.textAlign = "center";
   ctx.fillText(`${score}`, CARD_W / 2 - 70, CARD_H * 0.58);
-  ctx.fillStyle = "rgba(255,255,255,0.4)";
-  ctx.font = "500 56px 'Space Grotesk', 'Inter', system-ui, sans-serif";
+  ctx.fillStyle = "rgba(246,241,231,0.4)";
+  ctx.font = "400 56px 'Inter', system-ui, sans-serif";
   ctx.fillText("/ 100", CARD_W / 2 + 110, CARD_H * 0.58);
 
   const horizonY = CARD_H * 0.72;
-  ctx.fillStyle = "rgba(255,255,255,0.04)";
-  ctx.fillRect(0, horizonY, CARD_W, 4);
+  ctx.fillStyle = "rgba(246,241,231,0.04)";
+  ctx.fillRect(0, horizonY, CARD_W, 2);
 
   const peakX = CARD_W / 2;
   const peakY = horizonY - 230;
@@ -167,16 +166,16 @@ function drawCard(
     const badgeW = 420;
     const badgeH = 110;
     const badgeX = (CARD_W - badgeW) / 2;
-    ctx.fillStyle = "rgba(251,146,60,0.12)";
-    roundRect(ctx, badgeX, badgeY, badgeW, badgeH, 55);
+    ctx.fillStyle = "rgba(212,130,92,0.12)";
+    roundRect(ctx, badgeX, badgeY, badgeW, badgeH, 8);
     ctx.fill();
-    ctx.strokeStyle = "rgba(251,146,60,0.35)";
-    ctx.lineWidth = 2;
-    roundRect(ctx, badgeX, badgeY, badgeW, badgeH, 55);
+    ctx.strokeStyle = "rgba(212,130,92,0.35)";
+    ctx.lineWidth = 1;
+    roundRect(ctx, badgeX, badgeY, badgeW, badgeH, 8);
     ctx.stroke();
 
-    ctx.fillStyle = "#fb923c";
-    ctx.font = "800 54px 'Space Grotesk', 'Inter', system-ui, sans-serif";
+    ctx.fillStyle = "#d4825c";
+    ctx.font = "700 54px 'Inter', system-ui, sans-serif";
     ctx.textAlign = "center";
     ctx.fillText(
       `🔥 ${streak.current}-day streak`,
@@ -184,8 +183,8 @@ function drawCard(
       badgeY + badgeH / 2 + 20,
     );
   } else if (streak.totalCaught >= 1) {
-    ctx.fillStyle = "rgba(255,255,255,0.5)";
-    ctx.font = "600 38px 'Inter', system-ui, sans-serif";
+    ctx.fillStyle = "rgba(246,241,231,0.5)";
+    ctx.font = "400 38px 'Inter', system-ui, sans-serif";
     ctx.textAlign = "center";
     ctx.fillText(
       `${streak.totalCaught} mountain days caught`,
@@ -197,31 +196,31 @@ function drawCard(
   if (sponsor) {
     const sponsorY = CARD_H - 180;
     ctx.fillStyle = `${sponsor.accent}22`;
-    roundRect(ctx, 72, sponsorY - 40, CARD_W - 144, 76, 38);
+    roundRect(ctx, 72, sponsorY - 40, CARD_W - 144, 76, 4);
     ctx.fill();
     ctx.strokeStyle = `${sponsor.accent}55`;
-    ctx.lineWidth = 2;
-    roundRect(ctx, 72, sponsorY - 40, CARD_W - 144, 76, 38);
+    ctx.lineWidth = 1;
+    roundRect(ctx, 72, sponsorY - 40, CARD_W - 144, 76, 4);
     ctx.stroke();
 
-    ctx.fillStyle = "rgba(255,255,255,0.55)";
-    ctx.font = "600 20px 'Inter', system-ui, sans-serif";
+    ctx.fillStyle = "rgba(246,241,231,0.55)";
+    ctx.font = "400 20px 'Inter', system-ui, sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("This Mountain Moment presented by", CARD_W / 2, sponsorY - 8);
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "800 30px 'Space Grotesk', 'Inter', system-ui, sans-serif";
+    ctx.fillStyle = "#f6f1e7";
+    ctx.font = "600 30px 'Inter', system-ui, sans-serif";
     ctx.fillText(sponsor.brand, CARD_W / 2, sponsorY + 22);
   }
 
   if (handle) {
-    ctx.fillStyle = "rgba(251,191,36,0.85)";
-    ctx.font = "700 32px 'Space Grotesk', 'Inter', system-ui, sans-serif";
+    ctx.fillStyle = "rgba(212,130,92,0.85)";
+    ctx.font = "500 32px 'Inter', system-ui, sans-serif";
     ctx.textAlign = "left";
     ctx.fillText(`@${handle}`, 72, CARD_H - 110);
   }
 
-  ctx.fillStyle = "rgba(255,255,255,0.35)";
-  ctx.font = "500 28px 'Inter', system-ui, sans-serif";
+  ctx.fillStyle = "rgba(246,241,231,0.35)";
+  ctx.font = "400 28px 'Inter', system-ui, sans-serif";
   ctx.textAlign = hideWatermark ? "left" : "center";
   const footer = hideWatermark
     ? `${time} PT`
@@ -287,7 +286,6 @@ export default function MountainMoment({
     return "Share this forecast";
   }, [isVisible, currentStreak]);
 
-  // re-render preview when toggles change while modal is open
   const render = useCallback(async () => {
     setCaptureState("rendering");
     const canvas = document.createElement("canvas");
@@ -424,31 +422,21 @@ export default function MountainMoment({
     }
   }, [isVisible, score, neighborhoodLabel, durationMessage]);
 
-  const shareBtnClass = isVisible
-    ? "bg-gradient-to-br from-emerald-500/30 via-emerald-400/20 to-blue-500/25 ring-1 ring-emerald-400/40 hover:ring-emerald-300/60 shadow-lg shadow-emerald-500/10"
-    : "bg-gradient-to-br from-rose-500/30 via-rose-400/20 to-blue-500/25 ring-1 ring-rose-400/40 hover:ring-rose-300/60 shadow-lg shadow-rose-500/10";
-
   return (
     <>
       <button
         onClick={openModal}
-        className={`group relative inline-flex items-center gap-2.5 px-5 py-2.5 rounded-xl font-display font-bold text-sm transition-all overflow-hidden ${
+        className={`group inline-flex items-center gap-2.5 px-5 py-2.5 font-display text-sm transition-all ${
           isVisible
-            ? "bg-gradient-to-br from-emerald-500/25 via-emerald-400/15 to-blue-500/20 text-emerald-100 ring-1 ring-emerald-400/40 hover:ring-emerald-300/60 shadow-lg shadow-emerald-500/10"
-            : "bg-gradient-to-br from-white/[0.08] to-white/[0.04] text-white/80 ring-1 ring-white/[0.12] hover:ring-white/25"
+            ? "bg-[color:var(--accent-clear)]/[0.08] text-[color:var(--accent-clear)] border border-[color:var(--accent-clear)]/25 hover:border-[color:var(--accent-clear)]/50"
+            : "border border-[var(--rule)] text-[color:var(--type-2)] hover:border-[var(--rule-strong)]"
         }`}
         aria-label="Capture a shareable Mountain Moment"
       >
-        <span
-          className={`absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none`}
-          aria-hidden="true"
-        />
-        <Sparkles
-          className={`w-4 h-4 ${isVisible ? "text-emerald-300" : "text-white/60"} animate-pulse-slow`}
-        />
-        <span className="relative">{ctaLabel}</span>
+        <Camera className="w-4 h-4" />
+        <span>{ctaLabel}</span>
         {streak.current >= 2 && isVisible && (
-          <span className="relative inline-flex items-center gap-1 ml-1 px-2 py-0.5 rounded-md bg-orange-500/20 ring-1 ring-orange-400/40 text-[10px] text-orange-200 font-bold tabular-nums">
+          <span className="inline-flex items-center gap-1 font-mono text-[10px] text-[color:var(--accent)] tabular">
             <Flame className="w-3 h-3" />
             {streak.current}
           </span>
@@ -467,27 +455,27 @@ export default function MountainMoment({
             aria-label="Close"
             className="absolute inset-0 bg-black/75 backdrop-blur-xl animate-fade-up"
           />
-          <div className="relative w-full sm:max-w-md mx-auto sm:mx-4 rounded-t-3xl sm:rounded-3xl bg-gradient-to-b from-slate-900/95 to-slate-950/95 ring-1 ring-white/10 shadow-2xl p-5 sm:p-6 animate-fade-up max-h-[92vh] overflow-y-auto scrollbar-thin">
+          <div className="relative w-full sm:max-w-md mx-auto sm:mx-4 bg-[var(--ink-deep)] border border-[var(--rule-strong)] shadow-2xl p-5 sm:p-6 animate-fade-up max-h-[92vh] overflow-y-auto scrollbar-thin">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="font-display font-bold text-white text-lg">
+                <h3 className="font-display font-medium text-[color:var(--type-1)] text-lg">
                   Your Mountain Moment
                 </h3>
-                <p className="text-[11px] text-slate-500 font-medium tracking-wide uppercase mt-0.5">
+                <p className="ticker mt-0.5">
                   Ready for IG · Threads · TikTok
                 </p>
               </div>
               <button
                 onClick={closeModal}
-                className="p-2 rounded-lg glass hover:bg-white/[0.08] transition-colors"
+                className="p-2 text-[color:var(--type-4)] hover:text-[color:var(--type-2)] transition-colors border border-[var(--rule)]"
                 aria-label="Close"
               >
-                <X className="w-4 h-4 text-white/50" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             <div
-              className={`relative aspect-[9/16] w-full rounded-2xl overflow-hidden ring-1 ring-white/10 bg-black ${
+              className={`relative aspect-[9/16] w-full overflow-hidden ring-1 ring-[var(--rule)] bg-[var(--ink-deep)] ${
                 captureState === "rendering" ? "animate-pulse" : ""
               }`}
             >
@@ -500,31 +488,18 @@ export default function MountainMoment({
                 />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <Loader2 className="w-6 h-6 text-white/40 animate-spin" />
+                  <Loader2 className="w-6 h-6 text-[color:var(--type-4)] animate-spin" />
                 </div>
-              )}
-              {isVisible && captureState === "ready" && (
-                <div
-                  className="absolute inset-0 pointer-events-none animate-hero-glow"
-                  style={{
-                    background:
-                      "radial-gradient(circle at 50% 42%, rgba(52,211,153,0.18), transparent 60%)",
-                  }}
-                  aria-hidden="true"
-                />
               )}
             </div>
 
             {streak.current >= 2 && (
-              <div className="mt-4 flex items-center gap-3 p-3 rounded-xl bg-orange-500/8 ring-1 ring-orange-400/20">
-                <div className="flex-shrink-0 p-2 rounded-lg bg-orange-500/15">
-                  <Flame className="w-4 h-4 text-orange-400" />
-                </div>
+              <div className="mt-4 flex items-center gap-3 p-3 border border-[color:var(--accent)]/20">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-display font-bold text-orange-200">
+                  <p className="text-sm font-display font-medium text-[color:var(--accent)]">
                     Day {streak.current} in a row
                   </p>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
+                  <p className="ticker mt-0.5">
                     Best: {streak.best} · Total caught: {streak.totalCaught}
                   </p>
                 </div>
@@ -532,21 +507,20 @@ export default function MountainMoment({
             )}
 
             <div className="mt-4 space-y-2.5">
-              <label className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06] text-xs cursor-pointer">
-                <span className="flex items-center gap-2 font-semibold text-white/80">
-                  <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
+              <label className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[var(--rule)] text-xs cursor-pointer">
+                <span className="flex items-center gap-2 font-display text-[color:var(--type-2)]">
                   Hide watermark
                 </span>
                 <input
                   type="checkbox"
-                  className="accent-emerald-400 w-4 h-4"
+                  className="accent-[color:var(--accent-clear)] w-4 h-4"
                   checked={hideWatermark}
                   onChange={(e) => setHideWatermark(e.target.checked)}
                 />
               </label>
 
-              <div className="px-3 py-2.5 rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06]">
-                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
+              <div className="px-3 py-2.5 border border-[var(--rule)]">
+                <label className="ticker mb-1.5 block">
                   Your handle
                 </label>
                 <input
@@ -562,20 +536,20 @@ export default function MountainMoment({
                       // ignore
                     }
                   }}
-                  className="w-full px-3 py-2 rounded-lg bg-white/[0.04] ring-1 ring-white/[0.08] text-xs text-white placeholder:text-slate-600 focus:outline-none focus:ring-emerald-400/30"
+                  className="w-full px-3 py-2 bg-[color:var(--type-1)]/[0.04] border border-[var(--rule)] text-xs text-[color:var(--type-1)] placeholder:text-[color:var(--type-4)] focus:outline-none focus:border-[var(--rule-strong)]"
                   maxLength={24}
                 />
               </div>
 
-              <div className="px-3 py-2.5 rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06]">
+              <div className="px-3 py-2.5 border border-[var(--rule)]">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
+                  <span className="ticker">
                     Sponsor (opt-in)
                   </span>
                   {sponsorId && (
                     <button
                       onClick={() => setSponsorId(null)}
-                      className="text-[10px] text-slate-500 hover:text-white/70 underline underline-offset-2"
+                      className="ticker hover:text-[color:var(--type-2)] underline underline-offset-2"
                     >
                       Clear
                     </button>
@@ -588,24 +562,19 @@ export default function MountainMoment({
                       <button
                         key={s.id}
                         onClick={() => setSponsorId(active ? null : s.id)}
-                        className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all ${
+                        className={`px-2.5 py-1 text-[11px] font-mono tracking-wide transition-all border ${
                           active
-                            ? "text-white ring-1"
-                            : "text-white/60 bg-white/[0.04] ring-1 ring-white/[0.08] hover:bg-white/[0.08]"
+                            ? "text-[color:var(--type-1)] border-[color:var(--accent)]/40"
+                            : "text-[color:var(--type-3)] border-[var(--rule)] hover:border-[var(--rule-strong)]"
                         }`}
-                        style={
-                          active
-                            ? { backgroundColor: `${s.accent}22`, borderColor: `${s.accent}66`, boxShadow: `inset 0 0 0 1px ${s.accent}66` }
-                            : undefined
-                        }
                       >
                         {s.label}
                       </button>
                     );
                   })}
                 </div>
-                <p className="mt-2 text-[10px] text-slate-500 leading-relaxed">
-                  Tag a local brand on your card. Opt in to earn rewards when sponsors are live.
+                <p className="mt-2 ticker leading-relaxed">
+                  Tag a local brand on your card. Earn rewards when sponsors are live.
                 </p>
               </div>
             </div>
@@ -614,7 +583,11 @@ export default function MountainMoment({
               <button
                 onClick={share}
                 disabled={captureState !== "ready" && captureState !== "copied" && captureState !== "saved"}
-                className={`col-span-2 inline-flex items-center justify-center gap-2.5 px-4 py-3.5 rounded-xl font-display font-bold text-sm transition-all disabled:opacity-50 text-white ${shareBtnClass}`}
+                className={`col-span-2 inline-flex items-center justify-center gap-2.5 px-4 py-3.5 font-display text-sm transition-all disabled:opacity-50 ${
+                  isVisible
+                    ? "bg-[color:var(--accent-clear)]/[0.1] text-[color:var(--accent-clear)] border border-[color:var(--accent-clear)]/25"
+                    : "bg-[color:var(--type-1)]/[0.06] text-[color:var(--type-1)] border border-[var(--rule-strong)]"
+                }`}
               >
                 {captureState === "sharing" ? (
                   <>
@@ -637,11 +610,11 @@ export default function MountainMoment({
               <button
                 onClick={download}
                 disabled={captureState !== "ready" && captureState !== "saved"}
-                className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-semibold text-white/80 bg-white/[0.05] ring-1 ring-white/[0.10] hover:bg-white/[0.08] transition-all disabled:opacity-40"
+                className="inline-flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-display text-[color:var(--type-2)] border border-[var(--rule)] hover:border-[var(--rule-strong)] transition-all disabled:opacity-40"
               >
                 {captureState === "saved" ? (
                   <>
-                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <Check className="w-3.5 h-3.5 text-[color:var(--accent-clear)]" />
                     Saved
                   </>
                 ) : (
@@ -654,15 +627,15 @@ export default function MountainMoment({
 
               <button
                 onClick={copyCaption}
-                className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-semibold text-white/80 bg-white/[0.05] ring-1 ring-white/[0.10] hover:bg-white/[0.08] transition-all"
+                className="inline-flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-display text-[color:var(--type-2)] border border-[var(--rule)] hover:border-[var(--rule-strong)] transition-all"
               >
                 <Copy className="w-3.5 h-3.5" />
                 Copy caption
               </button>
             </div>
 
-            <p className="mt-4 text-center text-[11px] text-slate-500 leading-relaxed">
-              <Camera className="w-3 h-3 inline -mt-0.5 mr-1 text-slate-600" />
+            <p className="mt-4 text-center ticker leading-relaxed">
+              <Camera className="w-3 h-3 inline -mt-0.5 mr-1" />
               Tap Share Moment, then pick Instagram, Threads, iMessage, or anywhere
               else. The card attaches automatically.
             </p>

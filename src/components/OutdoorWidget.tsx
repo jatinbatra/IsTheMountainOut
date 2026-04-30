@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Sunset, MapPin, Clock, ChevronRight, TreePine, Camera } from "lucide-react";
+import { Sunset, MapPin, Clock, ChevronRight, Camera } from "lucide-react";
 
 interface Props {
   isVisible: boolean;
-  sunset?: string; // ISO string or HH:MM format
+  sunset?: string;
 }
 
 interface Trail {
@@ -63,13 +63,11 @@ function getGoldenHourCountdown(sunset?: string): { hours: number; minutes: numb
   if (sunset.includes("T")) {
     sunsetDate = new Date(sunset);
   } else {
-    // HH:MM format — assume today, Pacific time
     const [h, m] = sunset.split(":").map(Number);
     sunsetDate = new Date();
     sunsetDate.setHours(h, m, 0, 0);
   }
 
-  // Golden hour starts ~1 hour before sunset
   const goldenStart = new Date(sunsetDate.getTime() - 60 * 60 * 1000);
   const diff = sunsetDate.getTime() - now.getTime();
 
@@ -91,7 +89,6 @@ function getGoldenHourCountdown(sunset?: string): { hours: number; minutes: numb
 export default function OutdoorWidget({ isVisible, sunset }: Props) {
   const [countdown, setCountdown] = useState(getGoldenHourCountdown(sunset));
 
-  // Update countdown every minute
   useEffect(() => {
     setCountdown(getGoldenHourCountdown(sunset));
     const interval = setInterval(() => {
@@ -106,33 +103,26 @@ export default function OutdoorWidget({ isVisible, sunset }: Props) {
     <div className="space-y-6">
       {/* Golden Hour Countdown */}
       {countdown && !countdown.isPast && (
-        <div className="glass rounded-3xl p-6 space-y-4 ring-1 ring-amber-400/10">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-amber-500/10">
-              <Sunset className="w-5 h-5 text-amber-400" />
-            </div>
-            <div>
-              <h3 className="font-display text-base font-bold text-white">
-                Golden Hour Countdown
-              </h3>
-              <p className="text-[11px] text-white/30">
-                Best light for Rainier photography
-              </p>
-            </div>
+        <div className="border-t border-[var(--rule)] pt-5 space-y-4">
+          <div>
+            <p className="ticker text-[color:var(--accent)] mb-1">Golden Hour</p>
+            <h3 className="font-display text-base font-medium text-[color:var(--type-1)]">
+              Best light for Rainier photography
+            </h3>
           </div>
 
-          <div className="flex items-baseline gap-1 pl-1">
-            <span className="font-display text-5xl font-black text-amber-300/90">
+          <div className="flex items-baseline gap-1">
+            <span className="font-display text-5xl font-light text-[color:var(--accent)] tabular">
               {countdown.hours}
             </span>
-            <span className="text-lg text-amber-300/40 font-medium mr-2">h</span>
-            <span className="font-display text-5xl font-black text-amber-300/90">
+            <span className="text-lg text-[color:var(--accent)]/40 mr-2">h</span>
+            <span className="font-display text-5xl font-light text-[color:var(--accent)] tabular">
               {countdown.minutes.toString().padStart(2, "0")}
             </span>
-            <span className="text-lg text-amber-300/40 font-medium">m</span>
+            <span className="text-lg text-[color:var(--accent)]/40">m</span>
           </div>
 
-          <div className="flex items-center gap-4 text-xs text-white/30">
+          <div className="flex items-center gap-4 ticker">
             <div className="flex items-center gap-1.5">
               <Camera className="w-3.5 h-3.5" />
               <span>Golden hour starts at {countdown.goldenStart}</span>
@@ -146,63 +136,52 @@ export default function OutdoorWidget({ isVisible, sunset }: Props) {
       )}
 
       {countdown?.isPast && (
-        <div className="glass rounded-3xl p-6 ring-1 ring-violet-400/10">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-violet-500/10">
-              <Sunset className="w-5 h-5 text-violet-400" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-white">Golden hour has passed for today</p>
-              <p className="text-xs text-white/30">Check back tomorrow for the next window</p>
-            </div>
+        <div className="border-t border-[var(--rule)] pt-5 flex items-center gap-3">
+          <Sunset className="w-5 h-5 text-[color:var(--type-4)]" />
+          <div>
+            <p className="text-sm font-display text-[color:var(--type-2)]">Golden hour has passed for today</p>
+            <p className="ticker mt-0.5">Check back tomorrow for the next window</p>
           </div>
         </div>
       )}
 
       {/* Trail Recommendations */}
-      <div className="glass rounded-3xl p-6 space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-2xl bg-emerald-500/10">
-            <TreePine className="w-5 h-5 text-emerald-400" />
-          </div>
-          <div>
-            <h3 className="font-display text-base font-bold text-white">
-              Trail Recommendations
-            </h3>
-            <p className="text-[11px] text-white/30">
-              The mountain is out! Great day to hit the trail.
-            </p>
-          </div>
+      <div className="border-t border-[var(--rule)] pt-5 space-y-4">
+        <div>
+          <p className="ticker mb-1">Trail Recommendations</p>
+          <h3 className="font-display text-base font-medium text-[color:var(--type-1)]">
+            The mountain is out. Great day to hit the trail.
+          </h3>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-0">
           {TRAILS.map((trail) => (
             <div
               key={trail.name}
-              className="group flex items-start gap-3 p-3 rounded-2xl hover:bg-white/[0.03] transition-colors cursor-default"
+              className="group flex items-start gap-3 py-3 border-b border-[var(--rule)] last:border-0"
             >
-              <div className="mt-0.5 p-1.5 rounded-lg bg-white/[0.04]">
-                <MapPin className="w-3.5 h-3.5 text-white/30" />
+              <div className="mt-0.5 flex-shrink-0">
+                <MapPin className="w-3.5 h-3.5 text-[color:var(--type-4)]" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-white">{trail.name}</span>
+                  <span className="text-sm font-display font-medium text-[color:var(--type-1)]">{trail.name}</span>
                   {trail.hasRainierView && (
-                    <span className="text-[9px] font-bold text-emerald-400/70 bg-emerald-500/10 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                    <span className="ticker text-[color:var(--accent-clear)]">
                       Rainier View
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-white/30 mt-0.5 leading-relaxed">{trail.highlight}</p>
-                <div className="flex items-center gap-3 mt-1.5 text-[10px] text-white/20">
+                <p className="text-xs text-[color:var(--type-3)] mt-0.5 leading-relaxed">{trail.highlight}</p>
+                <div className="flex items-center gap-3 mt-1 font-mono text-[10px] text-[color:var(--type-4)]">
                   <span>{trail.distance}</span>
-                  <span className="w-1 h-1 rounded-full bg-white/10" />
-                  <span className={trail.difficulty === "Easy" ? "text-emerald-400/50" : "text-amber-400/50"}>
+                  <span>·</span>
+                  <span className={trail.difficulty === "Easy" ? "text-[color:var(--accent-clear)]/60" : "text-[color:var(--accent)]/60"}>
                     {trail.difficulty}
                   </span>
                 </div>
               </div>
-              <ChevronRight className="w-4 h-4 text-white/10 group-hover:text-white/20 transition-colors mt-1 shrink-0" />
+              <ChevronRight className="w-4 h-4 text-[color:var(--type-4)] group-hover:text-[color:var(--type-2)] transition-colors mt-1 shrink-0" />
             </div>
           ))}
         </div>

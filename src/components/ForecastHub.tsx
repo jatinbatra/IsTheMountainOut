@@ -31,9 +31,9 @@ export default function ForecastHub({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-display text-lg font-bold text-white">Forecast</h2>
+        <h2 className="font-display text-lg font-medium text-[color:var(--type-1)]">Forecast</h2>
         <div
-          className="inline-flex rounded-lg bg-white/[0.04] ring-1 ring-white/[0.06] p-0.5"
+          className="inline-flex border border-[var(--rule)] p-0.5"
           role="tablist"
           aria-label="Forecast view"
         >
@@ -43,10 +43,10 @@ export default function ForecastHub({
               role="tab"
               aria-selected={tab === t}
               onClick={() => setTab(t)}
-              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+              className={`px-3 py-1.5 text-xs font-mono tracking-wide transition-all ${
                 tab === t
-                  ? "bg-white/[0.08] text-white shadow-sm"
-                  : "text-slate-500 hover:text-slate-300"
+                  ? "bg-[color:var(--type-1)]/[0.08] text-[color:var(--type-1)]"
+                  : "text-[color:var(--type-4)] hover:text-[color:var(--type-2)]"
               }`}
             >
               {t}

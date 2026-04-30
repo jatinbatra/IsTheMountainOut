@@ -57,22 +57,22 @@ export default function NeighborhoodSelector({ selected, onSelect, scores }: Pro
     <div ref={ref} className="relative inline-flex">
       <button
         onClick={() => setOpen(!open)}
-        className="inline-flex items-center gap-2 px-3 py-2 rounded-xl glass hover:bg-white/[0.06] transition-all text-sm"
+        className="inline-flex items-center gap-2 px-3 py-2 border border-[var(--rule)] hover:border-[var(--rule-strong)] transition-all text-sm"
         aria-expanded={open}
         aria-haspopup="listbox"
       >
-        <MapPin className="w-3.5 h-3.5 text-blue-400/60" />
+        <MapPin className="w-3.5 h-3.5 text-[color:var(--accent)]" />
         {selected && (
-          <span className="text-slate-500 text-xs">Your neighborhood:</span>
+          <span className="ticker">Your neighborhood:</span>
         )}
-        <span className="text-white font-semibold text-sm">{label}</span>
+        <span className="text-[color:var(--type-1)] font-display font-medium text-sm">{label}</span>
         {selectedScore !== undefined && (
-          <span className={`text-xs font-display font-bold ${selectedScore >= 50 ? "text-emerald-400/70" : "text-red-400/60"}`}>
+          <span className={`font-mono text-xs tabular ${selectedScore >= 50 ? "text-[color:var(--accent-clear)]" : "text-[color:var(--accent-fog)]"}`}>
             {selectedScore}
           </span>
         )}
         <ChevronDown
-          className={`w-3.5 h-3.5 text-slate-600 transition-transform duration-200 ${
+          className={`w-3.5 h-3.5 text-[color:var(--type-4)] transition-transform duration-200 ${
             open ? "rotate-180" : ""
           }`}
         />
@@ -80,7 +80,7 @@ export default function NeighborhoodSelector({ selected, onSelect, scores }: Pro
 
       {open && (
         <div
-          className="absolute top-full mt-2 left-0 z-50 glass rounded-xl py-1.5 min-w-[250px] shadow-xl ring-1 ring-white/[0.08] max-h-[320px] overflow-y-auto scrollbar-thin"
+          className="absolute top-full mt-2 left-0 z-50 bg-[var(--ink-deep)] border border-[var(--rule-strong)] py-1.5 min-w-[250px] shadow-xl max-h-[320px] overflow-y-auto scrollbar-thin"
           role="listbox"
         >
           <button
@@ -90,8 +90,8 @@ export default function NeighborhoodSelector({ selected, onSelect, scores }: Pro
             }}
             className={`w-full text-left px-4 py-2 text-xs transition-colors ${
               !selected
-                ? "text-blue-300 bg-blue-500/10"
-                : "text-slate-500 hover:bg-white/[0.04] hover:text-slate-300"
+                ? "text-[color:var(--accent)] bg-[color:var(--accent)]/[0.06]"
+                : "text-[color:var(--type-3)] hover:bg-[color:var(--type-1)]/[0.03] hover:text-[color:var(--type-2)]"
             }`}
             role="option"
             aria-selected={!selected}
@@ -109,18 +109,18 @@ export default function NeighborhoodSelector({ selected, onSelect, scores }: Pro
                 }}
                 className={`w-full text-left px-4 py-2 text-xs transition-colors flex items-center justify-between ${
                   selected === n.id
-                    ? "text-blue-300 bg-blue-500/10"
-                    : "text-slate-400 hover:bg-white/[0.04] hover:text-slate-300"
+                    ? "text-[color:var(--accent)] bg-[color:var(--accent)]/[0.06]"
+                    : "text-[color:var(--type-3)] hover:bg-[color:var(--type-1)]/[0.03] hover:text-[color:var(--type-2)]"
                 }`}
                 role="option"
                 aria-selected={selected === n.id}
               >
                 <span>
                   {n.label}
-                  <span className="text-slate-600 ml-2">{n.elevation}</span>
+                  <span className="text-[color:var(--type-4)] ml-2">{n.elevation}</span>
                 </span>
                 {nScore !== undefined && (
-                  <span className={`font-display font-bold text-[11px] ${nScore >= 50 ? "text-emerald-400/60" : "text-red-400/50"}`}>
+                  <span className={`font-mono text-[11px] tabular ${nScore >= 50 ? "text-[color:var(--accent-clear)]" : "text-[color:var(--accent-fog)]"}`}>
                     {nScore}
                   </span>
                 )}

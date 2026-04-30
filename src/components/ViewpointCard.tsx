@@ -29,19 +29,19 @@ interface Props {
 
 function getConfidenceColor(confidence: string) {
   switch (confidence) {
-    case "high": return "text-emerald-400/70";
-    case "moderate": return "text-amber-400/70";
-    case "low": return "text-orange-400/70";
-    default: return "text-red-400/70";
+    case "high": return "text-[color:var(--accent-clear)]";
+    case "moderate": return "text-[color:var(--accent)]";
+    case "low": return "text-[color:var(--accent-fog)]";
+    default: return "text-[color:var(--accent-fog)]";
   }
 }
 
 function getBarColor(confidence: string) {
   switch (confidence) {
-    case "high": return "bg-emerald-400/60";
-    case "moderate": return "bg-amber-400/60";
-    case "low": return "bg-orange-400/60";
-    default: return "bg-red-400/50";
+    case "high": return "bg-[color:var(--accent-clear)]/60";
+    case "moderate": return "bg-[color:var(--accent)]/60";
+    case "low": return "bg-[color:var(--accent-fog)]/60";
+    default: return "bg-[color:var(--accent-fog)]/50";
   }
 }
 
@@ -68,51 +68,47 @@ export default function ViewpointCard({
       onClick={onSelect}
       className={`w-full text-left transition-all duration-200 ${
         isSelected
-          ? "bg-white/[0.04] border-l-2 border-blue-400/50 pl-4 pr-4 py-4"
-          : "border-l-2 border-transparent pl-4 pr-4 py-3 hover:bg-white/[0.02]"
+          ? "bg-[color:var(--type-1)]/[0.03] border-l-2 border-[color:var(--accent)] pl-4 pr-4 py-4"
+          : "border-l-2 border-transparent pl-4 pr-4 py-3 hover:bg-[color:var(--type-1)]/[0.02]"
       }`}
     >
-      {/* Top row: rank, name, score */}
       <div className="flex items-start justify-between gap-3 mb-1.5">
         <div className="flex items-center gap-2.5 min-w-0">
           <span className={`font-mono text-xs font-bold shrink-0 ${
-            rank === 1 && isVisible ? "text-amber-400/70" : "text-white/15"
+            rank === 1 && isVisible ? "text-[color:var(--accent)]" : "text-[color:var(--type-4)]"
           }`}>
             {String(rank).padStart(2, "0")}
           </span>
-          <h3 className="font-display font-bold text-white text-sm truncate">
+          <h3 className="font-display font-medium text-[color:var(--type-1)] text-sm truncate">
             {viewpoint.name}
           </h3>
-          <span className="text-[9px] text-white/15 font-medium shrink-0">
+          <span className="ticker shrink-0">
             {getRegionLabel(viewpoint.region)}
           </span>
         </div>
 
         <div className="flex items-baseline gap-1 shrink-0">
-          <span className="font-display text-lg font-black text-white">{viewpoint.locationScore}</span>
-          <span className={`text-[10px] font-bold uppercase ${getConfidenceColor(viewpoint.locationConfidence)}`}>
+          <span className="font-display text-lg font-light text-[color:var(--type-1)] tabular">{viewpoint.locationScore}</span>
+          <span className={`ticker ${getConfidenceColor(viewpoint.locationConfidence)}`}>
             {viewpoint.locationConfidence}
           </span>
         </div>
       </div>
 
-      {/* Score bar — thin, no container */}
-      <div className="w-full h-[2px] rounded-full bg-white/[0.04] mb-2.5 ml-7">
+      <div className="w-full h-px bg-[var(--rule)] mb-2.5 ml-7 relative overflow-hidden">
         <div
-          className={`h-full rounded-full ${getBarColor(viewpoint.locationConfidence)} transition-all duration-500`}
+          className={`absolute left-0 top-[-1px] h-[3px] ${getBarColor(viewpoint.locationConfidence)} transition-all duration-500`}
           style={{ width: `${viewpoint.locationScore}%` }}
         />
       </div>
 
-      {/* Sky description — only when selected */}
       {isSelected && (
-        <p className="text-xs text-white/30 leading-relaxed mb-2.5 ml-7 italic">
+        <p className="text-xs text-[color:var(--type-3)] leading-relaxed mb-2.5 ml-7 font-display italic font-light">
           {viewpoint.skyDescription}
         </p>
       )}
 
-      {/* Stats row */}
-      <div className="flex items-center gap-4 ml-7 text-[11px] text-white/20">
+      <div className="flex items-center gap-4 ml-7 font-mono text-[11px] text-[color:var(--type-4)]">
         <span className="flex items-center gap-1">
           <MapPin className="w-2.5 h-2.5" />
           {viewpoint.distanceMiles}mi
@@ -131,7 +127,7 @@ export default function ViewpointCard({
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="flex items-center gap-1 text-blue-400/40 hover:text-blue-300 transition-colors ml-auto"
+            className="flex items-center gap-1 text-[color:var(--accent)] hover:text-[color:var(--type-1)] transition-colors ml-auto"
           >
             <Map className="w-2.5 h-2.5" />
             Maps

@@ -137,21 +137,21 @@ export default function PhotoDrop({ neighborhood }: Props) {
     <div>
       <div className="flex items-baseline justify-between gap-3 mb-4">
         <div className="flex items-baseline gap-2">
-          <Crown className="w-4 h-4 text-amber-400 self-center" aria-hidden="true" />
-          <h2 className="font-display text-sm font-bold text-white">Photo Drop</h2>
-          <p className="text-xs text-white/30">
+          <Crown className="w-4 h-4 text-[color:var(--accent)] self-center" aria-hidden="true" />
+          <h2 className="font-display text-sm font-medium text-[color:var(--type-1)]">Photo Drop</h2>
+          <p className="ticker">
             First photo per hood wins the Daily Crown
           </p>
         </div>
         {crownCount > 0 && (
-          <span className="text-xs text-amber-400/70 tabular-nums">
+          <span className="font-mono text-xs text-[color:var(--accent)] tabular-nums">
             {crownCount} crowned
           </span>
         )}
       </div>
 
       {hoodCrown && (
-        <div className="relative mb-4 rounded-2xl overflow-hidden ring-1 ring-amber-400/30 bg-black/30">
+        <div className="relative mb-4 overflow-hidden ring-1 ring-[color:var(--accent)]/30 bg-[var(--ink-deep)]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={hoodCrown.url}
@@ -161,20 +161,20 @@ export default function PhotoDrop({ neighborhood }: Props) {
           />
           <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/60 to-transparent pointer-events-none" />
           <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
-          <div className="absolute top-3 left-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/90 text-amber-950 text-[10px] font-display font-bold tracking-wide">
+          <div className="absolute top-3 left-3 inline-flex items-center gap-1.5 px-2.5 py-1 bg-[color:var(--accent)]/90 text-[var(--ink)] font-mono text-[10px] tracking-wider uppercase">
             <Crown className="w-3 h-3" />
             DAILY CROWN · {hoodLabel}
           </div>
           <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-3">
             <div className="text-xs">
-              <div className="font-display font-bold text-white">
+              <div className="font-display text-white">
                 {hoodCrown.handle ? `@${hoodCrown.handle}` : "anon"}
               </div>
-              <div className="text-[10px] text-white/60">
+              <div className="font-mono text-[10px] text-white/60">
                 Verified at {formatTimeShort(hoodCrown.capturedAt)}
               </div>
             </div>
-            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-300 bg-emerald-500/15 ring-1 ring-emerald-400/30 px-2 py-1 rounded-full">
+            <span className="inline-flex items-center gap-1 font-mono text-[10px] tracking-wider text-[color:var(--accent-clear)] border border-[color:var(--accent-clear)]/30 px-2 py-1">
               <Check className="w-3 h-3" />
               AI-verified
             </span>
@@ -183,7 +183,7 @@ export default function PhotoDrop({ neighborhood }: Props) {
       )}
 
       <div className="space-y-3 mb-6">
-        <p className="text-sm text-white/50">
+        <p className="text-sm text-[color:var(--type-3)]">
           {hoodCrown
             ? `Crown is claimed in ${hoodLabel}. Drop anyway to make the feed.`
             : hoodId
@@ -201,7 +201,7 @@ export default function PhotoDrop({ neighborhood }: Props) {
             setHandleInput(v);
             persistHandle(v);
           }}
-          className="w-full px-4 py-2.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-white/20"
+          className="w-full px-4 py-2.5 bg-[color:var(--type-1)]/[0.03] border border-[var(--rule)] text-sm text-[color:var(--type-1)] placeholder:text-[color:var(--type-4)] focus:outline-none focus:border-[var(--rule-strong)]"
           maxLength={24}
         />
         <input
@@ -219,14 +219,14 @@ export default function PhotoDrop({ neighborhood }: Props) {
         <button
           onClick={() => fileRef.current?.click()}
           disabled={busy || !hoodId}
-          className={`w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-sm font-semibold transition-colors ${
+          className={`w-full inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-display transition-colors ${
             busy
-              ? "bg-white/[0.04] text-white/30 cursor-wait"
+              ? "bg-[color:var(--type-1)]/[0.03] text-[color:var(--type-4)] cursor-wait border border-[var(--rule)]"
               : state === "success"
-                ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
+                ? "bg-[color:var(--accent-clear)]/[0.08] text-[color:var(--accent-clear)] border border-[color:var(--accent-clear)]/20"
                 : !hoodId
-                  ? "bg-white/[0.04] text-white/25 cursor-not-allowed"
-                  : "bg-white text-black hover:bg-white/90"
+                  ? "bg-[color:var(--type-1)]/[0.03] text-[color:var(--type-4)] cursor-not-allowed border border-[var(--rule)]"
+                  : "bg-[color:var(--type-1)] text-[var(--ink)] hover:opacity-90"
           }`}
         >
           {state === "uploading" ? (
@@ -261,7 +261,7 @@ export default function PhotoDrop({ neighborhood }: Props) {
 
       {recent.length > 0 && (
         <div>
-          <p className="text-xs text-white/30 mb-3">
+          <p className="ticker mb-3">
             Today&apos;s feed
           </p>
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
@@ -271,16 +271,16 @@ export default function PhotoDrop({ neighborhood }: Props) {
                 href={d.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="relative aspect-square rounded-xl overflow-hidden ring-1 ring-white/[0.06] bg-black/20 group"
+                className="relative aspect-square overflow-hidden ring-1 ring-[var(--rule)] bg-[var(--ink-deep)] group"
                 title={`${NEIGHBORHOOD_LABELS[d.hoodId] ?? d.hoodId} · ${formatTimeShort(d.capturedAt)}`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={d.url} alt="" className="w-full h-full object-cover" loading="lazy" />
                 {d.isCrown && (
-                  <Crown className="absolute top-1.5 right-1.5 w-3.5 h-3.5 text-amber-300 drop-shadow" />
+                  <Crown className="absolute top-1.5 right-1.5 w-3.5 h-3.5 text-[color:var(--accent)] drop-shadow" />
                 )}
                 <div className="absolute inset-x-0 bottom-0 px-1.5 py-1 bg-gradient-to-t from-black/80 to-transparent">
-                  <div className="text-[9px] font-bold text-white truncate">
+                  <div className="font-mono text-[9px] tracking-wider text-white truncate">
                     {NEIGHBORHOOD_LABELS[d.hoodId] ?? d.hoodId}
                   </div>
                 </div>

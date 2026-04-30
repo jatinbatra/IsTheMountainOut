@@ -28,10 +28,10 @@ export default function GlobalStreakBadge() {
 
   return (
     <div
-      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-display font-bold tabular-nums ring-1 ${
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 font-mono text-[10px] tracking-wider uppercase tabular-nums border ${
         isGloom
-          ? "bg-slate-500/10 text-slate-300 ring-slate-400/20"
-          : "bg-emerald-500/10 text-emerald-300 ring-emerald-400/25"
+          ? "border-[color:var(--accent-fog)]/20 text-[color:var(--accent-fog)]"
+          : "border-[color:var(--accent-clear)]/25 text-[color:var(--accent-clear)]"
       }`}
       title={`Since ${streak.since}`}
     >
