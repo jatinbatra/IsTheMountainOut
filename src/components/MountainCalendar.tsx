@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CalendarDays } from "lucide-react";
 
 interface CalendarDay {
   date: string;
@@ -28,7 +27,16 @@ export default function MountainCalendar() {
   const validDays = days.filter((d) => d.score >= 0);
   const mountainDays = validDays.filter((d) => d.isVisible).length;
 
-  if (validDays.length === 0) return null;
+  if (validDays.length === 0) {
+    return (
+      <div className="border-t border-[var(--rule)] pt-5">
+        <p className="ticker mb-2">Mountain Calendar</p>
+        <p className="text-sm text-[color:var(--type-3)] font-display font-light italic">
+          No historical data yet. The calendar fills in as the cron job runs daily.
+        </p>
+      </div>
+    );
+  }
 
   const todayStr = new Date().toISOString().split("T")[0];
 
@@ -38,15 +46,10 @@ export default function MountainCalendar() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="p-1.5 rounded-lg bg-emerald-500/10">
-            <CalendarDays className="w-4 h-4 text-emerald-400" />
-          </div>
-          <h2 className="font-display text-lg font-bold text-white">
-            Mountain Calendar
-          </h2>
-        </div>
-        <span className="text-[11px] text-slate-500 font-medium">
+        <h2 className="font-display text-lg font-medium text-[color:var(--type-1)]">
+          Mountain Calendar
+        </h2>
+        <span className="ticker">
           {mountainDays} of {validDays.length} days visible
         </span>
       </div>
@@ -55,7 +58,7 @@ export default function MountainCalendar() {
         {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
           <div
             key={i}
-            className="text-center text-[10px] text-slate-600 font-medium pb-1"
+            className="text-center font-mono text-[10px] text-[color:var(--type-4)] pb-1"
           >
             {d}
           </div>
@@ -73,14 +76,14 @@ export default function MountainCalendar() {
           return (
             <div
               key={day.date}
-              className={`aspect-square rounded-lg flex items-center justify-center text-[10px] font-medium transition-colors ${
-                isToday ? "ring-1 ring-white/20" : ""
+              className={`aspect-square flex items-center justify-center font-mono text-[10px] transition-colors ${
+                isToday ? "ring-1 ring-[var(--rule-strong)]" : ""
               } ${
                 !hasData
-                  ? "bg-white/[0.02] text-slate-700"
+                  ? "bg-[color:var(--type-1)]/[0.02] text-[color:var(--type-4)]"
                   : day.isVisible
-                    ? "bg-emerald-500/20 text-emerald-300"
-                    : "bg-red-500/15 text-red-400/60"
+                    ? "bg-[color:var(--accent-clear)]/20 text-[color:var(--accent-clear)]"
+                    : "bg-[color:var(--accent-fog)]/15 text-[color:var(--accent-fog)]/60"
               }`}
               title={hasData ? `${day.date}: ${day.score}/100` : day.date}
             >
@@ -90,15 +93,15 @@ export default function MountainCalendar() {
         })}
       </div>
 
-      <div className="flex items-center gap-4 text-[10px] text-slate-600">
+      <div className="flex items-center gap-4 ticker">
         <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded bg-emerald-500/20" /> Mountain out
+          <span className="w-2.5 h-2.5 bg-[color:var(--accent-clear)]/20" /> Mountain out
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded bg-red-500/15" /> Hidden
+          <span className="w-2.5 h-2.5 bg-[color:var(--accent-fog)]/15" /> Hidden
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded bg-white/[0.02] ring-1 ring-white/[0.06]" />{" "}
+          <span className="w-2.5 h-2.5 bg-[color:var(--type-1)]/[0.02] ring-1 ring-[var(--rule)]" />{" "}
           No data
         </span>
       </div>
