@@ -80,12 +80,12 @@ export default function CountdownStrip({ sunrise, sunset, alpenglow }: Props) {
         const delta = e.time.getTime() - now;
         return (
           <div key={e.key} className="flex items-center gap-2 whitespace-nowrap">
-            <Icon className="w-3.5 h-3.5 text-white/20" aria-hidden="true" />
-            <span className="text-white/30">{e.label}</span>
-            <span className="font-display font-bold text-white tabular-nums">
+            <Icon className="w-3.5 h-3.5 text-[color:var(--type-4)]" aria-hidden="true" />
+            <span className="text-[color:var(--type-3)]">{e.label}</span>
+            <span className="font-display font-bold text-[color:var(--type-1)] tabular-nums">
               {formatCountdown(delta)}
             </span>
-            <span className="text-white/15 text-xs tabular-nums">
+            <span className="text-[color:var(--type-4)] text-xs tabular-nums">
               {formatTime(e.time)}
             </span>
           </div>

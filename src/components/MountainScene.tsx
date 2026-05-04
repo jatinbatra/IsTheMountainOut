@@ -163,7 +163,7 @@ export default function MountainScene({
   return (
     <div
       ref={containerRef}
-      className="relative w-full overflow-hidden rounded-3xl ring-1 ring-white/[0.08] shadow-2xl shadow-black/40 cursor-crosshair select-none"
+      className="relative w-full overflow-hidden rounded-3xl ring-1 ring-gray-200 shadow-xl cursor-crosshair select-none"
       onMouseMove={handleMouseMove}
       onClick={handleSceneClick}
       onMouseLeave={() => {
@@ -563,7 +563,7 @@ export default function MountainScene({
             top: Math.max(0, tooltip.y - 80),
           }}
         >
-          <div className="glass-strong rounded-xl px-3.5 py-2.5 max-w-[200px] shadow-xl shadow-black/40">
+          <div className="bg-black/60 backdrop-blur-xl rounded-xl px-3.5 py-2.5 max-w-[200px] shadow-xl shadow-black/40">
             <div className="text-xs font-semibold text-white mb-0.5">{tooltip.title}</div>
             <div className="text-[10px] text-white/40 leading-relaxed">{tooltip.detail}</div>
           </div>
@@ -572,7 +572,7 @@ export default function MountainScene({
 
       {/* Viewpoint label */}
       {viewpointName && (
-        <div className="absolute bottom-4 left-4 glass-strong rounded-2xl px-4 py-3">
+        <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-xl rounded-2xl px-4 py-3">
           <div className="text-[10px] text-white/35 uppercase tracking-[0.15em] font-medium mb-0.5">Viewing from</div>
           <div className="text-sm font-semibold text-white">{viewpointName}</div>
           {viewpointDistance && (
@@ -584,7 +584,7 @@ export default function MountainScene({
       )}
 
       {/* Sky condition */}
-      <div className="absolute top-4 right-4 glass-strong rounded-2xl px-4 py-2.5">
+      <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-xl rounded-2xl px-4 py-2.5">
         <div className="text-[10px] text-white/35 uppercase tracking-[0.15em] font-medium mb-0.5">Sky</div>
         <div className="text-sm font-medium text-white">{skyTheme.label}</div>
       </div>
@@ -611,7 +611,7 @@ export default function MountainScene({
       </div>
 
       {/* Interactive hint */}
-      <div className="absolute bottom-4 right-4 glass-strong rounded-xl px-3 py-1.5 animate-bounce-subtle">
+      <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-xl rounded-xl px-3 py-1.5 animate-bounce-subtle">
         <span className="text-[10px] text-white/50 font-medium">Click to interact</span>
       </div>
     </div>

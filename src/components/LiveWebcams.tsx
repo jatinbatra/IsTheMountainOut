@@ -72,34 +72,32 @@ export default function LiveWebcams({ feeds }: Props) {
   const goPrev = () => setSelectedCam((prev) => (prev - 1 + feeds.length) % feeds.length);
 
   return (
-    <section className="space-y-5">
+    <section className="space-y-4">
       <div className="flex items-center justify-between">
-        <div>
+        <div className="flex items-center gap-2">
           <h2 className="font-display text-lg font-medium text-[color:var(--type-1)]">
-            Live Cameras
+            Webcams
           </h2>
-          <div className="flex items-center gap-2 mt-1">
+          <div className="flex items-center gap-1.5">
             <div className="relative">
-              <div className="w-1.5 h-1.5 rounded-full bg-[color:var(--accent)]" />
-              <div className="absolute inset-0 w-1.5 h-1.5 rounded-full bg-[color:var(--accent)] animate-ping opacity-75" />
+              <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
+              <div className="absolute inset-0 w-1.5 h-1.5 rounded-full bg-red-500 animate-ping opacity-75" />
             </div>
-            <span className="ticker">
-              Auto-refreshes every 3 min
-            </span>
+            <span className="text-[10px] text-[color:var(--type-4)]">Auto-refreshes</span>
           </div>
         </div>
       </div>
 
-      {/* Camera selector */}
+      {/* Camera selector pills */}
       <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
         {feeds.map((feed, i) => (
           <button
             key={feed.id}
             onClick={() => setSelectedCam(i)}
-            className={`flex items-center gap-2 px-3.5 py-2 text-xs whitespace-nowrap transition-all font-mono tracking-wide ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs whitespace-nowrap transition-all rounded-full ${
               selectedCam === i
-                ? "bg-[color:var(--accent)]/[0.1] text-[color:var(--accent)] border border-[color:var(--accent)]/25"
-                : "border border-[var(--rule)] text-[color:var(--type-4)] hover:text-[color:var(--type-2)] hover:border-[var(--rule-strong)]"
+                ? "bg-[color:var(--accent)]/10 text-[color:var(--accent)] font-medium"
+                : "bg-gray-100 text-[color:var(--type-3)] hover:text-[color:var(--type-2)]"
             }`}
           >
             <Camera className="w-3 h-3" />
@@ -109,20 +107,15 @@ export default function LiveWebcams({ feeds }: Props) {
       </div>
 
       {/* Main webcam display */}
-      <div className={`relative overflow-hidden ring-1 ring-[var(--rule-strong)] bg-[var(--ink-deep)] ${expanded ? "fixed inset-4 z-50" : ""}`}>
-        <div className={`relative ${expanded ? "h-full" : "aspect-video"} bg-[var(--ink-deep)]`}>
+      <div className={`alpine-card !p-0 overflow-hidden ${expanded ? "fixed inset-4 z-50 !rounded-2xl" : ""}`}>
+        <div className={`relative ${expanded ? "h-full" : "aspect-video"} bg-gray-100`}>
           {loadErrors[currentFeed.id] ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gray-50">
               <AlertCircle className="w-8 h-8 text-[color:var(--type-4)]" />
-              <p className="text-sm text-[color:var(--type-3)]">
-                Camera feed temporarily unavailable
-              </p>
-              <p className="text-xs text-[color:var(--type-4)] max-w-sm text-center">
-                This may happen during maintenance or severe weather.
-              </p>
+              <p className="text-sm text-[color:var(--type-3)]">Camera feed temporarily unavailable</p>
               <button
                 onClick={() => refreshImage(currentFeed.id)}
-                className="mt-1 px-5 py-2 border border-[var(--rule)] text-xs text-[color:var(--type-3)] hover:border-[var(--rule-strong)] transition-colors"
+                className="mt-1 px-4 py-2 rounded-lg border border-gray-200 text-xs text-[color:var(--type-3)] hover:border-gray-300 transition-colors"
               >
                 Try Again
               </button>
@@ -140,77 +133,49 @@ export default function LiveWebcams({ feeds }: Props) {
 
           {/* Overlay controls */}
           <div className="absolute inset-0 pointer-events-none">
-            {/* Top bar */}
-            <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-4 bg-gradient-to-b from-black/70 via-black/30 to-transparent pointer-events-auto">
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1.5 bg-[color:var(--accent)]/20 ring-1 ring-[color:var(--accent)]/25 backdrop-blur-md px-2.5 py-1">
-                  <div className="relative">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[color:var(--accent)]" />
-                    <div className="absolute inset-0 w-1.5 h-1.5 rounded-full bg-[color:var(--accent)] animate-ping opacity-75" />
-                  </div>
-                  <span className="font-mono text-[11px] font-semibold text-[color:var(--accent)]">LIVE</span>
-                </div>
-                <span className="text-sm font-display font-medium text-[color:var(--type-1)] drop-shadow-lg">
-                  {currentFeed.name}
-                </span>
-              </div>
+            <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-3 bg-gradient-to-b from-black/50 to-transparent pointer-events-auto">
               <div className="flex items-center gap-2">
+                <span className="font-mono text-[10px] font-bold text-white/80 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">LIVE</span>
+                <span className="text-xs text-white/70 font-medium">{currentFeed.name}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => refreshImage(currentFeed.id)}
-                  className="p-2 bg-black/30 backdrop-blur-md hover:bg-black/50 transition-colors ring-1 ring-[var(--rule)]"
-                  title="Refresh image"
+                  className="p-1.5 bg-black/30 backdrop-blur-sm rounded-lg hover:bg-black/50 transition-colors"
                 >
-                  <RefreshCw
-                    className={`w-4 h-4 text-[color:var(--type-3)] ${refreshing ? "animate-spin" : ""}`}
-                  />
+                  <RefreshCw className={`w-3.5 h-3.5 text-white/70 ${refreshing ? "animate-spin" : ""}`} />
                 </button>
                 <button
                   onClick={() => setExpanded(!expanded)}
-                  className="p-2 bg-black/30 backdrop-blur-md hover:bg-black/50 transition-colors ring-1 ring-[var(--rule)]"
-                  title={expanded ? "Exit fullscreen" : "Fullscreen"}
+                  className="p-1.5 bg-black/30 backdrop-blur-sm rounded-lg hover:bg-black/50 transition-colors"
                 >
-                  <Maximize2 className="w-4 h-4 text-[color:var(--type-3)]" />
+                  <Maximize2 className="w-3.5 h-3.5 text-white/70" />
                 </button>
               </div>
             </div>
 
-            {/* Navigation arrows */}
             {feeds.length > 1 && (
               <>
-                <button
-                  onClick={goPrev}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 bg-black/30 backdrop-blur-md hover:bg-black/50 transition-all ring-1 ring-[var(--rule)] pointer-events-auto"
-                >
-                  <ChevronLeft className="w-5 h-5 text-[color:var(--type-2)]" />
+                <button onClick={goPrev} className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/30 backdrop-blur-sm rounded-full hover:bg-black/50 transition-all pointer-events-auto">
+                  <ChevronLeft className="w-4 h-4 text-white/80" />
                 </button>
-                <button
-                  onClick={goNext}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 bg-black/30 backdrop-blur-md hover:bg-black/50 transition-all ring-1 ring-[var(--rule)] pointer-events-auto"
-                >
-                  <ChevronRight className="w-5 h-5 text-[color:var(--type-2)]" />
+                <button onClick={goNext} className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/30 backdrop-blur-sm rounded-full hover:bg-black/50 transition-all pointer-events-auto">
+                  <ChevronRight className="w-4 h-4 text-white/80" />
                 </button>
               </>
             )}
 
-            {/* Bottom info */}
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-5 pt-12 pointer-events-auto">
-              <div className="flex items-end justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <MapPin className="w-3.5 h-3.5 text-[color:var(--type-3)]" />
-                    <span className="ticker text-[color:var(--type-3)]">
-                      {currentFeed.location}
-                    </span>
-                  </div>
-                  <p className="text-sm text-[color:var(--type-2)] line-clamp-2 font-display font-light">
-                    {currentFeed.description}
-                  </p>
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3 pt-8 pointer-events-auto">
+              <div className="flex items-end justify-between gap-3">
+                <div className="flex items-center gap-1.5">
+                  <MapPin className="w-3 h-3 text-white/50" />
+                  <span className="text-[10px] text-white/50">{currentFeed.location}</span>
                 </div>
                 <a
                   href={currentFeed.sourceUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 ticker text-[color:var(--accent)] hover:text-[color:var(--type-1)] transition-colors whitespace-nowrap shrink-0"
+                  className="flex items-center gap-1 text-[10px] text-white/50 hover:text-white/80 transition-colors"
                 >
                   <ExternalLink className="w-3 h-3" />
                   {currentFeed.sourceName}
@@ -219,17 +184,16 @@ export default function LiveWebcams({ feeds }: Props) {
             </div>
           </div>
 
-          {/* Camera dots */}
           {feeds.length > 1 && (
-            <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-2">
+            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-1.5">
               {feeds.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setSelectedCam(i)}
                   className={`h-1.5 rounded-full transition-all duration-300 ${
                     selectedCam === i
-                      ? "bg-[color:var(--type-1)] w-6"
-                      : "bg-[color:var(--type-4)] w-1.5 hover:bg-[color:var(--type-3)]"
+                      ? "bg-white w-5"
+                      : "bg-white/30 w-1.5 hover:bg-white/50"
                   }`}
                 />
               ))}
@@ -239,66 +203,46 @@ export default function LiveWebcams({ feeds }: Props) {
       </div>
 
       {/* Thumbnail grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         {feeds.map((feed, i) => (
           <button
             key={feed.id}
             onClick={() => setSelectedCam(i)}
-            className={`relative overflow-hidden transition-all duration-300 ${
+            className={`relative overflow-hidden rounded-xl transition-all duration-300 ${
               selectedCam === i
-                ? "ring-1 ring-[color:var(--accent)]/40"
-                : "ring-1 ring-[var(--rule)] hover:ring-[var(--rule-strong)]"
+                ? "ring-2 ring-[color:var(--accent)]"
+                : "ring-1 ring-gray-100 hover:ring-gray-200"
             }`}
           >
-            <div className="aspect-video bg-[var(--ink-deep)] relative">
+            <div className="aspect-video bg-gray-100 relative">
               {loadErrors[feed.id] ? (
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <AlertCircle className="w-5 h-5 text-[color:var(--type-4)]" />
+                  <AlertCircle className="w-4 h-4 text-[color:var(--type-4)]" />
                 </div>
               ) : (
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img
                   src={getImageSrc(feed)}
                   alt={feed.name}
-                  className={`w-full h-full object-cover ${selectedCam === i ? "opacity-90" : "opacity-60"} transition-opacity`}
+                  className={`w-full h-full object-cover ${selectedCam === i ? "" : "opacity-60"} transition-opacity`}
                   onError={() => handleImageError(feed.id)}
                 />
               )}
-              {selectedCam === i && (
-                <div className="absolute top-1.5 left-1.5 flex items-center gap-1 bg-[color:var(--accent)]/25 backdrop-blur-sm px-1.5 py-0.5">
-                  <div className="relative">
-                    <div className="w-1 h-1 rounded-full bg-[color:var(--accent)]" />
-                    <div className="absolute inset-0 w-1 h-1 rounded-full bg-[color:var(--accent)] animate-ping opacity-75" />
-                  </div>
-                  <span className="font-mono text-[9px] text-[color:var(--accent)] font-semibold">LIVE</span>
-                </div>
-              )}
             </div>
-            <div className="p-2.5 bg-[color:var(--type-1)]/[0.02]">
-              <div className="flex items-center gap-1.5">
-                <Camera className="w-3 h-3 text-[color:var(--type-4)]" />
-                <span className="font-mono text-xs text-[color:var(--type-3)] truncate">
-                  {feed.name}
-                </span>
-              </div>
-              {feed.elevation && (
-                <span className="font-mono text-[10px] text-[color:var(--type-4)] tabular">
-                  {feed.elevation.toLocaleString()} ft
-                </span>
-              )}
+            <div className="p-2 bg-white">
+              <span className="text-[10px] text-[color:var(--type-2)] truncate block">{feed.name}</span>
             </div>
           </button>
         ))}
       </div>
 
-      <p className="ticker text-center">
+      <p className="text-[10px] text-[color:var(--type-4)] text-center">
         Live feeds from USGS Cascades Volcano Observatory and National Park Service
       </p>
 
-      {/* Fullscreen backdrop */}
       {expanded && (
         <div
-          className="fixed inset-0 bg-black/85 backdrop-blur-sm z-40"
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40"
           onClick={() => setExpanded(false)}
         />
       )}

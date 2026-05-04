@@ -11,11 +11,11 @@ const CHIPS = [
 export default function PrivacyCommitment() {
   return (
     <div
-      className="border-t border-[var(--rule)] pt-5"
+      className="border-t border-gray-200 pt-5"
       role="note"
       aria-label="Privacy commitment"
     >
-      <p className="ticker text-[color:var(--accent-clear)] mb-2">
+      <p className="ticker text-[#2d8a4e] mb-2">
         Private by design
       </p>
       <p className="text-sm text-[color:var(--type-2)] font-display font-light leading-snug">
@@ -25,7 +25,7 @@ export default function PrivacyCommitment() {
         {CHIPS.map((chip) => (
           <li
             key={chip}
-            className="inline-flex items-center px-2 py-0.5 border border-[var(--rule)] font-mono text-[10px] tracking-wider uppercase text-[color:var(--type-3)]"
+            className="inline-flex items-center px-2 py-0.5 rounded-full border border-gray-200 font-mono text-[10px] tracking-wider uppercase text-[color:var(--type-3)]"
           >
             {chip}
           </li>

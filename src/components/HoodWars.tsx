@@ -24,9 +24,9 @@ interface Props {
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 function rankColor(rank: number): string {
-  if (rank === 1) return "text-[color:var(--accent)]";
+  if (rank === 1) return "text-[#2d8a4e]";
   if (rank === 2) return "text-[color:var(--type-2)]";
-  if (rank === 3) return "text-[color:var(--accent-fog)]";
+  if (rank === 3) return "text-gray-400";
   return "text-[color:var(--type-4)]";
 }
 
@@ -100,13 +100,13 @@ export default function HoodWars({
             <button
               key={s.id}
               onClick={() => onSelect(s.id)}
-              className={`relative text-left p-3.5 transition-all overflow-hidden group border ${
+              className={`relative text-left p-3.5 rounded-xl transition-all overflow-hidden group border ${
                 i === 0
-                  ? "border-[color:var(--accent)]/30 bg-[color:var(--accent)]/[0.04]"
+                  ? "border-[#2d8a4e]/30 bg-[#2d8a4e]/[0.06]"
                   : i === 1
-                    ? "border-[var(--rule-strong)] bg-[color:var(--type-1)]/[0.02]"
-                    : "border-[var(--rule)] bg-[color:var(--type-1)]/[0.01]"
-              } ${isSel ? "border-[color:var(--type-1)]/30" : ""}`}
+                    ? "border-gray-200 bg-gray-50"
+                    : "border-gray-100 bg-gray-50/50"
+              } ${isSel ? "border-[color:var(--type-1)]/30 bg-white shadow-sm" : ""}`}
             >
               <div className={`font-mono text-[10px] tracking-wider ${rankColor(i + 1)} mb-1`}>#{i + 1}</div>
               <div className="font-display font-medium text-sm text-[color:var(--type-1)] truncate">{s.label}</div>
@@ -115,7 +115,7 @@ export default function HoodWars({
                 <span className="font-mono text-[10px] text-[color:var(--type-4)]">/ {windowDays}d</span>
               </div>
               {s.currentStreak > 1 && (
-                <div className="mt-1.5 inline-flex items-center gap-1 font-mono text-[10px] text-[color:var(--accent)]">
+                <div className="mt-1.5 inline-flex items-center gap-1 font-mono text-[10px] text-[#2d8a4e]">
                   <Flame className="w-3 h-3" />
                   {s.currentStreak}-day streak
                 </div>
@@ -125,7 +125,7 @@ export default function HoodWars({
         })}
       </div>
 
-      <div className="divide-y divide-[var(--rule)] border-y border-[var(--rule)] overflow-hidden">
+      <div className="divide-y divide-gray-100 border-y border-gray-100 rounded-xl overflow-hidden">
         {rest.map((s, i) => {
           const rank = i + 4;
           const isSel = selected === s.id;
@@ -134,13 +134,13 @@ export default function HoodWars({
               key={s.id}
               onClick={() => onSelect(s.id)}
               className={`w-full flex items-center gap-3 px-3.5 py-2.5 text-left transition-colors ${
-                isSel ? "bg-[color:var(--type-1)]/[0.04]" : "hover:bg-[color:var(--type-1)]/[0.02]"
+                isSel ? "bg-gray-50" : "hover:bg-gray-50/60"
               }`}
             >
               <span className="font-mono text-[10px] text-[color:var(--type-4)] w-6 tabular">#{rank}</span>
               <span className="flex-1 text-sm text-[color:var(--type-2)] truncate">{s.label}</span>
               {s.currentStreak > 1 && (
-                <span className="inline-flex items-center gap-0.5 font-mono text-[10px] text-[color:var(--accent)] tabular">
+                <span className="inline-flex items-center gap-0.5 font-mono text-[10px] text-[#2d8a4e] tabular">
                   <Flame className="w-3 h-3" />
                   {s.currentStreak}
                 </span>

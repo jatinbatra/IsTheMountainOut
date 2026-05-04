@@ -25,29 +25,26 @@ export default function CommunityGames({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="font-display text-lg font-medium text-[color:var(--type-1)]">Community</h2>
-        <div
-          className="inline-flex border border-[var(--rule)] p-0.5"
-          role="tablist"
-          aria-label="Community games"
-        >
-          {GAMES.map((g) => (
-            <button
-              key={g}
-              role="tab"
-              aria-selected={game === g}
-              onClick={() => setGame(g)}
-              className={`px-3 py-1.5 text-xs font-mono tracking-wide transition-all ${
-                game === g
-                  ? "bg-[color:var(--type-1)]/[0.08] text-[color:var(--type-1)]"
-                  : "text-[color:var(--type-4)] hover:text-[color:var(--type-2)]"
-              }`}
-            >
-              {g}
-            </button>
-          ))}
-        </div>
+      <div
+        className="inline-flex rounded-xl bg-gray-100 p-1"
+        role="tablist"
+        aria-label="Community games"
+      >
+        {GAMES.map((g) => (
+          <button
+            key={g}
+            role="tab"
+            aria-selected={game === g}
+            onClick={() => setGame(g)}
+            className={`px-4 py-2 text-xs font-medium rounded-lg transition-all ${
+              game === g
+                ? "bg-white text-[color:var(--type-1)] shadow-sm"
+                : "text-[color:var(--type-3)] hover:text-[color:var(--type-2)]"
+            }`}
+          >
+            {g}
+          </button>
+        ))}
       </div>
 
       <div role="tabpanel" aria-label={game}>

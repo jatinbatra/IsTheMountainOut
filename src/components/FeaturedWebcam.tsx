@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { RefreshCw, ExternalLink, AlertCircle } from "lucide-react";
 
-// Load directly from USGS — server proxy gets blocked from cloud IPs
 const WEBCAM_URL = "https://volcview.wr.usgs.gov/ashcam-api/images/webcams/rainier-longmire/current.jpeg";
 const WEBCAM_SOURCE = "https://www.usgs.gov/volcanoes/mount-rainier/webcams";
 
@@ -36,52 +35,45 @@ export default function FeaturedWebcam() {
   });
 
   return (
-    <div className="relative rounded-2xl overflow-hidden bg-black/20 ring-1 ring-white/[0.06]">
-      {/* Viewfinder frame lines */}
-      <div className="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-white/20 rounded-tl z-10 pointer-events-none" />
-      <div className="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 border-white/20 rounded-tr z-10 pointer-events-none" />
-      <div className="absolute bottom-3 left-3 w-6 h-6 border-b-2 border-l-2 border-white/20 rounded-bl z-10 pointer-events-none" />
-      <div className="absolute bottom-3 right-3 w-6 h-6 border-b-2 border-r-2 border-white/20 rounded-br z-10 pointer-events-none" />
-
-      {/* Top telemetry bar */}
-      <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-5 py-3 bg-gradient-to-b from-black/60 to-transparent pointer-events-none">
-        <div className="flex items-center gap-3 pointer-events-auto">
+    <div className="alpine-card !p-0 overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+        <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5">
             <div className="relative">
               <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
               <div className="absolute inset-0 w-1.5 h-1.5 rounded-full bg-red-500 animate-ping opacity-75" />
             </div>
-            <span className="font-mono text-[10px] font-bold text-red-400 uppercase tracking-widest">REC</span>
+            <span className="font-mono text-[10px] font-bold text-red-500 uppercase tracking-widest">Live</span>
           </div>
-          <span className="font-mono text-[10px] text-white/50">USGS-LONGMIRE</span>
+          <span className="text-xs text-[color:var(--type-3)]">Longmire · Mt. Rainier</span>
         </div>
-        <div className="flex items-center gap-3 pointer-events-auto">
-          <span className="font-mono text-[10px] text-white/40">{timestamp} PT</span>
-          <button onClick={refresh} className="p-1 hover:bg-white/10 rounded transition-colors">
-            <RefreshCw className={`w-3 h-3 text-white/40 ${refreshing ? "animate-spin" : ""}`} />
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-[10px] text-[color:var(--type-4)]">{timestamp} PT</span>
+          <button onClick={refresh} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+            <RefreshCw className={`w-3.5 h-3.5 text-[color:var(--type-4)] ${refreshing ? "animate-spin" : ""}`} />
           </button>
-          <a href={WEBCAM_SOURCE} target="_blank" rel="noopener noreferrer" className="p-1 hover:bg-white/10 rounded transition-colors">
-            <ExternalLink className="w-3 h-3 text-white/40" />
+          <a href={WEBCAM_SOURCE} target="_blank" rel="noopener noreferrer" className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+            <ExternalLink className="w-3.5 h-3.5 text-[color:var(--type-4)]" />
           </a>
         </div>
       </div>
 
       {/* Image */}
-      <div className="relative aspect-video">
+      <div className="relative aspect-video bg-gray-100">
         {error ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/40">
-            <AlertCircle className="w-6 h-6 text-white/15" />
-            <p className="font-mono text-xs text-white/25">Feed unavailable</p>
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gray-50">
+            <AlertCircle className="w-6 h-6 text-[color:var(--type-4)]" />
+            <p className="text-xs text-[color:var(--type-4)]">Feed unavailable</p>
             {lastGoodSrc && (
-              <p className="font-mono text-[9px] text-white/15">Showing last known frame</p>
+              <p className="text-[10px] text-[color:var(--type-4)]">Showing last known frame</p>
             )}
             <button
               onClick={refresh}
-              className="font-mono text-[10px] text-blue-400/50 hover:text-blue-300 transition-colors"
+              className="text-[10px] text-[color:var(--accent)] hover:text-[color:var(--type-1)] transition-colors"
             >
               Retry
             </button>
-            {/* Fallback: show last good frame behind error */}
             {lastGoodSrc && (
               <>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -103,13 +95,10 @@ export default function FeaturedWebcam() {
         )}
       </div>
 
-      {/* Bottom telemetry */}
-      <div className="absolute bottom-0 left-0 right-0 z-10 flex items-end justify-between px-5 py-3 bg-gradient-to-t from-black/60 to-transparent pointer-events-none">
-        <div>
-          <p className="font-mono text-[10px] text-white/40">Mt. Rainier South Face</p>
-          <p className="font-mono text-[9px] text-white/20">46.75°N 121.81°W | 2,761 ft</p>
-        </div>
-        <p className="font-mono text-[9px] text-white/15">USGS Volcanic Monitoring</p>
+      {/* Footer info */}
+      <div className="px-4 py-2.5 bg-gray-50 flex items-center justify-between">
+        <p className="text-[10px] text-[color:var(--type-3)]">Mt. Rainier South Face · 46.75°N 121.81°W</p>
+        <p className="text-[9px] text-[color:var(--type-4)]">USGS Volcanic Monitoring</p>
       </div>
     </div>
   );

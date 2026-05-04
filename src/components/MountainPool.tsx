@@ -178,43 +178,43 @@ export default function MountainPool() {
     <div>
       <div className="flex items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-blue-500/10 ring-1 ring-blue-400/20">
-            <Target className="w-4 h-4 text-blue-400" aria-hidden="true" />
+          <div className="p-2 rounded-xl bg-blue-50 border border-blue-200">
+            <Target className="w-4 h-4 text-blue-500" aria-hidden="true" />
           </div>
           <div>
-            <h2 className="font-display text-base font-bold text-white">The Mountain Pool</h2>
-            <p className="text-[11px] text-slate-500 font-medium tracking-wide mt-0.5">
+            <h2 className="font-display text-base font-bold text-[color:var(--type-1)]">The Mountain Pool</h2>
+            <p className="text-[11px] text-[color:var(--type-3)] font-medium tracking-wide mt-0.5">
               Predict this week&apos;s daily visibility · free to play
             </p>
           </div>
         </div>
         {!isLocked && week && (
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.04] ring-1 ring-white/[0.06] text-[10px] font-mono tabular-nums text-amber-300">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-[10px] font-mono tabular-nums text-amber-600">
             <Clock className="w-3 h-3" />
             {countdown}
           </div>
         )}
         {isLocked && (
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-500/10 ring-1 ring-rose-400/20 text-[10px] font-semibold uppercase tracking-wide text-rose-300">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-red-50 border border-red-200 text-[10px] font-semibold uppercase tracking-wide text-red-500">
             Locked
           </div>
         )}
       </div>
 
-      <div className="rounded-2xl ring-1 ring-white/[0.06] bg-white/[0.02] p-4 sm:p-5 space-y-4">
+      <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-5 space-y-4">
         <div className="grid grid-cols-7 gap-2">
           {slate.map((score, i) => (
             <div key={i} className="flex flex-col items-center gap-2">
-              <div className="text-[10px] text-slate-500 font-semibold uppercase tracking-wide">
+              <div className="text-[10px] text-[color:var(--type-3)] font-semibold uppercase tracking-wide">
                 {week ? dayLabel(week.startDate, i) : ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"][i]}
               </div>
-              <div className="relative w-full h-24 rounded-xl bg-white/[0.03] ring-1 ring-white/[0.05] overflow-hidden">
+              <div className="relative w-full h-24 rounded-xl bg-gray-100 border border-gray-200 overflow-hidden">
                 <div
                   className={`absolute inset-x-0 bottom-0 bg-gradient-to-t ${tierColor(score)} transition-all duration-300`}
                   style={{ height: `${score}%` }}
                 />
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <span className="font-display font-bold text-white text-sm tabular-nums drop-shadow">
+                  <span className="font-display font-bold text-[color:var(--type-1)] text-sm tabular-nums drop-shadow-sm">
                     {score}
                   </span>
                 </div>
@@ -227,22 +227,22 @@ export default function MountainPool() {
                 disabled={isLocked}
                 value={score}
                 onChange={(e) => updatePick(i, Number(e.target.value))}
-                className="w-full accent-blue-400 cursor-pointer disabled:cursor-not-allowed"
+                className="w-full accent-blue-500 cursor-pointer disabled:cursor-not-allowed"
                 aria-label={`Day ${i + 1} prediction`}
               />
             </div>
           ))}
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-3 pt-3 border-t border-white/[0.05]">
+        <div className="flex items-center gap-2 sm:gap-3 pt-3 border-t border-gray-100">
           <div className="relative flex-1">
-            <AtSign className="w-3.5 h-3.5 text-slate-600 absolute left-3 top-1/2 -translate-y-1/2" />
+            <AtSign className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="handle (optional)"
               value={handleInput}
               onChange={(e) => setHandleInput(e.target.value.slice(0, 24))}
-              className="w-full pl-8 pr-3 py-2 rounded-lg bg-white/[0.03] ring-1 ring-white/[0.06] text-xs text-white placeholder:text-slate-600 focus:outline-none focus:ring-blue-400/30"
+              className="w-full pl-8 pr-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs text-[color:var(--type-1)] placeholder:text-gray-400 focus:outline-none focus:border-blue-300 focus:ring-1 focus:ring-blue-200"
               maxLength={24}
               disabled={isLocked}
             />
@@ -250,7 +250,7 @@ export default function MountainPool() {
           <button
             onClick={reset}
             disabled={isLocked || submitting}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-white/60 bg-white/[0.03] ring-1 ring-white/[0.06] hover:bg-white/[0.06] transition-all disabled:opacity-40"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-[color:var(--type-3)] bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-all disabled:opacity-40"
             aria-label="Reset picks"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -258,12 +258,12 @@ export default function MountainPool() {
           <button
             onClick={submit}
             disabled={isLocked || submitting || (submitted && !isDirty && !submitError)}
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-display font-bold transition-all disabled:opacity-40 ${
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-display font-bold transition-all disabled:opacity-40 ${
               submitError
-                ? "bg-rose-500/15 text-rose-200 ring-1 ring-rose-400/40"
+                ? "bg-red-50 text-red-600 border border-red-200"
                 : submitted && !isDirty
-                  ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/30"
-                  : "bg-gradient-to-r from-blue-500/30 to-violet-500/30 text-white ring-1 ring-blue-400/40 shadow-lg shadow-blue-500/10"
+                  ? "bg-[#2d8a4e]/10 text-[#2d8a4e] border border-[#2d8a4e]/20"
+                  : "bg-blue-500 text-white border border-blue-600 shadow-sm hover:bg-blue-600"
             }`}
           >
             {submitting ? (
@@ -296,45 +296,45 @@ export default function MountainPool() {
         </div>
 
         {submitError && (
-          <p className="flex items-center gap-1.5 text-[11px] text-rose-300/90 font-medium -mt-1">
+          <p className="flex items-center gap-1.5 text-[11px] text-red-600 font-medium -mt-1">
             <AlertCircle className="w-3 h-3" aria-hidden="true" />
             {submitError}
           </p>
         )}
 
         {savedLocally && submitted && !isDirty && !submitError && (
-          <p className="text-[11px] text-amber-300/80 font-medium -mt-1">
+          <p className="text-[11px] text-orange-600 font-medium -mt-1">
             Saved on this device. Leaderboard is offline right now. Your picks will sync when it&apos;s back.
           </p>
         )}
       </div>
 
       {data && data.standings.length > 0 && (
-        <div className="mt-4 rounded-2xl ring-1 ring-white/[0.06] bg-white/[0.02] overflow-hidden">
-          <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/[0.04]">
-            <Trophy className="w-3.5 h-3.5 text-amber-400" />
-            <span className="text-xs font-display font-bold text-white">Live standings</span>
-            <span className="text-[10px] text-slate-500 ml-auto tabular-nums">
+        <div className="mt-4 rounded-2xl border border-gray-200 bg-white overflow-hidden">
+          <div className="flex items-center gap-2 px-4 py-2.5 border-b border-gray-100">
+            <Trophy className="w-3.5 h-3.5 text-amber-500" />
+            <span className="text-xs font-display font-bold text-[color:var(--type-1)]">Live standings</span>
+            <span className="text-[10px] text-[color:var(--type-4)] ml-auto tabular-nums">
               {data.totalEntries} entries
             </span>
           </div>
-          <ul className="divide-y divide-white/[0.04]">
+          <ul className="divide-y divide-gray-100">
             {data.standings.slice(0, 5).map((s, i) => {
               const isMe = s.userId === userId;
               return (
                 <li
                   key={s.userId}
-                  className={`flex items-center gap-3 px-4 py-2 ${isMe ? "bg-blue-500/8" : ""}`}
+                  className={`flex items-center gap-3 px-4 py-2 ${isMe ? "bg-blue-50" : ""}`}
                 >
-                  <span className={`font-mono text-[10px] font-bold w-6 ${i === 0 ? "text-amber-300" : "text-slate-600"}`}>
+                  <span className={`font-mono text-[10px] font-bold w-6 ${i === 0 ? "text-amber-500" : "text-[color:var(--type-4)]"}`}>
                     #{i + 1}
                   </span>
-                  <span className="flex-1 text-sm text-white/80 truncate">
+                  <span className="flex-1 text-sm text-[color:var(--type-2)] truncate">
                     {s.handle || "anon"}
-                    {isMe && <span className="ml-1.5 text-[10px] text-blue-300 font-bold">YOU</span>}
+                    {isMe && <span className="ml-1.5 text-[10px] text-blue-600 font-bold">YOU</span>}
                   </span>
-                  <span className="text-[11px] text-slate-500 tabular-nums">err {s.error}</span>
-                  <ChevronRight className="w-3 h-3 text-slate-700" />
+                  <span className="text-[11px] text-[color:var(--type-4)] tabular-nums">err {s.error}</span>
+                  <ChevronRight className="w-3 h-3 text-gray-300" />
                 </li>
               );
             })}

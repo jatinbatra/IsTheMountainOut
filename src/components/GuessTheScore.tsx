@@ -28,10 +28,10 @@ function tierLabel(error: number): string {
 }
 
 function tierColor(error: number): string {
-  if (error <= 3) return "text-emerald-300";
-  if (error <= 8) return "text-blue-300";
-  if (error <= 15) return "text-amber-300";
-  return "text-rose-300";
+  if (error <= 3) return "text-[#2d8a4e]";
+  if (error <= 8) return "text-blue-600";
+  if (error <= 15) return "text-amber-600";
+  return "text-rose-500";
 }
 
 export default function GuessTheScore() {
@@ -90,7 +90,7 @@ export default function GuessTheScore() {
         const body = await res.json().catch(() => ({}));
         const code = typeof body?.error === "string" ? body.error : null;
         if (code === "already_revealed") {
-          setError("Today\u2019s answer is already out \u2014 come back tomorrow.");
+          setError("Today’s answer is already out — come back tomorrow.");
         }
       }
     } catch {
@@ -108,25 +108,25 @@ export default function GuessTheScore() {
   }, [revealed, submitted]);
 
   return (
-    <div className="rounded-2xl ring-1 ring-white/[0.06] bg-white/[0.02] p-4 sm:p-5">
+    <div className="alpine-card p-4 sm:p-5">
       <div className="flex items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-violet-500/10 ring-1 ring-violet-400/20">
-            <Dice5 className="w-4 h-4 text-violet-300" aria-hidden="true" />
+          <div className="p-2 rounded-xl bg-violet-50 border border-violet-200">
+            <Dice5 className="w-4 h-4 text-violet-500" aria-hidden="true" />
           </div>
           <div>
-            <h2 className="font-display text-base font-bold text-white">Guess the Score</h2>
-            <p className="text-[11px] text-slate-500 font-medium tracking-wide mt-0.5">
+            <h2 className="font-display text-base font-bold text-[color:var(--type-1)]">Guess the Score</h2>
+            <p className="text-[11px] text-[color:var(--type-3)] font-medium tracking-wide mt-0.5">
               {heading} · reveals nightly at 8pm PT
             </p>
           </div>
         </div>
         {data && data.totalPlays > 0 && (
           <div className="text-right">
-            <div className="font-display text-sm font-bold text-white tabular-nums leading-none">
+            <div className="font-display text-sm font-bold text-[color:var(--type-1)] tabular-nums leading-none">
               {data.totalPlays}
             </div>
-            <div className="text-[9px] uppercase tracking-wide text-slate-500 font-semibold">
+            <div className="text-[9px] uppercase tracking-wide text-[color:var(--type-4)] font-semibold">
               {data.totalPlays === 1 ? "player" : "players"}
             </div>
           </div>
@@ -137,19 +137,19 @@ export default function GuessTheScore() {
         <div className="space-y-4">
           <div className="flex items-center justify-center gap-6 py-2">
             <div className="text-center">
-              <div className="text-[10px] uppercase tracking-wide text-slate-500 font-semibold">Actual peak</div>
-              <div className="font-display text-4xl font-black text-white tabular-nums mt-1">
+              <div className="text-[10px] uppercase tracking-wide text-[color:var(--type-4)] font-semibold">Actual peak</div>
+              <div className="font-display text-4xl font-black text-[color:var(--type-1)] tabular-nums mt-1">
                 {data?.actualPeak ?? "-"}
               </div>
             </div>
             {data?.myGuess && (
               <>
-                <div className="h-12 w-px bg-white/[0.08]" aria-hidden="true" />
+                <div className="h-12 w-px bg-gray-200" aria-hidden="true" />
                 <div className="text-center">
-                  <div className="text-[10px] uppercase tracking-wide text-slate-500 font-semibold">
+                  <div className="text-[10px] uppercase tracking-wide text-[color:var(--type-4)] font-semibold">
                     Your guess
                   </div>
-                  <div className="font-display text-4xl font-black text-white tabular-nums mt-1">
+                  <div className="font-display text-4xl font-black text-[color:var(--type-1)] tabular-nums mt-1">
                     {data.myGuess.guess}
                   </div>
                   {data.myError !== null && (
@@ -163,20 +163,20 @@ export default function GuessTheScore() {
           </div>
 
           {data && data.top.length > 0 && (
-            <div className="rounded-xl bg-white/[0.02] ring-1 ring-white/[0.05] overflow-hidden">
-              <div className="flex items-center gap-2 px-3 py-2 border-b border-white/[0.04]">
-                <Trophy className="w-3.5 h-3.5 text-amber-300" />
-                <span className="text-xs font-display font-bold text-white">Top guesses</span>
+            <div className="rounded-xl bg-gray-50 border border-gray-100 overflow-hidden">
+              <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100">
+                <Trophy className="w-3.5 h-3.5 text-amber-500" />
+                <span className="text-xs font-display font-bold text-[color:var(--type-1)]">Top guesses</span>
               </div>
-              <ul className="divide-y divide-white/[0.04]">
+              <ul className="divide-y divide-gray-100">
                 {data.top.map((t, i) => (
                   <li key={`${t.handle}-${i}`} className="flex items-center gap-3 px-3 py-1.5">
-                    <span className={`font-mono text-[10px] font-bold w-5 ${i === 0 ? "text-amber-300" : "text-slate-600"}`}>
+                    <span className={`font-mono text-[10px] font-bold w-5 ${i === 0 ? "text-amber-500" : "text-[color:var(--type-4)]"}`}>
                       #{i + 1}
                     </span>
-                    <span className="flex-1 text-sm text-white/80 truncate">{t.handle}</span>
-                    <span className="text-[11px] text-slate-500 tabular-nums">guess {t.guess}</span>
-                    <span className="text-[11px] text-white/60 tabular-nums">±{t.error}</span>
+                    <span className="flex-1 text-sm text-[color:var(--type-2)] truncate">{t.handle}</span>
+                    <span className="text-[11px] text-[color:var(--type-4)] tabular-nums">guess {t.guess}</span>
+                    <span className="text-[11px] text-[color:var(--type-3)] tabular-nums">&plusmn;{t.error}</span>
                   </li>
                 ))}
               </ul>
@@ -184,7 +184,7 @@ export default function GuessTheScore() {
           )}
 
           {!data?.myGuess && (
-            <p className="text-xs text-white/50 text-center">
+            <p className="text-xs text-[color:var(--type-4)] text-center">
               You missed today&apos;s round. The next one opens at midnight PT.
             </p>
           )}
@@ -192,10 +192,10 @@ export default function GuessTheScore() {
       ) : (
         <div className="space-y-4">
           <div className="flex items-end justify-center gap-3">
-            <span className="font-display text-6xl font-black text-white tabular-nums leading-none">
+            <span className="font-display text-6xl font-black text-[color:var(--type-1)] tabular-nums leading-none">
               {guess}
             </span>
-            <span className="text-slate-500 text-lg font-light pb-2">/100</span>
+            <span className="text-[color:var(--type-4)] text-lg font-light pb-2">/100</span>
           </div>
           <input
             type="range"
@@ -207,7 +207,7 @@ export default function GuessTheScore() {
               setGuess(Number(e.target.value));
               setError(null);
             }}
-            className="w-full accent-violet-400 cursor-pointer"
+            className="w-full accent-violet-500 cursor-pointer"
             aria-label="Your guess"
           />
           <div className="flex items-center gap-2 flex-wrap">
@@ -216,18 +216,18 @@ export default function GuessTheScore() {
               placeholder="handle (optional)"
               value={handleInput}
               onChange={(e) => setHandleInput(e.target.value.slice(0, 24))}
-              className="flex-1 min-w-0 px-3 py-2 rounded-lg bg-white/[0.03] ring-1 ring-white/[0.06] text-xs text-white placeholder:text-slate-600 focus:outline-none focus:ring-violet-400/30"
+              className="flex-1 min-w-0 px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs text-[color:var(--type-1)] placeholder:text-gray-400 focus:outline-none focus:border-violet-300 focus:ring-1 focus:ring-violet-200"
               maxLength={24}
             />
             <button
               onClick={submit}
               disabled={submitting || isLoading}
-              className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-display font-bold transition-all disabled:opacity-50 ${
+              className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-display font-bold transition-all disabled:opacity-50 ${
                 error
-                  ? "bg-rose-500/15 text-rose-200 ring-1 ring-rose-400/40"
+                  ? "bg-red-50 text-red-600 border border-red-200"
                   : submitted
-                    ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/30"
-                    : "bg-gradient-to-r from-violet-500/30 to-pink-500/30 text-white ring-1 ring-violet-400/40 shadow-lg shadow-violet-500/10"
+                    ? "bg-[#2d8a4e]/10 text-[#2d8a4e] border border-[#2d8a4e]/20"
+                    : "bg-violet-500 text-white border border-violet-600 shadow-sm hover:bg-violet-600"
               }`}
             >
               {submitting ? (
@@ -254,18 +254,18 @@ export default function GuessTheScore() {
             </button>
           </div>
           {error && (
-            <p className="flex items-center gap-1.5 text-[11px] text-rose-300/90 font-medium">
+            <p className="flex items-center gap-1.5 text-[11px] text-red-600 font-medium">
               <AlertCircle className="w-3 h-3" aria-hidden="true" />
               {error}
             </p>
           )}
           {onlyLocal && !error && (
-            <p className="text-[11px] text-amber-300/80 font-medium">
+            <p className="text-[11px] text-orange-600 font-medium">
               Saved on this device. Leaderboard is offline right now.
             </p>
           )}
           {data && data.averageGuess !== null && !submitted && (
-            <p className="text-[11px] text-slate-500 text-center">
+            <p className="text-[11px] text-[color:var(--type-4)] text-center">
               {data.totalPlays} others guessed, average {data.averageGuess}/100.
             </p>
           )}

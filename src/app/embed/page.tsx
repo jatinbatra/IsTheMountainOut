@@ -35,8 +35,8 @@ export default async function EmbedPage({
       <body
         style={{
           margin: 0,
-          background: "#0a0f1a",
-          color: "#e2e8f0",
+          background: "#f0f2f0",
+          color: "#1a2e1a",
           fontFamily: "system-ui, -apple-system, sans-serif",
         }}
       >
@@ -48,13 +48,16 @@ export default async function EmbedPage({
             padding: "16px 24px",
             height: "100px",
             boxSizing: "border-box",
+            background: "#ffffff",
+            borderRadius: "12px",
+            margin: "8px",
           }}
         >
           <div>
             <div
               style={{
                 fontSize: 11,
-                color: "#64748b",
+                color: "#6b8f6b",
                 letterSpacing: "0.05em",
                 textTransform: "uppercase",
                 fontWeight: 600,
@@ -67,7 +70,7 @@ export default async function EmbedPage({
                 fontSize: 36,
                 fontWeight: 900,
                 letterSpacing: "-0.04em",
-                color: isVisible ? "#34d399" : "#f87171",
+                color: isVisible ? "#2d8a4e" : "#c75a3a",
                 lineHeight: 1,
                 marginTop: 4,
               }}
@@ -80,12 +83,12 @@ export default async function EmbedPage({
               style={{
                 fontSize: 28,
                 fontWeight: 900,
-                color: "#fff",
+                color: "#1a2e1a",
                 lineHeight: 1,
               }}
             >
               {score}
-              <span style={{ fontSize: 14, color: "#475569", fontWeight: 400 }}>
+              <span style={{ fontSize: 14, color: "#9bb59b", fontWeight: 400 }}>
                 /100
               </span>
             </div>
@@ -95,7 +98,7 @@ export default async function EmbedPage({
               rel="noopener noreferrer"
               style={{
                 fontSize: 10,
-                color: "#3b82f6",
+                color: "#3a7c52",
                 textDecoration: "none",
               }}
             >

@@ -1,30 +1,42 @@
 @import "tailwindcss";
 
 /* ─────────────────────────────────────────────────────────
-   EDITORIAL ALPINE
-   Inspired by National Geographic field reports, Patagonia
-   catalogs, and topographic maps. Not another dark dashboard.
+   ALPINE LIGHT
+   Nature-inspired, light-mode design with forest green accents.
+   Clean white cards, soft shadows, rounded corners.
    ───────────────────────────────────────────────────────── */
 
 :root {
-  --ink: #0a0d10;
-  --ink-deep: #060809;
-  --paper: #f6f1e7;
-  --paper-warm: #ede5d3;
-  --rule: rgba(246, 241, 231, 0.10);
-  --rule-strong: rgba(246, 241, 231, 0.18);
-  --type-1: #f6f1e7;
-  --type-2: rgba(246, 241, 231, 0.65);
-  --type-3: rgba(246, 241, 231, 0.40);
-  --type-4: rgba(246, 241, 231, 0.22);
+  --ink: #ffffff;
+  --ink-deep: #f7f8fa;
+  --paper: #1a2e1a;
+  --paper-warm: #2b3a2b;
 
-  /* Accent shifts based on conditions */
-  --accent: #d4825c;            /* alpenglow terracotta — default */
-  --accent-clear: #94c8a3;      /* alpine sage */
-  --accent-fog: #8a99a6;        /* fog steel */
-  --accent-pink: #e8a7a3;       /* alpenglow pink */
+  --type-1: #1a2e1a;
+  --type-2: #3d5a3d;
+  --type-3: #6b8f6b;
+  --type-4: #9bb59b;
 
-  --background: var(--ink);
+  --rule: rgba(26, 46, 26, 0.10);
+  --rule-strong: rgba(26, 46, 26, 0.18);
+
+  --accent: #3a7c52;
+  --accent-clear: #2d8a4e;
+  --accent-fog: #7a8a8f;
+  --accent-pink: #c77d6a;
+
+  --hero-bg: #1f2e1f;
+  --hero-bg-light: #2b3e2b;
+  --card-bg: #ffffff;
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+  --card-shadow-lg: 0 4px 16px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.04);
+  --card-radius: 16px;
+
+  --gauge-good: #2d8a4e;
+  --gauge-mid: #d4a843;
+  --gauge-poor: #c75a3a;
+
+  --background: #f0f2f0;
   --foreground: var(--type-1);
 }
 
@@ -40,11 +52,11 @@ html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  background: var(--ink);
+  background: var(--background);
 }
 
 body {
-  background: var(--ink);
+  background: var(--background);
   color: var(--type-1);
   font-family: var(--font-sans), system-ui, sans-serif;
   font-feature-settings: "ss01", "cv02", "cv11";
@@ -58,43 +70,15 @@ body {
   position: relative;
 }
 
-/* Film grain — gives the page texture, not template smooth */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1   0 0 0 0 1   0 0 0 0 1   0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-  mix-blend-mode: screen;
-}
+.theme-clear { --accent: #2d8a4e; }
+.theme-overcast { --accent: #7a8a8f; }
+.theme-alpenglow { --accent: #c77d6a; }
 
-/* Topographic contour lines — alpine identity */
-.topo-bg {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.06;
-  background-image: url("data:image/svg+xml;utf8,<svg width='600' height='600' viewBox='0 0 600 600' xmlns='http://www.w3.org/2000/svg'><g fill='none' stroke='%23f6f1e7' stroke-width='0.5'><circle cx='300' cy='340' r='40'/><circle cx='300' cy='340' r='75'/><circle cx='300' cy='340' r='115' stroke-dasharray='2 4'/><circle cx='300' cy='340' r='160'/><circle cx='300' cy='340' r='210' stroke-dasharray='4 6'/><circle cx='300' cy='340' r='265'/><path d='M180 340 Q220 320 260 340' stroke-width='0.4'/><path d='M340 340 Q380 360 420 340' stroke-width='0.4'/><path d='M150 340 Q220 280 290 320 T420 320' stroke-width='0.4'/></g></svg>");
-  background-position: center 60%;
-  background-repeat: no-repeat;
-  background-size: 120vmax 120vmax;
-}
-
-/* Theme variations shift the accent color */
-.theme-clear { --accent: var(--accent-clear); }
-.theme-overcast { --accent: var(--accent-fog); }
-.theme-alpenglow { --accent: var(--accent-pink); }
-
-/* Selection */
 ::selection {
   background: var(--accent);
-  color: var(--ink);
+  color: #ffffff;
 }
 
-/* Tap feel without the scale-bouncing template look */
 button, a[role="button"], [role="tab"], [role="option"] {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
@@ -106,7 +90,7 @@ button, a[role="button"] {
 }
 
 button:active:not(:disabled) {
-  opacity: 0.7;
+  opacity: 0.85;
   transition: opacity 0.05s ease;
 }
 
@@ -124,11 +108,10 @@ button:active:not(:disabled) {
   font-feature-settings: "tnum", "ss01";
 }
 
-/* Editorial dateline — tiny mono label, like a magazine */
 .dateline {
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 11px;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--type-3);
   font-weight: 500;
@@ -148,7 +131,6 @@ button:active:not(:disabled) {
   background: var(--rule);
 }
 
-/* Editorial pull quote */
 .pullquote {
   font-family: var(--font-display), Georgia, serif;
   font-style: italic;
@@ -157,30 +139,120 @@ button:active:not(:disabled) {
   line-height: 1.15;
 }
 
-/* Decorative number with tabular figures */
 .tabular { font-feature-settings: "tnum"; }
 
-/* Cards: editorial paper, not glassy. Thin rule on the top only. */
+.ticker {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--type-3);
+}
+
+/* ─── Cards ─── */
+
+.alpine-card {
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  padding: 1.25rem;
+}
+
+.alpine-card-lg {
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow-lg);
+  padding: 1.5rem;
+}
+
 .editorial-card {
   border-top: 1px solid var(--rule);
   padding-top: 1.5rem;
 }
 
 .editorial-card-warm {
-  background: rgba(246, 241, 231, 0.025);
+  background: rgba(26, 46, 26, 0.025);
   border: 1px solid var(--rule);
 }
 
-/* Ticker — for the dateline strip */
-.ticker {
-  font-family: var(--font-mono), monospace;
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--type-3);
+/* Legacy glass — remapped to light cards */
+.glass {
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--rule);
 }
 
-/* ─── Animations: deliberate, slow, alpine ─── */
+.glass-strong {
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow-lg);
+  border: 1px solid var(--rule-strong);
+}
+
+.glass-hover {
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.glass-hover:hover {
+  box-shadow: var(--card-shadow-lg);
+  border-color: var(--rule-strong);
+}
+
+/* ─── Hero Section ─── */
+
+.hero-section {
+  background: linear-gradient(180deg, var(--hero-bg) 0%, var(--hero-bg-light) 100%);
+  color: #ffffff;
+  border-radius: 0 0 24px 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section .ticker,
+.hero-section .dateline {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ─── Circular Gauge ─── */
+
+.gauge-ring {
+  --gauge-size: 180px;
+  --gauge-stroke: 12;
+  width: var(--gauge-size);
+  height: calc(var(--gauge-size) / 2 + 20px);
+  position: relative;
+}
+
+.gauge-ring svg {
+  width: var(--gauge-size);
+  height: var(--gauge-size);
+  transform: rotate(-90deg);
+}
+
+.gauge-ring .gauge-track {
+  fill: none;
+  stroke: rgba(255,255,255,0.12);
+  stroke-width: var(--gauge-stroke);
+  stroke-linecap: round;
+}
+
+.gauge-ring .gauge-fill {
+  fill: none;
+  stroke-width: var(--gauge-stroke);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.gauge-label {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+/* ─── Animations ─── */
 
 @keyframes fade-up {
   0% { opacity: 0; transform: translateY(12px); }
@@ -207,13 +279,13 @@ button:active:not(:disabled) {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { filter: drop-shadow(0 0 12px rgba(148, 200, 163, 0.4)); }
-  50% { filter: drop-shadow(0 0 30px rgba(148, 200, 163, 0.7)); }
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(45, 138, 78, 0.3)); }
+  50% { filter: drop-shadow(0 0 20px rgba(45, 138, 78, 0.5)); }
 }
 
 @keyframes pulse-glow-red {
-  0%, 100% { filter: drop-shadow(0 0 12px rgba(216, 130, 92, 0.4)); }
-  50% { filter: drop-shadow(0 0 30px rgba(216, 130, 92, 0.7)); }
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(199, 90, 58, 0.3)); }
+  50% { filter: drop-shadow(0 0 20px rgba(199, 90, 58, 0.5)); }
 }
 
 @keyframes cloud-drift {
@@ -267,6 +339,10 @@ button:active:not(:disabled) {
   50% { transform: translateY(-3px); }
 }
 
+@keyframes gauge-fill-anim {
+  0% { stroke-dashoffset: var(--gauge-circumference); }
+}
+
 .animate-fade-up { animation: fade-up 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 .animate-fade-in { animation: fade-in 0.6s ease-out forwards; }
 .animate-score-fill { animation: score-fill 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
@@ -285,7 +361,6 @@ button:active:not(:disabled) {
 .animate-pulse-slow { animation: pulse-slow 2s ease-in-out infinite; }
 .animate-bounce-subtle { animation: bounce-subtle 2s ease-in-out infinite; }
 
-/* Staggered reveals — magazine reading rhythm */
 .stagger-1 { animation-delay: 80ms; opacity: 0; }
 .stagger-2 { animation-delay: 160ms; opacity: 0; }
 .stagger-3 { animation-delay: 240ms; opacity: 0; }
@@ -297,35 +372,6 @@ button:active:not(:disabled) {
 .delay-200 { animation-delay: 200ms; }
 .delay-300 { animation-delay: 300ms; }
 .delay-500 { animation-delay: 500ms; }
-
-.scroll-reveal-delay-1 { transition-delay: 100ms; }
-.scroll-reveal-delay-2 { transition-delay: 200ms; }
-.scroll-reveal-delay-3 { transition-delay: 300ms; }
-
-/* ─── Glass — kept for legacy, but quieter ─── */
-.glass {
-  background: rgba(246, 241, 231, 0.025);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--rule);
-  transition: background 0.2s ease, border-color 0.2s ease;
-}
-
-.glass-strong {
-  background: rgba(246, 241, 231, 0.04);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border: 1px solid var(--rule-strong);
-}
-
-.glass-hover {
-  transition: background 0.2s ease, border-color 0.2s ease;
-}
-
-.glass-hover:hover {
-  background: rgba(246, 241, 231, 0.04);
-  border-color: var(--rule-strong);
-}
 
 /* ─── Scrollbar ─── */
 .scrollbar-thin {
@@ -343,7 +389,7 @@ button:active:not(:disabled) {
   background: var(--type-3);
 }
 
-/* Legacy gradient text — kept static so existing components don't break */
+/* Legacy gradient text */
 .gradient-text {
   background: linear-gradient(135deg, var(--accent-clear), var(--accent));
   -webkit-background-clip: text;
@@ -352,17 +398,18 @@ button:active:not(:disabled) {
 }
 
 .gradient-text-red {
-  background: linear-gradient(135deg, var(--accent), #b06148);
+  background: linear-gradient(135deg, var(--accent-pink), #b06148);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .gradient-text-amber {
-  background: linear-gradient(135deg, #e3b873, var(--accent));
+  background: linear-gradient(135deg, #d4a843, var(--accent));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .noise-overlay { display: none; }
+.topo-bg { display: none; }

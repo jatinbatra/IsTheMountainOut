@@ -26,7 +26,7 @@ export default function SmsShareButton({ score, neighborhoodLabel }: Props) {
   return (
     <a
       href={href}
-      className="group inline-flex items-center gap-2.5 px-5 py-2.5 border border-[var(--rule)] hover:border-[var(--rule-strong)] font-display text-sm text-[color:var(--type-2)] hover:text-[color:var(--type-1)] transition-all"
+      className="group inline-flex items-center gap-2.5 px-5 py-2.5 rounded-xl border border-gray-200 hover:border-gray-300 font-display text-sm text-[color:var(--type-2)] hover:text-[color:var(--type-1)] transition-all"
       aria-label="Text a friend"
     >
       <MessageCircle className="w-4 h-4 text-[color:var(--type-3)] group-hover:text-[color:var(--type-2)] transition-colors" />

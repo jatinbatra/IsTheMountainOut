@@ -100,56 +100,56 @@ export default function OutdoorWidget({ isVisible, sunset }: Props) {
   if (!isVisible) return null;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Golden Hour Countdown */}
       {countdown && !countdown.isPast && (
-        <div className="border-t border-[var(--rule)] pt-5 space-y-4">
+        <div className="alpine-card space-y-3">
           <div>
-            <p className="ticker text-[color:var(--accent)] mb-1">Golden Hour</p>
-            <h3 className="font-display text-base font-medium text-[color:var(--type-1)]">
+            <p className="text-[10px] text-orange-500 uppercase tracking-wider font-medium mb-1">Golden Hour</p>
+            <h3 className="font-medium text-[color:var(--type-1)] text-sm">
               Best light for Rainier photography
             </h3>
           </div>
 
           <div className="flex items-baseline gap-1">
-            <span className="font-display text-5xl font-light text-[color:var(--accent)] tabular">
+            <span className="font-display text-4xl font-light text-orange-500 tabular">
               {countdown.hours}
             </span>
-            <span className="text-lg text-[color:var(--accent)]/40 mr-2">h</span>
-            <span className="font-display text-5xl font-light text-[color:var(--accent)] tabular">
+            <span className="text-sm text-orange-300 mr-2">h</span>
+            <span className="font-display text-4xl font-light text-orange-500 tabular">
               {countdown.minutes.toString().padStart(2, "0")}
             </span>
-            <span className="text-lg text-[color:var(--accent)]/40">m</span>
+            <span className="text-sm text-orange-300">m</span>
           </div>
 
-          <div className="flex items-center gap-4 ticker">
-            <div className="flex items-center gap-1.5">
-              <Camera className="w-3.5 h-3.5" />
-              <span>Golden hour starts at {countdown.goldenStart}</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5" />
-              <span>Sunset in {countdown.hours}h {countdown.minutes}m</span>
-            </div>
+          <div className="flex items-center gap-4 text-[10px] text-[color:var(--type-4)]">
+            <span className="flex items-center gap-1">
+              <Camera className="w-3 h-3" />
+              Golden hour starts at {countdown.goldenStart}
+            </span>
+            <span className="flex items-center gap-1">
+              <Clock className="w-3 h-3" />
+              Sunset in {countdown.hours}h {countdown.minutes}m
+            </span>
           </div>
         </div>
       )}
 
       {countdown?.isPast && (
-        <div className="border-t border-[var(--rule)] pt-5 flex items-center gap-3">
+        <div className="alpine-card flex items-center gap-3">
           <Sunset className="w-5 h-5 text-[color:var(--type-4)]" />
           <div>
-            <p className="text-sm font-display text-[color:var(--type-2)]">Golden hour has passed for today</p>
-            <p className="ticker mt-0.5">Check back tomorrow for the next window</p>
+            <p className="text-sm text-[color:var(--type-2)]">Golden hour has passed for today</p>
+            <p className="text-[10px] text-[color:var(--type-4)] mt-0.5">Check back tomorrow</p>
           </div>
         </div>
       )}
 
       {/* Trail Recommendations */}
-      <div className="border-t border-[var(--rule)] pt-5 space-y-4">
+      <div className="alpine-card space-y-3">
         <div>
-          <p className="ticker mb-1">Trail Recommendations</p>
-          <h3 className="font-display text-base font-medium text-[color:var(--type-1)]">
+          <p className="text-[10px] text-[color:var(--accent)] uppercase tracking-wider font-medium mb-1">Trail Recommendations</p>
+          <h3 className="font-medium text-[color:var(--type-1)] text-sm">
             The mountain is out. Great day to hit the trail.
           </h3>
         </div>
@@ -158,25 +158,25 @@ export default function OutdoorWidget({ isVisible, sunset }: Props) {
           {TRAILS.map((trail) => (
             <div
               key={trail.name}
-              className="group flex items-start gap-3 py-3 border-b border-[var(--rule)] last:border-0"
+              className="group flex items-start gap-3 py-3 border-b border-gray-100 last:border-0"
             >
-              <div className="mt-0.5 flex-shrink-0">
-                <MapPin className="w-3.5 h-3.5 text-[color:var(--type-4)]" />
+              <div className="mt-0.5 flex-shrink-0 w-6 h-6 rounded-lg bg-gray-50 flex items-center justify-center">
+                <MapPin className="w-3 h-3 text-[color:var(--type-4)]" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-display font-medium text-[color:var(--type-1)]">{trail.name}</span>
+                  <span className="text-sm font-medium text-[color:var(--type-1)]">{trail.name}</span>
                   {trail.hasRainierView && (
-                    <span className="ticker text-[color:var(--accent-clear)]">
+                    <span className="text-[9px] font-medium text-[#2d8a4e] bg-[#2d8a4e]/10 px-1.5 py-0.5 rounded-full">
                       Rainier View
                     </span>
                   )}
                 </div>
                 <p className="text-xs text-[color:var(--type-3)] mt-0.5 leading-relaxed">{trail.highlight}</p>
-                <div className="flex items-center gap-3 mt-1 font-mono text-[10px] text-[color:var(--type-4)]">
+                <div className="flex items-center gap-3 mt-1 text-[10px] text-[color:var(--type-4)]">
                   <span>{trail.distance}</span>
-                  <span>·</span>
-                  <span className={trail.difficulty === "Easy" ? "text-[color:var(--accent-clear)]/60" : "text-[color:var(--accent)]/60"}>
+                  <span>&middot;</span>
+                  <span className={trail.difficulty === "Easy" ? "text-[#2d8a4e]" : "text-[#d4a843]"}>
                     {trail.difficulty}
                   </span>
                 </div>

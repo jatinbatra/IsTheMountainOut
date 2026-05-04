@@ -152,45 +152,48 @@ export default function NotifyCard() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           {enabled && verified ? (
-            <BellRing className="w-4 h-4 text-[color:var(--accent-clear)]" aria-hidden="true" />
+            <div className="w-8 h-8 rounded-xl bg-[#2d8a4e]/10 flex items-center justify-center">
+              <BellRing className="w-4 h-4 text-[#2d8a4e]" aria-hidden="true" />
+            </div>
           ) : (
-            <Bell className="w-4 h-4 text-[color:var(--type-4)]" aria-hidden="true" />
+            <div className="w-8 h-8 rounded-xl bg-gray-100 flex items-center justify-center">
+              <Bell className="w-4 h-4 text-[color:var(--type-4)]" aria-hidden="true" />
+            </div>
           )}
-          <h3 className="font-display text-sm font-medium text-[color:var(--type-1)]">
+          <h3 className="font-medium text-sm text-[color:var(--type-1)]">
             {enabled ? (verified ? "Alerts active" : "Alerts enabled") : "Push alerts"}
           </h3>
         </div>
         {enabled && verified && (
-          <span className="ticker text-[color:var(--accent-clear)]">Working</span>
+          <span className="text-[10px] font-medium text-[#2d8a4e] bg-[#2d8a4e]/10 px-2 py-1 rounded-full">Working</span>
         )}
       </div>
 
       {enabled ? (
-        <p className="text-sm text-[color:var(--type-3)] leading-relaxed font-display font-light">
+        <p className="text-sm text-[color:var(--type-3)] leading-relaxed">
           We check conditions every 15 minutes. When the mountain emerges, alpenglow is likely,
-          or a gloom streak breaks, you get a push notification. Works with this tab closed.
-          Max one alert every 4 hours.
+          or a gloom streak breaks, you get a push notification. Max one alert every 4 hours.
         </p>
       ) : (
-        <p className="text-sm text-[color:var(--type-3)] leading-relaxed font-display font-light">
+        <p className="text-sm text-[color:var(--type-3)] leading-relaxed">
           {platform === "ios-safari-browser"
             ? "On iPhone, Safari blocks web push unless you install this app to your Home Screen first."
-            : "Get notified when the mountain comes out, alpenglow is likely, or a gloom streak breaks. Works even with this tab closed."}
+            : "Get notified when the mountain comes out, alpenglow is likely, or a gloom streak breaks."}
         </p>
       )}
 
       {platform === "ios-safari-browser" ? (
         <div className="space-y-2 text-sm text-[color:var(--type-3)]">
           <p className="flex items-center gap-2">
-            <span className="font-mono text-[color:var(--type-4)] text-xs">1</span>
+            <span className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-mono text-[color:var(--type-4)]">1</span>
             Tap <Share className="w-3.5 h-3.5 inline text-[color:var(--type-3)]" /> Share
           </p>
           <p className="flex items-center gap-2">
-            <span className="font-mono text-[color:var(--type-4)] text-xs">2</span>
+            <span className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-mono text-[color:var(--type-4)]">2</span>
             Pick <Plus className="w-3.5 h-3.5 inline text-[color:var(--type-3)]" /> Add to Home Screen
           </p>
           <p className="flex items-center gap-2">
-            <span className="font-mono text-[color:var(--type-4)] text-xs">3</span>
+            <span className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-mono text-[color:var(--type-4)]">3</span>
             Open from Home Screen, then enable alerts here.
           </p>
         </div>
@@ -205,7 +208,7 @@ export default function NotifyCard() {
               <button
                 onClick={handleEnable}
                 disabled={subscribing || permission === "denied"}
-                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-display font-medium bg-[color:var(--type-1)] text-[var(--ink)] hover:opacity-90 transition-colors disabled:opacity-40"
+                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium bg-[color:var(--accent)] text-white rounded-xl hover:opacity-90 transition-colors disabled:opacity-40"
               >
                 {subscribing ? (
                   <>
@@ -223,12 +226,12 @@ export default function NotifyCard() {
               <button
                 onClick={() => fireTestPing(endpoint)}
                 disabled={testing}
-                className={`inline-flex items-center gap-2 px-5 py-2.5 text-sm font-display font-medium transition-colors disabled:opacity-40 ${
+                className={`inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-xl transition-colors disabled:opacity-40 ${
                   testResult === "sent"
-                    ? "bg-[color:var(--accent-clear)]/[0.1] text-[color:var(--accent-clear)] border border-[color:var(--accent-clear)]/20"
+                    ? "bg-[#2d8a4e]/10 text-[#2d8a4e] border border-[#2d8a4e]/20"
                     : testResult === "failed"
-                      ? "bg-[color:var(--accent-fog)]/[0.1] text-[color:var(--accent-fog)] border border-[color:var(--accent-fog)]/20"
-                      : "border border-[var(--rule)] text-[color:var(--type-1)] hover:border-[var(--rule-strong)]"
+                      ? "bg-red-50 text-red-500 border border-red-200"
+                      : "border border-gray-200 text-[color:var(--type-1)] hover:border-gray-300"
                 }`}
               >
                 {testing ? (
@@ -252,7 +255,7 @@ export default function NotifyCard() {
               <button
                 onClick={() => ensureSubscribedAndTest().then(ok => { if (ok) { setTestResult("sent"); setVerified(true); setError(null); } })}
                 disabled={subscribing}
-                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-display font-medium border border-[var(--rule)] text-[color:var(--type-1)] hover:border-[var(--rule-strong)] transition-colors disabled:opacity-40"
+                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-xl border border-gray-200 text-[color:var(--type-1)] hover:border-gray-300 transition-colors disabled:opacity-40"
               >
                 Re-subscribe
               </button>
@@ -260,7 +263,7 @@ export default function NotifyCard() {
           </div>
 
           {error && (
-            <p className="font-mono text-[13px] text-[color:var(--accent-fog)]">{error}</p>
+            <p className="text-xs text-red-500">{error}</p>
           )}
         </>
       )}

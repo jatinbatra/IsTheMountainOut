@@ -30,9 +30,9 @@ function getWeatherIcon(code: number) {
 }
 
 function getBarColor(score: number): string {
-  if (score >= 70) return "bg-[color:var(--accent-clear)]";
-  if (score >= 50) return "bg-[color:var(--accent)]";
-  return "bg-[color:var(--accent-fog)]";
+  if (score >= 70) return "bg-[#2d8a4e]";
+  if (score >= 50) return "bg-[#d4a843]";
+  return "bg-[#c75a3a]/60";
 }
 
 export default function ForecastTimeline({ hourlyTimeline, currentScore }: Props) {
@@ -79,10 +79,10 @@ export default function ForecastTimeline({ hourlyTimeline, currentScore }: Props
   const activeData = activeHour !== null ? hourlyTimeline[activeHour] : null;
 
   return (
-    <div className="space-y-4">
+    <div className="alpine-card space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-display text-sm font-medium text-[color:var(--type-1)]">24-Hour Forecast</h2>
-        <span className="ticker">
+        <h3 className="text-sm font-medium text-[color:var(--type-1)]">24-Hour Forecast</h3>
+        <span className="text-[10px] text-[color:var(--type-4)]">
           {activeHour !== null ? "Viewing" : "Tap"} to explore
         </span>
       </div>
@@ -94,30 +94,30 @@ export default function ForecastTimeline({ hourlyTimeline, currentScore }: Props
         }`}
       >
         {activeData && (
-          <div className="border-t border-[var(--rule)] pt-4 flex items-center gap-4 flex-wrap">
+          <div className="rounded-xl bg-gray-50 p-3 flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-3">
               {(() => {
                 const Icon = getWeatherIcon(activeData.weatherCode);
                 return <Icon className="w-5 h-5 text-[color:var(--type-3)]" />;
               })()}
               <div>
-                <div className="ticker mb-1">
+                <p className="text-[10px] text-[color:var(--type-3)] uppercase tracking-wider">
                   {new Date(activeData.time).toLocaleTimeString("en-US", {
                     hour: "numeric",
                     minute: "2-digit",
                     timeZone: "America/Los_Angeles",
                   })}
-                </div>
+                </p>
                 <div className="flex items-center gap-2">
-                  <span className="font-display text-2xl font-light text-[color:var(--type-1)]">
+                  <span className="font-display text-xl font-light text-[color:var(--type-1)]">
                     {activeData.score}
                   </span>
-                  <span className="font-mono text-xs text-[color:var(--type-4)]">/100</span>
+                  <span className="text-[10px] text-[color:var(--type-4)]">/100</span>
                   <span
-                    className={`ticker ${
+                    className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${
                       activeData.isVisible
-                        ? "text-[color:var(--accent-clear)]"
-                        : "text-[color:var(--accent-fog)]"
+                        ? "bg-[#2d8a4e]/10 text-[#2d8a4e]"
+                        : "bg-gray-100 text-[color:var(--type-4)]"
                     }`}
                   >
                     {activeData.isVisible ? "Visible" : "Hidden"}
@@ -126,13 +126,10 @@ export default function ForecastTimeline({ hourlyTimeline, currentScore }: Props
               </div>
             </div>
 
-            <div className="flex gap-4 text-[color:var(--type-3)] font-mono text-[11px] flex-wrap">
-              <span>Clouds: {activeData.cloudLow}% low</span>
+            <div className="flex gap-3 text-[color:var(--type-3)] font-mono text-[10px] flex-wrap">
+              <span>Clouds: {activeData.cloudLow}%</span>
               <span>Temp: {((activeData.temperature * 9) / 5 + 32).toFixed(0)}°F</span>
-              <span>
-                Vis: {(activeData.visibility / 1609.34).toFixed(0)} mi
-              </span>
-              <span>Humidity: {activeData.humidity}%</span>
+              <span>Vis: {(activeData.visibility / 1609.34).toFixed(0)} mi</span>
             </div>
           </div>
         )}
@@ -172,7 +169,7 @@ export default function ForecastTimeline({ hourlyTimeline, currentScore }: Props
                       ? "opacity-100 scale-x-110"
                       : isCurrent
                         ? "opacity-80"
-                        : "opacity-40 hover:opacity-70"
+                        : "opacity-40 hover:opacity-60"
                   }`}
                   style={{ height: `${barHeight}%` }}
                 />
@@ -183,16 +180,16 @@ export default function ForecastTimeline({ hourlyTimeline, currentScore }: Props
 
         {/* Threshold line */}
         <div
-          className="absolute left-0 right-0 border-t border-dashed border-[var(--rule-strong)] pointer-events-none"
+          className="absolute left-0 right-0 border-t border-dashed border-gray-200 pointer-events-none"
           style={{ top: "50%" }}
         >
-          <span className="absolute -top-3 right-0 ticker">
+          <span className="absolute -top-3 right-0 text-[9px] text-[color:var(--type-4)]">
             visible
           </span>
         </div>
 
         {/* Time labels */}
-        <div className="flex justify-between mt-2 font-mono text-[10px] text-[color:var(--type-4)]">
+        <div className="flex justify-between mt-2 font-mono text-[9px] text-[color:var(--type-4)]">
           <span>12am</span>
           <span>6am</span>
           <span>12pm</span>
@@ -201,36 +198,18 @@ export default function ForecastTimeline({ hourlyTimeline, currentScore }: Props
         </div>
       </div>
 
-      {/* Summary dots */}
-      <div className="flex items-center gap-1.5 pt-1">
-        {hourlyTimeline.map((hour, i) => (
-          <div
-            key={i}
-            className={`h-1.5 flex-1 rounded-full transition-all duration-200 ${
-              i === currentHour
-                ? `${getBarColor(hour.score)} shadow-sm`
-                : i === activeHour
-                  ? getBarColor(hour.score) + " opacity-90"
-                  : hour.isVisible
-                    ? "bg-[color:var(--accent-clear)]/20"
-                    : "bg-[color:var(--accent-fog)]/15"
-            }`}
-          />
-        ))}
-      </div>
-
       {/* Legend */}
-      <div className="flex items-center gap-4 ticker pt-1">
-        <span className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-[color:var(--accent-clear)]/60" /> Visible (70+)
+      <div className="flex items-center gap-3 text-[9px] text-[color:var(--type-4)] pt-1 flex-wrap">
+        <span className="flex items-center gap-1">
+          <span className="w-2 h-2 rounded-full bg-[#2d8a4e]" /> Visible
         </span>
-        <span className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-[color:var(--accent)]/60" /> Marginal (50-69)
+        <span className="flex items-center gap-1">
+          <span className="w-2 h-2 rounded-full bg-[#d4a843]" /> Marginal
         </span>
-        <span className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-[color:var(--accent-fog)]/60" /> Hidden (&lt;50)
+        <span className="flex items-center gap-1">
+          <span className="w-2 h-2 rounded-full bg-[#c75a3a]/60" /> Hidden
         </span>
-        <span className="flex items-center gap-1.5">
+        <span className="flex items-center gap-1">
           <span className="w-1.5 h-1.5 rounded-full bg-[color:var(--accent)] animate-breathe" /> Now
         </span>
       </div>
