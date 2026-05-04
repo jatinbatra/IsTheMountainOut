@@ -5,8 +5,6 @@ import useSWR from "swr";
 import {
   MapPin,
   Navigation,
-  Calendar,
-  Ticket,
   ChevronRight,
   CheckCircle2,
   XCircle,
@@ -63,11 +61,11 @@ function nextWeekend(forecast?: WeeklyForecastDay[]): {
   return { ...out, weekendDate: anchor };
 }
 
-function scoreBadge(score: number): { label: string; color: string } {
-  if (score >= 70) return { label: "Clear", color: "text-emerald-300" };
-  if (score >= 50) return { label: "Peeking", color: "text-amber-300" };
-  if (score >= 30) return { label: "Hiding", color: "text-orange-300" };
-  return { label: "Gloomy", color: "text-slate-400" };
+function scoreBadge(score: number): { label: string; color: string; bg: string } {
+  if (score >= 70) return { label: "Clear", color: "text-[#2d8a4e]", bg: "bg-[#2d8a4e]/10" };
+  if (score >= 50) return { label: "Peeking", color: "text-[#d4a843]", bg: "bg-[#d4a843]/10" };
+  if (score >= 30) return { label: "Hiding", color: "text-[color:var(--type-4)]", bg: "bg-gray-100" };
+  return { label: "Gloomy", color: "text-[color:var(--type-4)]", bg: "bg-gray-100" };
 }
 
 function recommendation(
@@ -88,27 +86,23 @@ function recommendation(
 function DayChip({ day, label }: { day?: WeeklyForecastDay; label: string }) {
   if (!day) {
     return (
-      <div className="flex-1 rounded-xl bg-white/[0.02] ring-1 ring-white/[0.04] px-3 py-2.5 text-center">
-        <p className="text-[10px] uppercase tracking-wide font-semibold text-slate-500">
-          {label}
-        </p>
-        <p className="text-xs text-slate-500 mt-1">No forecast</p>
+      <div className="flex-1 rounded-xl bg-gray-50 px-3 py-3 text-center">
+        <p className="text-[10px] text-[color:var(--type-4)] uppercase tracking-wider mb-1">{label}</p>
+        <p className="text-xs text-[color:var(--type-4)]">No forecast</p>
       </div>
     );
   }
   const badge = scoreBadge(day.score);
   return (
-    <div className="flex-1 rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06] px-3 py-2.5 text-center">
-      <p className="text-[10px] uppercase tracking-wide font-semibold text-slate-500">
-        {label}
-      </p>
-      <p className="text-xl font-display font-bold text-white tabular-nums mt-0.5">
+    <div className="flex-1 rounded-xl bg-gray-50 px-3 py-3 text-center">
+      <p className="text-[10px] text-[color:var(--type-4)] uppercase tracking-wider mb-1">{label}</p>
+      <p className="font-display text-xl font-light text-[color:var(--type-1)] tabular mt-0.5">
         {day.score}
       </p>
-      <p className={`text-[10px] font-semibold uppercase tracking-wide ${badge.color}`}>
+      <p className={`text-[10px] font-medium ${badge.color} ${badge.bg} inline-block px-2 py-0.5 rounded-full mt-1`}>
         {badge.label}
       </p>
-      <p className="text-[10px] text-slate-500 tabular-nums mt-0.5">
+      <p className="font-mono text-[10px] text-[color:var(--type-4)] tabular mt-1">
         {Math.round(day.tempHigh)}° / {Math.round(day.tempLow)}°
       </p>
     </div>
@@ -134,9 +128,9 @@ function DestinationRow({
       href={dest.mapsUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex items-start gap-3 p-3 rounded-xl hover:bg-white/[0.03] transition-colors"
+      className="group flex items-start gap-3 p-3 hover:bg-gray-50 transition-colors rounded-xl"
     >
-      <div className="relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden ring-1 ring-white/10 bg-white/[0.03]">
+      <div className="relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 overflow-hidden rounded-xl ring-1 ring-gray-100 bg-gray-50">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={dest.photoUrl}
@@ -154,75 +148,75 @@ function DestinationRow({
         />
         <div
           className={`absolute inset-0 items-center justify-center hidden ${
-            open ? "bg-emerald-500/10" : "bg-slate-500/10"
+            open ? "bg-[#2d8a4e]/10" : "bg-gray-100"
           }`}
         >
           <MapPin
-            className={`w-5 h-5 ${open ? "text-emerald-300" : "text-slate-500"}`}
+            className={`w-5 h-5 ${open ? "text-[#2d8a4e]" : "text-[color:var(--type-4)]"}`}
             aria-hidden="true"
           />
         </div>
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <h4 className="font-display font-bold text-white text-sm truncate">
+          <h4 className="font-medium text-[color:var(--type-1)] text-sm truncate">
             {dest.name}
           </h4>
           {typeof score === "number" && (
-            <span className="text-[10px] font-semibold text-white/70 tabular-nums">
-              · {score}
+            <span className="font-mono text-[10px] text-[color:var(--type-3)] tabular">
+              &middot; {score}
             </span>
           )}
           {open ? (
-            <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-300">
+            <span className="inline-flex items-center gap-1 text-[10px] font-medium text-[#2d8a4e] bg-[#2d8a4e]/10 px-1.5 py-0.5 rounded-full">
               <CheckCircle2 className="w-3 h-3" aria-hidden="true" /> Open
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-slate-500">
+            <span className="inline-flex items-center gap-1 text-[10px] text-[color:var(--type-4)] bg-gray-100 px-1.5 py-0.5 rounded-full">
               <XCircle className="w-3 h-3" aria-hidden="true" /> Closed
             </span>
           )}
         </div>
-        <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
+        <p className="text-xs text-[color:var(--type-3)] mt-0.5 leading-relaxed">
           {dest.highlight}
         </p>
         {hasLiveWeather && (
-          <div className="flex items-center gap-3 mt-1.5 text-[10px] text-emerald-300/80 flex-wrap">
+          <div className="flex items-center gap-3 mt-1.5 font-mono text-[10px] text-[#2d8a4e] flex-wrap">
             {weather!.temperature !== null && (
-              <span className="tabular-nums font-semibold">
+              <span className="tabular">
                 {Math.round(weather!.temperature!)}°F now
               </span>
             )}
             {weather!.cloudCover !== null && (
-              <span className="inline-flex items-center gap-1 tabular-nums">
+              <span className="inline-flex items-center gap-1 tabular">
                 <Cloud className="w-3 h-3" aria-hidden="true" />
                 {Math.round(weather!.cloudCover!)}% cloud
               </span>
             )}
             {weather!.windSpeed !== null && weather!.windSpeed! >= 5 && (
-              <span className="inline-flex items-center gap-1 tabular-nums">
+              <span className="inline-flex items-center gap-1 tabular">
                 <Wind className="w-3 h-3" aria-hidden="true" />
                 {Math.round(weather!.windSpeed!)} mph
               </span>
             )}
           </div>
         )}
-        <div className="flex items-center gap-3 mt-1.5 text-[10px] text-slate-500 flex-wrap">
+        <div className="flex items-center gap-3 mt-1.5 font-mono text-[10px] text-[color:var(--type-4)] flex-wrap">
           <span className="inline-flex items-center gap-1">
             <Navigation className="w-3 h-3" aria-hidden="true" />
             {dest.driveFromSeattle} from Seattle
           </span>
-          <span>·</span>
-          <span className="tabular-nums">{dest.elevation}</span>
-          <span>·</span>
+          <span>&middot;</span>
+          <span className="tabular">{dest.elevation}</span>
+          <span>&middot;</span>
           <span className="truncate">{road.label}</span>
         </div>
         {!open && (
-          <p className="text-[10px] text-orange-300/70 mt-1">{road.note}</p>
+          <p className="text-[10px] text-orange-500 mt-1">{road.note}</p>
         )}
       </div>
       <ChevronRight
-        className="w-4 h-4 text-white/20 group-hover:text-white/50 transition-colors flex-shrink-0 mt-2"
+        className="w-4 h-4 text-[color:var(--type-4)] group-hover:text-[color:var(--type-2)] transition-colors flex-shrink-0 mt-2"
         aria-hidden="true"
       />
     </a>
@@ -233,26 +227,21 @@ function AlertsBlock({ alerts }: { alerts: ParkAlert[] }) {
   if (alerts.length === 0) return null;
   const top = alerts.slice(0, 3);
   return (
-    <div className="rounded-xl bg-amber-500/[0.06] ring-1 ring-amber-400/25 p-3 space-y-2">
+    <div className="rounded-xl border border-orange-200 bg-orange-50 p-3 space-y-2">
       <div className="flex items-center gap-2">
-        <AlertTriangle className="w-4 h-4 text-amber-300" aria-hidden="true" />
-        <p className="text-xs font-display font-bold text-amber-200">
+        <AlertTriangle className="w-4 h-4 text-orange-500" aria-hidden="true" />
+        <p className="text-[10px] font-medium text-orange-600 uppercase tracking-wider">
           Live park alerts ({alerts.length})
         </p>
       </div>
       <ul className="space-y-1.5">
         {top.map((a) => (
-          <li key={a.id} className="text-xs text-slate-200 leading-snug">
-            <span className="text-[10px] uppercase tracking-wide font-semibold text-amber-300/80 mr-1.5">
+          <li key={a.id} className="text-xs text-[color:var(--type-2)] leading-snug">
+            <span className="text-[10px] font-medium text-orange-500 mr-1.5 uppercase tracking-wider">
               {a.category}
             </span>
             {a.url ? (
-              <a
-                href={a.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline"
-              >
+              <a href={a.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
                 {a.title}
               </a>
             ) : (
@@ -262,7 +251,7 @@ function AlertsBlock({ alerts }: { alerts: ParkAlert[] }) {
         ))}
       </ul>
       {alerts.length > top.length && (
-        <p className="text-[10px] text-amber-300/70">
+        <p className="text-[10px] text-orange-500">
           + {alerts.length - top.length} more. Check NPS site
         </p>
       )}
@@ -310,19 +299,12 @@ export default function WeekendAtRainier({ weeklyForecast }: Props) {
   });
 
   return (
-    <div className="rounded-2xl ring-1 ring-white/[0.06] bg-gradient-to-br from-emerald-500/[0.04] via-white/[0.02] to-blue-500/[0.04] p-4 sm:p-5 space-y-4">
-      <div className="flex items-center gap-3">
-        <div className="flex-shrink-0 p-2 rounded-xl bg-emerald-500/15 ring-1 ring-emerald-400/25">
-          <Calendar className="w-4 h-4 text-emerald-300" aria-hidden="true" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-[10px] uppercase tracking-widest font-semibold text-emerald-300/80">
-            Weekend at Rainier
-          </p>
-          <h3 className="font-display font-bold text-white text-sm mt-0.5">
-            Planning a visit? Here&apos;s the weekend of {weekendLabel}.
-          </h3>
-        </div>
+    <div className="alpine-card space-y-5">
+      <div>
+        <p className="text-[10px] text-[color:var(--accent)] uppercase tracking-wider font-medium mb-1">Weekend at Rainier</p>
+        <h3 className="font-display font-medium text-[color:var(--type-1)] text-base">
+          Planning a visit? Here&apos;s the weekend of {weekendLabel}.
+        </h3>
       </div>
 
       <div className="flex items-stretch gap-2">
@@ -330,7 +312,7 @@ export default function WeekendAtRainier({ weeklyForecast }: Props) {
         <DayChip day={sunday} label="Sunday" />
       </div>
 
-      <p className="text-xs text-slate-300 leading-relaxed">
+      <p className="text-xs text-[color:var(--type-3)] leading-relaxed italic">
         {recommendation(saturday, sunday)}
       </p>
 
@@ -339,17 +321,13 @@ export default function WeekendAtRainier({ weeklyForecast }: Props) {
       )}
 
       <div>
-        <div className="flex items-end justify-between mb-2 px-1">
-          <p className="text-[10px] uppercase tracking-widest font-semibold text-slate-400">
-            Popular stops
-          </p>
+        <div className="flex items-end justify-between mb-2">
+          <p className="text-[10px] text-[color:var(--type-4)] uppercase tracking-wider">Popular stops</p>
           {realtime && (
-            <p className="text-[10px] text-emerald-300/60 font-medium">
-              Live weather
-            </p>
+            <p className="text-[10px] font-medium text-[#2d8a4e]">Live weather</p>
           )}
         </div>
-        <div className="rounded-xl bg-white/[0.02] ring-1 ring-white/[0.04] divide-y divide-white/[0.04]">
+        <div className="divide-y divide-gray-100">
           {destinations.map(({ dest, open, score, weather }) => (
             <DestinationRow
               key={dest.id}
@@ -362,35 +340,32 @@ export default function WeekendAtRainier({ weeklyForecast }: Props) {
         </div>
       </div>
 
-      <div className="rounded-xl bg-white/[0.02] ring-1 ring-white/[0.04] p-3 space-y-2">
-        <div className="flex items-center gap-2">
-          <Ticket className="w-4 h-4 text-amber-300" aria-hidden="true" />
-          <p className="text-xs font-display font-bold text-white">
-            Do you need a pass?
-          </p>
-        </div>
-        <p className="text-xs text-slate-300 leading-relaxed">
+      <div className="rounded-xl bg-gray-50 p-4 space-y-2">
+        <p className="text-[10px] text-[color:var(--accent)] uppercase tracking-wider font-medium">
+          Do you need a pass?
+        </p>
+        <p className="text-xs text-[color:var(--type-2)] leading-relaxed">
           Yes, every vehicle needs a park pass at the entrance.
         </p>
-        <ul className="space-y-1 text-xs text-slate-400">
+        <ul className="space-y-1 text-xs text-[color:var(--type-3)]">
           {pass.options.map((opt) => (
             <li key={opt.label} className="flex items-start gap-2">
-              <span className="text-slate-600 mt-0.5">·</span>
+              <span className="text-[color:var(--type-4)] mt-0.5">&middot;</span>
               <span>
-                <span className="text-white font-semibold tabular-nums">
+                <span className="text-[color:var(--type-1)] font-mono tabular font-medium">
                   {opt.price}
                 </span>{" "}
                 , {opt.label}
                 {opt.note && (
-                  <span className="text-slate-500"> ({opt.note})</span>
+                  <span className="text-[color:var(--type-4)]"> ({opt.note})</span>
                 )}
               </span>
             </li>
           ))}
         </ul>
         <div
-          className={`flex items-start gap-2 pt-2 border-t border-white/[0.04] ${
-            pass.timedEntry.active ? "text-amber-300" : "text-slate-400"
+          className={`flex items-start gap-2 pt-2 border-t border-gray-200 ${
+            pass.timedEntry.active ? "text-orange-500" : "text-[color:var(--type-4)]"
           }`}
         >
           <AlertCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" aria-hidden="true" />
@@ -400,7 +375,7 @@ export default function WeekendAtRainier({ weeklyForecast }: Props) {
           href={pass.websiteUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-300 hover:text-blue-200 transition-colors"
+          className="inline-flex items-center gap-1 text-xs text-[color:var(--accent)] font-medium hover:text-[color:var(--type-1)] transition-colors"
         >
           Official NPS fees page
           <ChevronRight className="w-3 h-3" aria-hidden="true" />

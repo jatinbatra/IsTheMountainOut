@@ -38,7 +38,6 @@ function getStoredVotes(): VoteState {
 }
 
 function generateMockCommunityVotes(isVisible: boolean): { yes: number; no: number } {
-  // Generate realistic community vote counts that loosely track the actual status
   const base = isVisible ? 35 : 8;
   const yes = base + Math.floor(Math.random() * 15);
   const noBase = isVisible ? 3 : 20;
@@ -53,7 +52,6 @@ export default function CommunityVote({ currentScore, isVisible }: Props) {
 
   useEffect(() => {
     const stored = getStoredVotes();
-    // Add mock community votes
     const mock = generateMockCommunityVotes(isVisible);
     setVotes({
       ...stored,
@@ -78,10 +76,9 @@ export default function CommunityVote({ currentScore, isVisible }: Props) {
     setJustVoted(true);
     setTimeout(() => setJustVoted(false), 2000);
 
-    // Persist to localStorage
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        yesVotes: newVotes.yesVotes - (generateMockCommunityVotes(isVisible).yes), // Store only real user vote
+        yesVotes: newVotes.yesVotes - (generateMockCommunityVotes(isVisible).yes),
         noVotes: newVotes.noVotes - (generateMockCommunityVotes(isVisible).no),
         userVote: vote,
         lastVoteTime: newVotes.lastVoteTime,
@@ -93,33 +90,32 @@ export default function CommunityVote({ currentScore, isVisible }: Props) {
   const yesPercent = totalVotes > 0 ? Math.round((votes.yesVotes / totalVotes) * 100) : 50;
 
   return (
-    <div className="glass rounded-3xl p-6 space-y-4">
+    <div className="alpine-card space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-violet-500/10">
-            <Users className="w-4 h-4 text-violet-400" />
+          <div className="p-2 rounded-xl bg-violet-50">
+            <Users className="w-4 h-4 text-violet-500" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-white">Community Check</h3>
-            <p className="text-[10px] text-white/25">Can you see the mountain right now?</p>
+            <h3 className="text-sm font-semibold text-[color:var(--type-1)]">Community Check</h3>
+            <p className="text-[10px] text-[color:var(--type-4)]">Can you see the mountain right now?</p>
           </div>
         </div>
-        <span className="text-[10px] text-white/15 font-medium">
+        <span className="text-[10px] text-[color:var(--type-4)] font-medium">
           {totalVotes} reports today
         </span>
       </div>
 
-      {/* Vote buttons */}
       <div className="flex gap-3">
         <button
           onClick={() => handleVote("yes")}
           disabled={!canVote}
           className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-semibold transition-all ${
             votes.userVote === "yes"
-              ? "bg-emerald-500/20 text-emerald-300 ring-2 ring-emerald-400/30"
+              ? "bg-[#2d8a4e]/10 text-[#2d8a4e] ring-2 ring-[#2d8a4e]/30"
               : canVote
-                ? "glass hover:bg-emerald-500/10 text-white/50 hover:text-emerald-300"
-                : "glass text-white/20 cursor-not-allowed"
+                ? "bg-gray-50 hover:bg-[#2d8a4e]/5 text-[color:var(--type-3)] hover:text-[#2d8a4e]"
+                : "bg-gray-50 text-[color:var(--type-4)] cursor-not-allowed"
           }`}
         >
           <Eye className="w-4 h-4" />
@@ -130,10 +126,10 @@ export default function CommunityVote({ currentScore, isVisible }: Props) {
           disabled={!canVote}
           className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-semibold transition-all ${
             votes.userVote === "no"
-              ? "bg-red-500/20 text-red-300 ring-2 ring-red-400/30"
+              ? "bg-red-50 text-red-500 ring-2 ring-red-300/30"
               : canVote
-                ? "glass hover:bg-red-500/10 text-white/50 hover:text-red-300"
-                : "glass text-white/20 cursor-not-allowed"
+                ? "bg-gray-50 hover:bg-red-50 text-[color:var(--type-3)] hover:text-red-500"
+                : "bg-gray-50 text-[color:var(--type-4)] cursor-not-allowed"
           }`}
         >
           <EyeOff className="w-4 h-4" />
@@ -142,31 +138,30 @@ export default function CommunityVote({ currentScore, isVisible }: Props) {
       </div>
 
       {justVoted && (
-        <p className="text-xs text-center text-emerald-400/60 animate-fade-up">
+        <p className="text-xs text-center text-[#2d8a4e] animate-fade-up">
           Thanks for reporting! Your vote helps the community.
         </p>
       )}
 
-      {/* Community consensus bar */}
       <div className="space-y-2">
-        <div className="w-full h-3 rounded-full bg-white/[0.06] overflow-hidden flex">
+        <div className="w-full h-3 rounded-full bg-gray-100 overflow-hidden flex">
           <div
-            className="h-full bg-gradient-to-r from-emerald-500/60 to-emerald-400/60 transition-all duration-500"
+            className="h-full bg-[#2d8a4e]/60 transition-all duration-500"
             style={{ width: `${yesPercent}%` }}
           />
           <div
-            className="h-full bg-gradient-to-r from-red-500/40 to-red-400/40 transition-all duration-500"
+            className="h-full bg-red-400/40 transition-all duration-500"
             style={{ width: `${100 - yesPercent}%` }}
           />
         </div>
-        <div className="flex justify-between text-[10px] text-white/25">
+        <div className="flex justify-between text-[10px] text-[color:var(--type-4)]">
           <span>{yesPercent}% say visible ({votes.yesVotes})</span>
           <span>{100 - yesPercent}% say hidden ({votes.noVotes})</span>
         </div>
       </div>
 
       {!canVote && !justVoted && (
-        <p className="text-[10px] text-center text-white/15">
+        <p className="text-[10px] text-center text-[color:var(--type-4)]">
           You can vote again in 30 minutes
         </p>
       )}

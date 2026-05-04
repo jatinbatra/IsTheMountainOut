@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Download, X, Share2, Plus, Mountain } from "lucide-react";
+import { Download, X, Share2, Plus } from "lucide-react";
 
 const VISIT_KEY = "itmo:visits:v1";
 const DISMISSED_KEY = "itmo:pwa-dismissed:v1";
@@ -105,16 +105,16 @@ export default function PWAInstallPrompt() {
       role="dialog"
       aria-label="Install IsTheMountainOut"
     >
-      <div className="rounded-2xl bg-slate-900/95 backdrop-blur-xl ring-1 ring-white/10 shadow-2xl shadow-black/40 p-4">
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-2xl shadow-black/10 p-4">
         <div className="flex items-start gap-3">
-          <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/80 to-violet-600/80 flex items-center justify-center ring-1 ring-white/10">
-            <Mountain className="w-5 h-5 text-white" />
+          <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-[color:var(--accent)]/10 flex items-center justify-center">
+            <span className="font-display text-lg text-[color:var(--accent)]">M</span>
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-display font-bold text-white text-sm">
+            <h3 className="font-medium text-[color:var(--type-1)] text-sm">
               Add to Home Screen
             </h3>
-            <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
+            <p className="text-xs text-[color:var(--type-3)] mt-0.5 leading-relaxed">
               {platform === "ios"
                 ? "Get one-tap mountain checks. Install IsTheMountainOut as an app."
                 : "One tap to see if Mt. Rainier is out. No browser, no clutter."}
@@ -122,7 +122,7 @@ export default function PWAInstallPrompt() {
           </div>
           <button
             onClick={dismiss}
-            className="flex-shrink-0 p-1 rounded-lg text-slate-500 hover:text-white/70 hover:bg-white/[0.05] transition-colors"
+            className="flex-shrink-0 p-1 text-[color:var(--type-4)] hover:text-[color:var(--type-2)] transition-colors"
             aria-label="Dismiss"
           >
             <X className="w-4 h-4" />
@@ -132,7 +132,7 @@ export default function PWAInstallPrompt() {
         {platform === "android" && deferred && (
           <button
             onClick={install}
-            className="mt-3 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-display font-bold text-white bg-gradient-to-r from-blue-500 to-violet-600 hover:from-blue-400 hover:to-violet-500 transition-all"
+            className="mt-3 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium bg-[color:var(--accent)] text-white rounded-xl hover:opacity-90 transition-all"
           >
             <Download className="w-4 h-4" />
             Install app
@@ -140,19 +140,19 @@ export default function PWAInstallPrompt() {
         )}
 
         {platform === "ios" && (
-          <div className="mt-3 space-y-2 text-xs text-slate-300">
-            <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06]">
-              <span className="font-mono font-bold text-slate-500 w-4">1.</span>
+          <div className="mt-3 space-y-2 text-xs text-[color:var(--type-2)]">
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50">
+              <span className="font-mono text-[color:var(--type-4)] w-4">1.</span>
               <span>Tap</span>
-              <Share2 className="w-3.5 h-3.5 text-blue-400" />
-              <span className="text-slate-400">Share</span>
-              <span className="text-slate-500">in Safari</span>
+              <Share2 className="w-3.5 h-3.5 text-[color:var(--accent)]" />
+              <span className="text-[color:var(--type-3)]">Share</span>
+              <span className="text-[color:var(--type-4)]">in Safari</span>
             </div>
-            <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06]">
-              <span className="font-mono font-bold text-slate-500 w-4">2.</span>
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50">
+              <span className="font-mono text-[color:var(--type-4)] w-4">2.</span>
               <span>Tap</span>
-              <Plus className="w-3.5 h-3.5 text-blue-400" />
-              <span className="font-semibold text-white/90">Add to Home Screen</span>
+              <Plus className="w-3.5 h-3.5 text-[color:var(--accent)]" />
+              <span className="font-medium text-[color:var(--type-1)]">Add to Home Screen</span>
             </div>
           </div>
         )}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useMemo } from "react";
-import { Sunrise, Moon, Star } from "lucide-react";
+import { Sunrise, Star } from "lucide-react";
 import { getLunarPhase } from "@/lib/lunar";
 
 interface Props {
@@ -33,7 +33,6 @@ function generateStars(count: number): StarData[] {
   return stars;
 }
 
-// Constellations visible from Seattle (approximate positions)
 const CONSTELLATIONS = [
   {
     name: "Ursa Major",
@@ -77,24 +76,20 @@ export default function NightSky({ sunrise, isDay }: Props) {
   const [showConstellation, setShowConstellation] = useState<number | null>(null);
   const [timeToSunrise, setTimeToSunrise] = useState("");
 
-  // Lunar phase — pure math, no API
   const lunar = useMemo(() => getLunarPhase(), []);
 
-  // Scroll-based parallax — three star layers move at different speeds
   useEffect(() => {
     function handleScroll() {
       if (!containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
       const viewportHeight = window.innerHeight;
-      // Normalize: 0 when element enters viewport, 1 when it leaves
       const progress = 1 - (rect.bottom / (viewportHeight + rect.height));
-      setScrollOffset(progress * 30); // max 30px of parallax travel
+      setScrollOffset(progress * 30);
     }
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Calculate time to sunrise
   useEffect(() => {
     function updateCountdown() {
       if (!sunrise) return;
@@ -102,7 +97,6 @@ export default function NightSky({ sunrise, isDay }: Props) {
       const now = new Date();
       let sunriseDate = new Date(sunrise);
 
-      // If sunrise has passed today, calculate for tomorrow
       if (sunriseDate <= now) {
         sunriseDate = new Date(sunriseDate.getTime() + 24 * 60 * 60 * 1000);
       }
@@ -123,7 +117,6 @@ export default function NightSky({ sunrise, isDay }: Props) {
     return () => clearInterval(interval);
   }, [sunrise]);
 
-  // Mouse parallax
   function handleMouseMove(e: React.MouseEvent) {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
@@ -132,7 +125,6 @@ export default function NightSky({ sunrise, isDay }: Props) {
     setMousePos({ x, y });
   }
 
-  // Don't render during day
   if (isDay) return null;
 
   const parallaxX = (mousePos.x - 50) * 0.03;
@@ -141,25 +133,20 @@ export default function NightSky({ sunrise, isDay }: Props) {
   return (
     <section className="space-y-5">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-indigo-500/10 ring-1 ring-indigo-400/15">
-            <Moon className="w-4 h-4 text-indigo-300" />
-          </div>
-          <div>
-            <h2 className="font-display text-lg font-bold text-white">
-              Night Sky over Seattle
-            </h2>
-            <p className="text-[11px] text-white/25 font-medium mt-0.5">
-              Move your cursor to look around. Tap constellations to identify them.
-            </p>
-          </div>
+        <div>
+          <h2 className="font-display text-lg font-medium text-[color:var(--type-1)]">
+            Night Sky over Seattle
+          </h2>
+          <p className="ticker mt-1">
+            Move your cursor to look around. Tap constellations to identify them.
+          </p>
         </div>
         {timeToSunrise && (
-          <div className="flex items-center gap-2 glass-strong rounded-xl px-3.5 py-2">
-            <Sunrise className="w-3.5 h-3.5 text-amber-400/60" />
+          <div className="flex items-center gap-2 border border-[var(--rule)] px-3.5 py-2">
+            <Sunrise className="w-3.5 h-3.5 text-[color:var(--accent)]" />
             <div className="text-right">
-              <div className="text-[10px] text-white/25 uppercase tracking-wider font-medium">Sunrise in</div>
-              <div className="font-display text-sm font-bold text-amber-300/80">{timeToSunrise}</div>
+              <div className="ticker">Sunrise in</div>
+              <div className="font-display text-sm font-light text-[color:var(--accent)] tabular">{timeToSunrise}</div>
             </div>
           </div>
         )}
@@ -169,7 +156,7 @@ export default function NightSky({ sunrise, isDay }: Props) {
       <div
         ref={containerRef}
         onMouseMove={handleMouseMove}
-        className="relative w-full aspect-[2/1] rounded-3xl overflow-hidden ring-1 ring-white/[0.06] cursor-crosshair select-none"
+        className="relative w-full aspect-[2/1] overflow-hidden ring-1 ring-[var(--rule)] cursor-crosshair select-none"
         style={{
           background: "linear-gradient(180deg, #050510 0%, #0a0a2e 30%, #121240 60%, #1a1a4a 80%, #0d1b2a 100%)",
         }}
@@ -184,7 +171,7 @@ export default function NightSky({ sunrise, isDay }: Props) {
           }}
         />
 
-        {/* Deep stars (parallax layer 1 - slowest, scroll + mouse) */}
+        {/* Deep stars */}
         <svg
           className="absolute inset-0 w-full h-full pointer-events-none"
           viewBox="0 0 100 100"
@@ -214,7 +201,7 @@ export default function NightSky({ sunrise, isDay }: Props) {
           ))}
         </svg>
 
-        {/* Mid stars (parallax layer 2 - medium speed) */}
+        {/* Mid stars */}
         <svg
           className="absolute inset-0 w-full h-full pointer-events-none"
           viewBox="0 0 100 100"
@@ -244,7 +231,7 @@ export default function NightSky({ sunrise, isDay }: Props) {
           ))}
         </svg>
 
-        {/* Near stars (parallax layer 3 - fastest, most movement) */}
+        {/* Near stars */}
         <svg
           className="absolute inset-0 w-full h-full pointer-events-none"
           viewBox="0 0 100 100"
@@ -274,7 +261,7 @@ export default function NightSky({ sunrise, isDay }: Props) {
           ))}
         </svg>
 
-        {/* Moon phase — positioned in upper right */}
+        {/* Moon phase */}
         <div
           className="absolute top-6 right-6 flex flex-col items-center gap-1.5 pointer-events-none z-10"
           style={{
@@ -283,11 +270,11 @@ export default function NightSky({ sunrise, isDay }: Props) {
           }}
         >
           <span className="text-3xl drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">{lunar.emoji}</span>
-          <span className="font-display text-[9px] font-semibold text-white/50 tracking-wide uppercase">{lunar.name}</span>
-          <span className="font-mono text-[8px] text-white/30">{lunar.illumination}% lit</span>
+          <span className="font-display text-[9px] font-medium text-[color:var(--type-3)] tracking-wide uppercase">{lunar.name}</span>
+          <span className="font-mono text-[8px] text-[color:var(--type-4)] tabular">{lunar.illumination}% lit</span>
         </div>
 
-        {/* Constellations (interactive layer) */}
+        {/* Constellations */}
         <svg
           className="absolute inset-0 w-full h-full"
           viewBox="0 0 100 100"
@@ -303,7 +290,6 @@ export default function NightSky({ sunrise, isDay }: Props) {
               className="cursor-pointer"
               onClick={() => setShowConstellation(showConstellation === ci ? null : ci)}
             >
-              {/* Connection lines */}
               {constellation.lines.map(([a, b], li) => (
                 <line
                   key={`line-${li}`}
@@ -318,10 +304,8 @@ export default function NightSky({ sunrise, isDay }: Props) {
                 />
               ))}
 
-              {/* Stars */}
               {constellation.stars.map(([sx, sy], si) => (
                 <g key={`star-${si}`}>
-                  {/* Glow */}
                   <circle
                     cx={sx}
                     cy={sy}
@@ -330,7 +314,6 @@ export default function NightSky({ sunrise, isDay }: Props) {
                     opacity={showConstellation === ci ? 0.15 : 0.05}
                     style={{ transition: "opacity 0.5s ease" }}
                   />
-                  {/* Star point */}
                   <circle
                     cx={sx}
                     cy={sy}
@@ -339,7 +322,6 @@ export default function NightSky({ sunrise, isDay }: Props) {
                     opacity={showConstellation === ci ? 0.9 : 0.5}
                     style={{ transition: "opacity 0.5s ease" }}
                   />
-                  {/* Hit area */}
                   <circle
                     cx={sx}
                     cy={sy}
@@ -349,7 +331,6 @@ export default function NightSky({ sunrise, isDay }: Props) {
                 </g>
               ))}
 
-              {/* Label */}
               {showConstellation === ci && (
                 <g>
                   <text
@@ -381,7 +362,7 @@ export default function NightSky({ sunrise, isDay }: Props) {
           ))}
         </svg>
 
-        {/* Mountain silhouette at bottom */}
+        {/* Mountain silhouette */}
         <svg
           className="absolute bottom-0 left-0 right-0 w-full pointer-events-none"
           viewBox="0 0 1000 200"
@@ -394,12 +375,10 @@ export default function NightSky({ sunrise, isDay }: Props) {
               <stop offset="100%" stopColor="#050510" />
             </linearGradient>
           </defs>
-          {/* Distant range */}
           <path
             d="M0 140 L50 120 L100 130 L160 100 L200 115 L250 90 L300 110 L350 95 L400 85 L430 70 L460 55 L480 45 L500 38 L520 45 L540 55 L560 65 L580 78 L610 90 L650 100 L700 110 L750 105 L800 115 L850 100 L900 110 L950 120 L1000 115 L1000 200 L0 200 Z"
             fill="url(#nightMountainGrad)"
           />
-          {/* Snow cap hint */}
           <path
             d="M445 60 L460 50 L475 43 L490 38 L505 35 L520 38 L535 43 L548 50 L555 58 L540 52 L525 48 L510 45 L495 48 L480 52 L465 58 Z"
             fill="#1a1a2e"
@@ -408,13 +387,13 @@ export default function NightSky({ sunrise, isDay }: Props) {
         </svg>
 
         {/* Corner info */}
-        <div className="absolute bottom-4 left-4 flex items-center gap-2 text-[11px] text-white/20 pointer-events-none">
+        <div className="absolute bottom-4 left-4 flex items-center gap-2 ticker pointer-events-none">
           <Star className="w-3 h-3" />
           <span>Seattle, WA &middot; 47.6&deg;N</span>
         </div>
       </div>
 
-      <p className="text-[11px] text-white/15 text-center font-medium">
+      <p className="ticker text-center">
         The mountain is still out there. Check back after sunrise.
       </p>
     </section>

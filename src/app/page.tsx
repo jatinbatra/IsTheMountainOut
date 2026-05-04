@@ -177,27 +177,25 @@ import { Suspense } from "react";
 
 function DashboardFallback() {
   return (
-    <div className="flex-1 min-h-screen bg-[#050b18]">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-8">
-        {/* Header skeleton */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-2xl bg-white/[0.04] animate-pulse" />
-            <div className="space-y-2">
-              <div className="h-4 w-36 rounded bg-white/[0.04] animate-pulse" />
-              <div className="h-3 w-24 rounded bg-white/[0.03] animate-pulse" />
-            </div>
-          </div>
+    <div className="flex-1 min-h-screen bg-[var(--background)]">
+      <div className="bg-[#1f2e1f] rounded-b-3xl px-5 pt-12 pb-16">
+        <div className="max-w-2xl mx-auto space-y-4">
+          <div className="h-4 w-32 rounded-full bg-white/10 animate-pulse" />
+          <div className="h-8 w-48 rounded-full bg-white/10 animate-pulse" />
         </div>
-        {/* Hero skeleton */}
-        <div className="text-center space-y-6 py-8">
-          <div className="h-3 w-40 mx-auto rounded bg-white/[0.03] animate-pulse" />
-          <div className="h-32 w-56 mx-auto rounded bg-white/[0.04] animate-pulse" />
-          <div className="flex items-center justify-center gap-4">
-            <div className="h-12 w-16 rounded bg-white/[0.04] animate-pulse" />
-            <div className="h-6 w-10 rounded bg-white/[0.03] animate-pulse" />
+      </div>
+      <div className="max-w-2xl mx-auto px-5 -mt-10 space-y-6">
+        <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col items-center gap-4">
+          <div className="w-44 h-24 rounded-full bg-gray-100 animate-pulse" />
+          <div className="h-5 w-40 rounded bg-gray-100 animate-pulse" />
+        </div>
+        <div className="bg-white rounded-2xl shadow-sm p-6 space-y-3">
+          <div className="h-4 w-24 rounded bg-gray-100 animate-pulse" />
+          <div className="grid grid-cols-3 gap-3">
+            <div className="h-16 rounded-xl bg-gray-50 animate-pulse" />
+            <div className="h-16 rounded-xl bg-gray-50 animate-pulse" />
+            <div className="h-16 rounded-xl bg-gray-50 animate-pulse" />
           </div>
-          <div className="h-[3px] w-48 mx-auto rounded-full bg-white/[0.04]" />
         </div>
       </div>
     </div>

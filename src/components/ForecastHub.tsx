@@ -30,29 +30,26 @@ export default function ForecastHub({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="font-display text-lg font-bold text-white">Forecast</h2>
-        <div
-          className="inline-flex rounded-lg bg-white/[0.04] ring-1 ring-white/[0.06] p-0.5"
-          role="tablist"
-          aria-label="Forecast view"
-        >
-          {TABS.map((t) => (
-            <button
-              key={t}
-              role="tab"
-              aria-selected={tab === t}
-              onClick={() => setTab(t)}
-              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
-                tab === t
-                  ? "bg-white/[0.08] text-white shadow-sm"
-                  : "text-slate-500 hover:text-slate-300"
-              }`}
-            >
-              {t}
-            </button>
-          ))}
-        </div>
+      <div
+        className="inline-flex rounded-xl bg-gray-100 p-1"
+        role="tablist"
+        aria-label="Forecast view"
+      >
+        {TABS.map((t) => (
+          <button
+            key={t}
+            role="tab"
+            aria-selected={tab === t}
+            onClick={() => setTab(t)}
+            className={`px-4 py-2 text-xs font-medium rounded-lg transition-all ${
+              tab === t
+                ? "bg-white text-[color:var(--type-1)] shadow-sm"
+                : "text-[color:var(--type-3)] hover:text-[color:var(--type-2)]"
+            }`}
+          >
+            {t}
+          </button>
+        ))}
       </div>
 
       <div role="tabpanel" aria-label={`${tab} forecast`}>

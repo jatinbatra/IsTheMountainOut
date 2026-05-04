@@ -8,7 +8,6 @@ interface Props {
   weeklyForecast?: WeeklyForecastDay[];
 }
 
-// WMO weather code to short description
 function weatherLabel(code: number): string {
   if (code === 0) return "Clear";
   if (code <= 3) return "Partly cloudy";
@@ -32,70 +31,60 @@ export default function VisibilityHistory({ isVisible, weeklyForecast }: Props) 
   const today = new Date().toISOString().split("T")[0];
 
   return (
-    <div className="space-y-5">
+    <div className="alpine-card space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-display text-xl font-bold text-white">
-          7-Day Prediction
-        </h2>
-        <span className="text-[10px] text-white/15 font-medium uppercase tracking-wider">
-          Based on forecast data
-        </span>
+        <h3 className="text-sm font-medium text-[color:var(--type-1)]">7-Day Prediction</h3>
+        <span className="text-[10px] text-[color:var(--type-4)]">Based on forecast data</span>
       </div>
 
-      {/* Day bars — no cards, clean horizontal layout */}
       <div className="space-y-0">
         {weeklyForecast.map((day, i) => {
           const isToday = day.date === today;
           const hovered = hoveredDay === i;
           const barColor = day.isVisible
-            ? isVisible ? "bg-emerald-400/60" : "bg-emerald-400/30"
-            : "bg-red-400/35";
+            ? "bg-[#2d8a4e]"
+            : "bg-gray-200";
 
           return (
             <div
               key={day.date}
-              className={`py-3 border-b border-white/[0.04] last:border-0 cursor-default transition-colors ${
-                hovered ? "bg-white/[0.02]" : ""
+              className={`py-3 border-b border-gray-100 last:border-0 cursor-default transition-colors ${
+                hovered ? "bg-gray-50" : ""
               }`}
               onMouseEnter={() => setHoveredDay(i)}
               onMouseLeave={() => setHoveredDay(null)}
             >
               <div className="flex items-center gap-4">
-                {/* Day label */}
                 <div className="w-12 shrink-0">
-                  <span className={`text-xs font-medium ${isToday ? "text-white/70" : "text-white/30"}`}>
+                  <span className={`text-xs ${isToday ? "font-medium text-[color:var(--type-1)]" : "text-[color:var(--type-3)]"}`}>
                     {isToday ? "Today" : day.dayLabel}
                   </span>
                 </div>
 
-                {/* Score bar */}
                 <div className="flex-1 flex items-center gap-3">
-                  <div className="flex-1 h-[3px] rounded-full bg-white/[0.04]">
+                  <div className="flex-1 h-1.5 rounded-full bg-gray-100 overflow-hidden">
                     <div
                       className={`h-full rounded-full ${barColor} transition-all duration-700`}
                       style={{ width: `${day.score}%` }}
                     />
                   </div>
 
-                  {/* Score number */}
-                  <span className={`text-xs font-display font-bold w-8 text-right ${
-                    day.isVisible ? "text-emerald-400/70" : "text-red-400/60"
+                  <span className={`font-mono text-xs tabular w-8 text-right font-medium ${
+                    day.isVisible ? "text-[#2d8a4e]" : "text-[color:var(--type-4)]"
                   }`}>
                     {day.score}
                   </span>
                 </div>
 
-                {/* Visibility indicator */}
-                <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                  day.isVisible ? "bg-emerald-400/50" : "bg-red-400/40"
+                <div className={`w-2 h-2 rounded-full shrink-0 ${
+                  day.isVisible ? "bg-[#2d8a4e]" : "bg-gray-200"
                 }`} />
               </div>
 
-              {/* Expanded detail on hover */}
               <div className={`overflow-hidden transition-all duration-300 ${
                 hovered ? "max-h-20 opacity-100 mt-2" : "max-h-0 opacity-0"
               }`}>
-                <div className="flex items-center gap-4 ml-12 text-[10px] text-white/25">
+                <div className="flex items-center gap-3 ml-12 text-[10px] text-[color:var(--type-4)] flex-wrap">
                   <span>{weatherLabel(day.weatherCode)}</span>
                   <span>&middot;</span>
                   <span>{Math.round(day.tempHigh * 9/5 + 32)}° / {Math.round(day.tempLow * 9/5 + 32)}°F</span>
@@ -110,16 +99,13 @@ export default function VisibilityHistory({ isVisible, weeklyForecast }: Props) 
         })}
       </div>
 
-      {/* Legend */}
-      <div className="flex items-center gap-4 text-[10px] text-white/20">
-        <div className="flex items-center gap-1.5">
-          <div className="w-2 h-2 rounded-full bg-emerald-400/50" />
-          <span>Likely visible</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <div className="w-2 h-2 rounded-full bg-red-400/40" />
-          <span>Likely hidden</span>
-        </div>
+      <div className="flex items-center gap-4 text-[10px] text-[color:var(--type-4)]">
+        <span className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-[#2d8a4e]" /> Likely visible
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-gray-200" /> Likely hidden
+        </span>
       </div>
     </div>
   );

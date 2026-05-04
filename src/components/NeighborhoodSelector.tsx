@@ -57,22 +57,22 @@ export default function NeighborhoodSelector({ selected, onSelect, scores }: Pro
     <div ref={ref} className="relative inline-flex">
       <button
         onClick={() => setOpen(!open)}
-        className="inline-flex items-center gap-2 px-3 py-2 rounded-xl glass hover:bg-white/[0.06] transition-all text-sm"
+        className="inline-flex items-center gap-2 px-4 py-2.5 bg-white rounded-xl shadow-sm border border-gray-100 hover:border-gray-200 transition-all text-sm"
         aria-expanded={open}
         aria-haspopup="listbox"
       >
-        <MapPin className="w-3.5 h-3.5 text-blue-400/60" />
+        <MapPin className="w-3.5 h-3.5 text-[color:var(--accent)]" />
         {selected && (
-          <span className="text-slate-500 text-xs">Your neighborhood:</span>
+          <span className="text-[10px] text-[color:var(--type-3)] uppercase tracking-wider">Your hood:</span>
         )}
-        <span className="text-white font-semibold text-sm">{label}</span>
+        <span className="text-[color:var(--type-1)] font-medium">{label}</span>
         {selectedScore !== undefined && (
-          <span className={`text-xs font-display font-bold ${selectedScore >= 50 ? "text-emerald-400/70" : "text-red-400/60"}`}>
+          <span className={`font-mono text-xs tabular px-1.5 py-0.5 rounded-full ${selectedScore >= 50 ? "bg-[#2d8a4e]/10 text-[#2d8a4e]" : "bg-gray-100 text-[color:var(--type-4)]"}`}>
             {selectedScore}
           </span>
         )}
         <ChevronDown
-          className={`w-3.5 h-3.5 text-slate-600 transition-transform duration-200 ${
+          className={`w-3.5 h-3.5 text-[color:var(--type-4)] transition-transform duration-200 ${
             open ? "rotate-180" : ""
           }`}
         />
@@ -80,7 +80,7 @@ export default function NeighborhoodSelector({ selected, onSelect, scores }: Pro
 
       {open && (
         <div
-          className="absolute top-full mt-2 left-0 z-50 glass rounded-xl py-1.5 min-w-[250px] shadow-xl ring-1 ring-white/[0.08] max-h-[320px] overflow-y-auto scrollbar-thin"
+          className="absolute top-full mt-2 left-0 z-50 bg-white rounded-xl border border-gray-100 shadow-lg py-1.5 min-w-[260px] max-h-[320px] overflow-y-auto scrollbar-thin"
           role="listbox"
         >
           <button
@@ -88,11 +88,12 @@ export default function NeighborhoodSelector({ selected, onSelect, scores }: Pro
               onSelect(null);
               setOpen(false);
             }}
-            className={`w-full text-left px-4 py-2 text-xs transition-colors ${
+            className={`w-full text-left px-4 py-2.5 text-xs transition-colors rounded-lg mx-1 ${
               !selected
-                ? "text-blue-300 bg-blue-500/10"
-                : "text-slate-500 hover:bg-white/[0.04] hover:text-slate-300"
+                ? "text-[color:var(--accent)] bg-[color:var(--accent)]/[0.06] font-medium"
+                : "text-[color:var(--type-3)] hover:bg-gray-50 hover:text-[color:var(--type-2)]"
             }`}
+            style={{ width: "calc(100% - 0.5rem)" }}
             role="option"
             aria-selected={!selected}
           >
@@ -107,20 +108,20 @@ export default function NeighborhoodSelector({ selected, onSelect, scores }: Pro
                   onSelect(n.id);
                   setOpen(false);
                 }}
-                className={`w-full text-left px-4 py-2 text-xs transition-colors flex items-center justify-between ${
+                className={`w-full text-left px-4 py-2.5 text-xs transition-colors flex items-center justify-between ${
                   selected === n.id
-                    ? "text-blue-300 bg-blue-500/10"
-                    : "text-slate-400 hover:bg-white/[0.04] hover:text-slate-300"
+                    ? "text-[color:var(--accent)] bg-[color:var(--accent)]/[0.06] font-medium"
+                    : "text-[color:var(--type-2)] hover:bg-gray-50"
                 }`}
                 role="option"
                 aria-selected={selected === n.id}
               >
                 <span>
                   {n.label}
-                  <span className="text-slate-600 ml-2">{n.elevation}</span>
+                  <span className="text-[color:var(--type-4)] ml-2">{n.elevation}</span>
                 </span>
                 {nScore !== undefined && (
-                  <span className={`font-display font-bold text-[11px] ${nScore >= 50 ? "text-emerald-400/60" : "text-red-400/50"}`}>
+                  <span className={`font-mono text-[11px] tabular ${nScore >= 50 ? "text-[#2d8a4e]" : "text-[color:var(--type-4)]"}`}>
                     {nScore}
                   </span>
                 )}

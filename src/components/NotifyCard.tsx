@@ -152,50 +152,53 @@ export default function NotifyCard() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           {enabled && verified ? (
-            <BellRing className="w-4 h-4 text-emerald-400" aria-hidden="true" />
+            <div className="w-8 h-8 rounded-xl bg-[#2d8a4e]/10 flex items-center justify-center">
+              <BellRing className="w-4 h-4 text-[#2d8a4e]" aria-hidden="true" />
+            </div>
           ) : (
-            <Bell className="w-4 h-4 text-white/30" aria-hidden="true" />
+            <div className="w-8 h-8 rounded-xl bg-gray-100 flex items-center justify-center">
+              <Bell className="w-4 h-4 text-[color:var(--type-4)]" aria-hidden="true" />
+            </div>
           )}
-          <h3 className="font-display text-sm font-bold text-white">
+          <h3 className="font-medium text-sm text-[color:var(--type-1)]">
             {enabled ? (verified ? "Alerts active" : "Alerts enabled") : "Push alerts"}
           </h3>
         </div>
         {enabled && verified && (
-          <span className="text-[11px] text-emerald-400/60 font-medium">Working</span>
+          <span className="text-[10px] font-medium text-[#2d8a4e] bg-[#2d8a4e]/10 px-2 py-1 rounded-full">Working</span>
         )}
       </div>
 
       {enabled ? (
-        <p className="text-sm text-white/40 leading-relaxed">
+        <p className="text-sm text-[color:var(--type-3)] leading-relaxed">
           We check conditions every 15 minutes. When the mountain emerges, alpenglow is likely,
-          or a gloom streak breaks, you get a push notification. Works with this tab closed.
-          Max one alert every 4 hours.
+          or a gloom streak breaks, you get a push notification. Max one alert every 4 hours.
         </p>
       ) : (
-        <p className="text-sm text-white/40 leading-relaxed">
+        <p className="text-sm text-[color:var(--type-3)] leading-relaxed">
           {platform === "ios-safari-browser"
             ? "On iPhone, Safari blocks web push unless you install this app to your Home Screen first."
-            : "Get notified when the mountain comes out, alpenglow is likely, or a gloom streak breaks. Works even with this tab closed."}
+            : "Get notified when the mountain comes out, alpenglow is likely, or a gloom streak breaks."}
         </p>
       )}
 
       {platform === "ios-safari-browser" ? (
-        <div className="space-y-2 text-sm text-white/50">
+        <div className="space-y-2 text-sm text-[color:var(--type-3)]">
           <p className="flex items-center gap-2">
-            <span className="text-white/20 font-mono text-xs">1</span>
-            Tap <Share className="w-3.5 h-3.5 inline text-white/40" /> Share
+            <span className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-mono text-[color:var(--type-4)]">1</span>
+            Tap <Share className="w-3.5 h-3.5 inline text-[color:var(--type-3)]" /> Share
           </p>
           <p className="flex items-center gap-2">
-            <span className="text-white/20 font-mono text-xs">2</span>
-            Pick <Plus className="w-3.5 h-3.5 inline text-white/40" /> Add to Home Screen
+            <span className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-mono text-[color:var(--type-4)]">2</span>
+            Pick <Plus className="w-3.5 h-3.5 inline text-[color:var(--type-3)]" /> Add to Home Screen
           </p>
           <p className="flex items-center gap-2">
-            <span className="text-white/20 font-mono text-xs">3</span>
+            <span className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-mono text-[color:var(--type-4)]">3</span>
             Open from Home Screen, then enable alerts here.
           </p>
         </div>
       ) : platform === "unsupported" ? (
-        <p className="text-sm text-white/30">
+        <p className="text-sm text-[color:var(--type-4)]">
           Your browser doesn&apos;t support push. Try Chrome, Firefox, or Edge.
         </p>
       ) : (
@@ -205,7 +208,7 @@ export default function NotifyCard() {
               <button
                 onClick={handleEnable}
                 disabled={subscribing || permission === "denied"}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold bg-white text-black hover:bg-white/90 transition-colors disabled:opacity-40"
+                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium bg-[color:var(--accent)] text-white rounded-xl hover:opacity-90 transition-colors disabled:opacity-40"
               >
                 {subscribing ? (
                   <>
@@ -223,12 +226,12 @@ export default function NotifyCard() {
               <button
                 onClick={() => fireTestPing(endpoint)}
                 disabled={testing}
-                className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-colors disabled:opacity-40 ${
+                className={`inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-xl transition-colors disabled:opacity-40 ${
                   testResult === "sent"
-                    ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
+                    ? "bg-[#2d8a4e]/10 text-[#2d8a4e] border border-[#2d8a4e]/20"
                     : testResult === "failed"
-                      ? "bg-red-500/10 text-red-400 border border-red-500/20"
-                      : "bg-white/[0.08] text-white border border-white/[0.08] hover:bg-white/[0.12]"
+                      ? "bg-red-50 text-red-500 border border-red-200"
+                      : "border border-gray-200 text-[color:var(--type-1)] hover:border-gray-300"
                 }`}
               >
                 {testing ? (
@@ -252,7 +255,7 @@ export default function NotifyCard() {
               <button
                 onClick={() => ensureSubscribedAndTest().then(ok => { if (ok) { setTestResult("sent"); setVerified(true); setError(null); } })}
                 disabled={subscribing}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold bg-white/[0.08] text-white border border-white/[0.08] hover:bg-white/[0.12] transition-colors disabled:opacity-40"
+                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-xl border border-gray-200 text-[color:var(--type-1)] hover:border-gray-300 transition-colors disabled:opacity-40"
               >
                 Re-subscribe
               </button>
@@ -260,7 +263,7 @@ export default function NotifyCard() {
           </div>
 
           {error && (
-            <p className="text-[13px] text-red-400/80">{error}</p>
+            <p className="text-xs text-red-500">{error}</p>
           )}
         </>
       )}
