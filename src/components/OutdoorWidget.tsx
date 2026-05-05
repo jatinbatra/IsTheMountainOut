@@ -100,10 +100,10 @@ export default function OutdoorWidget({ isVisible, sunset }: Props) {
   if (!isVisible) return null;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-1">
       {/* Golden Hour Countdown */}
       {countdown && !countdown.isPast && (
-        <div className="alpine-card space-y-3">
+        <div className="alpine-card space-y-0.5">
           <div>
             <p className="text-[10px] text-orange-500 uppercase tracking-wider font-medium mb-1">Golden Hour</p>
             <h3 className="font-medium text-[color:var(--type-1)] text-sm">
@@ -122,7 +122,7 @@ export default function OutdoorWidget({ isVisible, sunset }: Props) {
             <span className="text-sm text-orange-300">m</span>
           </div>
 
-          <div className="flex items-center gap-4 text-[10px] text-[color:var(--type-4)]">
+          <div className="flex items-center gap-2 text-[10px] text-[color:var(--type-4)]">
             <span className="flex items-center gap-1">
               <Camera className="w-3 h-3" />
               Golden hour starts at {countdown.goldenStart}
@@ -146,7 +146,7 @@ export default function OutdoorWidget({ isVisible, sunset }: Props) {
       )}
 
       {/* Trail Recommendations */}
-      <div className="alpine-card space-y-3">
+      <div className="alpine-card space-y-0.5">
         <div>
           <p className="text-[10px] text-[color:var(--accent)] uppercase tracking-wider font-medium mb-1">Trail Recommendations</p>
           <h3 className="font-medium text-[color:var(--type-1)] text-sm">
@@ -158,11 +158,9 @@ export default function OutdoorWidget({ isVisible, sunset }: Props) {
           {TRAILS.map((trail) => (
             <div
               key={trail.name}
-              className="group flex items-start gap-3 py-3 border-b border-gray-100 last:border-0"
+              className="group flex items-start gap-3 py-2.5 border-b border-[var(--rule)] last:border-0"
             >
-              <div className="mt-0.5 flex-shrink-0 w-6 h-6 rounded-lg bg-gray-50 flex items-center justify-center">
-                <MapPin className="w-3 h-3 text-[color:var(--type-4)]" />
-              </div>
+              <MapPin className="w-3 h-3 text-[color:var(--type-4)] flex-shrink-0 mt-1" />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-[color:var(--type-1)]">{trail.name}</span>

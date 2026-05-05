@@ -148,17 +148,13 @@ export default function NotifyCard() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-0.5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           {enabled && verified ? (
-            <div className="w-8 h-8 rounded-xl bg-[#2d8a4e]/10 flex items-center justify-center">
-              <BellRing className="w-4 h-4 text-[#2d8a4e]" aria-hidden="true" />
-            </div>
+            <BellRing className="w-4 h-4 text-[#2d8a4e]" aria-hidden="true" />
           ) : (
-            <div className="w-8 h-8 rounded-xl bg-gray-100 flex items-center justify-center">
-              <Bell className="w-4 h-4 text-[color:var(--type-4)]" aria-hidden="true" />
-            </div>
+            <Bell className="w-4 h-4 text-[color:var(--type-4)]" aria-hidden="true" />
           )}
           <h3 className="font-medium text-sm text-[color:var(--type-1)]">
             {enabled ? (verified ? "Alerts active" : "Alerts enabled") : "Push alerts"}
@@ -185,15 +181,15 @@ export default function NotifyCard() {
       {platform === "ios-safari-browser" ? (
         <div className="space-y-2 text-sm text-[color:var(--type-3)]">
           <p className="flex items-center gap-2">
-            <span className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-mono text-[color:var(--type-4)]">1</span>
+            <span className="font-mono text-[10px] text-[color:var(--type-4)]">1.</span>
             Tap <Share className="w-3.5 h-3.5 inline text-[color:var(--type-3)]" /> Share
           </p>
           <p className="flex items-center gap-2">
-            <span className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-mono text-[color:var(--type-4)]">2</span>
+            <span className="font-mono text-[10px] text-[color:var(--type-4)]">2.</span>
             Pick <Plus className="w-3.5 h-3.5 inline text-[color:var(--type-3)]" /> Add to Home Screen
           </p>
           <p className="flex items-center gap-2">
-            <span className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-mono text-[color:var(--type-4)]">3</span>
+            <span className="font-mono text-[10px] text-[color:var(--type-4)]">3.</span>
             Open from Home Screen, then enable alerts here.
           </p>
         </div>
@@ -208,7 +204,7 @@ export default function NotifyCard() {
               <button
                 onClick={handleEnable}
                 disabled={subscribing || permission === "denied"}
-                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium bg-[color:var(--accent)] text-white rounded-xl hover:opacity-90 transition-colors disabled:opacity-40"
+                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium bg-[color:var(--accent)] text-white hover:opacity-90 transition-colors disabled:opacity-40"
               >
                 {subscribing ? (
                   <>
@@ -226,12 +222,12 @@ export default function NotifyCard() {
               <button
                 onClick={() => fireTestPing(endpoint)}
                 disabled={testing}
-                className={`inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-xl transition-colors disabled:opacity-40 ${
+                className={`inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium transition-colors disabled:opacity-40 ${
                   testResult === "sent"
                     ? "bg-[#2d8a4e]/10 text-[#2d8a4e] border border-[#2d8a4e]/20"
                     : testResult === "failed"
-                      ? "bg-red-50 text-red-500 border border-red-200"
-                      : "border border-gray-200 text-[color:var(--type-1)] hover:border-gray-300"
+                      ? "text-red-500 border border-red-200"
+                      : "border border-[var(--rule)] text-[color:var(--type-1)] hover:border-[var(--rule-strong)]"
                 }`}
               >
                 {testing ? (
@@ -255,7 +251,7 @@ export default function NotifyCard() {
               <button
                 onClick={() => ensureSubscribedAndTest().then(ok => { if (ok) { setTestResult("sent"); setVerified(true); setError(null); } })}
                 disabled={subscribing}
-                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-xl border border-gray-200 text-[color:var(--type-1)] hover:border-gray-300 transition-colors disabled:opacity-40"
+                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium border border-[var(--rule)] text-[color:var(--type-1)] hover:border-[var(--rule-strong)] transition-colors disabled:opacity-40"
               >
                 Re-subscribe
               </button>

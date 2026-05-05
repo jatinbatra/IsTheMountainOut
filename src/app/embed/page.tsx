@@ -35,8 +35,8 @@ export default async function EmbedPage({
       <body
         style={{
           margin: 0,
-          background: "#f0f2f0",
-          color: "#1a2e1a",
+          background: "#f4f1eb",
+          color: "#1a1e1a",
           fontFamily: "system-ui, -apple-system, sans-serif",
         }}
       >

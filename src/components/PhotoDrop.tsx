@@ -135,11 +135,9 @@ export default function PhotoDrop({ neighborhood }: Props) {
 
   return (
     <div className="alpine-card">
-      <div className="flex items-baseline justify-between gap-3 mb-4">
+      <div className="flex items-baseline justify-between gap-3 mb-1">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center">
-            <Crown className="w-3.5 h-3.5 text-amber-500" aria-hidden="true" />
-          </div>
+          <Crown className="w-3.5 h-3.5 text-amber-500" aria-hidden="true" />
           <h2 className="font-medium text-sm text-[color:var(--type-1)]">Photo Drop</h2>
           <p className="text-[10px] text-[color:var(--type-4)]">
             First photo per hood wins the Daily Crown
@@ -153,7 +151,7 @@ export default function PhotoDrop({ neighborhood }: Props) {
       </div>
 
       {hoodCrown && (
-        <div className="relative mb-4 overflow-hidden rounded-xl">
+        <div className="relative mb-2 overflow-hidden rounded">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={hoodCrown.url}
@@ -184,7 +182,7 @@ export default function PhotoDrop({ neighborhood }: Props) {
         </div>
       )}
 
-      <div className="space-y-3 mb-5">
+      <div className="space-y-1 mb-1">
         <p className="text-sm text-[color:var(--type-3)]">
           {hoodCrown
             ? `Crown is claimed in ${hoodLabel}. Drop anyway to make the feed.`
@@ -203,7 +201,7 @@ export default function PhotoDrop({ neighborhood }: Props) {
             setHandleInput(v);
             persistHandle(v);
           }}
-          className="w-full px-4 py-2.5 bg-gray-50 rounded-xl border border-gray-100 text-sm text-[color:var(--type-1)] placeholder:text-[color:var(--type-4)] focus:outline-none focus:border-[color:var(--accent)] focus:ring-1 focus:ring-[color:var(--accent)]/20"
+          className="w-full px-4 py-2.5 bg-transparent border border-[var(--rule)] text-sm text-[color:var(--type-1)] placeholder:text-[color:var(--type-4)] focus:outline-none focus:border-[color:var(--accent)]"
           maxLength={24}
         />
         <input
@@ -221,13 +219,13 @@ export default function PhotoDrop({ neighborhood }: Props) {
         <button
           onClick={() => fileRef.current?.click()}
           disabled={busy || !hoodId}
-          className={`w-full inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-medium rounded-xl transition-colors ${
+          className={`w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium uppercase tracking-wider transition-colors ${
             busy
-              ? "bg-gray-50 text-[color:var(--type-4)] cursor-wait border border-gray-100"
+              ? "text-[color:var(--type-4)] cursor-wait border border-[var(--rule)]"
               : state === "success"
                 ? "bg-[#2d8a4e]/10 text-[#2d8a4e] border border-[#2d8a4e]/20"
                 : !hoodId
-                  ? "bg-gray-50 text-[color:var(--type-4)] cursor-not-allowed border border-gray-100"
+                  ? "text-[color:var(--type-4)] cursor-not-allowed border border-[var(--rule)]"
                   : "bg-[color:var(--accent)] text-white hover:opacity-90"
           }`}
         >
@@ -273,7 +271,7 @@ export default function PhotoDrop({ neighborhood }: Props) {
                 href={d.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="relative aspect-square overflow-hidden rounded-xl ring-1 ring-gray-100 bg-gray-50 group"
+                className="relative aspect-square overflow-hidden rounded ring-1 ring-gray-100 bg-[var(--ink-deep)] group"
                 title={`${NEIGHBORHOOD_LABELS[d.hoodId] ?? d.hoodId} · ${formatTimeShort(d.capturedAt)}`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}

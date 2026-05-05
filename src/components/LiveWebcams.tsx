@@ -72,7 +72,7 @@ export default function LiveWebcams({ feeds }: Props) {
   const goPrev = () => setSelectedCam((prev) => (prev - 1 + feeds.length) % feeds.length);
 
   return (
-    <section className="space-y-4">
+    <section className="space-y-0.5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h2 className="font-display text-lg font-medium text-[color:var(--type-1)]">
@@ -97,7 +97,7 @@ export default function LiveWebcams({ feeds }: Props) {
             className={`flex items-center gap-1.5 px-3 py-1.5 text-xs whitespace-nowrap transition-all rounded-full ${
               selectedCam === i
                 ? "bg-[color:var(--accent)]/10 text-[color:var(--accent)] font-medium"
-                : "bg-gray-100 text-[color:var(--type-3)] hover:text-[color:var(--type-2)]"
+                : "bg-[var(--ink-deep)] text-[color:var(--type-3)] hover:text-[color:var(--type-2)]"
             }`}
           >
             <Camera className="w-3 h-3" />
@@ -107,10 +107,10 @@ export default function LiveWebcams({ feeds }: Props) {
       </div>
 
       {/* Main webcam display */}
-      <div className={`alpine-card !p-0 overflow-hidden ${expanded ? "fixed inset-4 z-50 !rounded-2xl" : ""}`}>
-        <div className={`relative ${expanded ? "h-full" : "aspect-video"} bg-gray-100`}>
+      <div className={`overflow-hidden border border-[var(--rule)] ${expanded ? "fixed inset-4 z-50" : ""}`}>
+        <div className={`relative ${expanded ? "h-full" : "aspect-video"} bg-[var(--ink-deep)]`}>
           {loadErrors[currentFeed.id] ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gray-50">
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[var(--ink-deep)]">
               <AlertCircle className="w-8 h-8 text-[color:var(--type-4)]" />
               <p className="text-sm text-[color:var(--type-3)]">Camera feed temporarily unavailable</p>
               <button
@@ -192,7 +192,7 @@ export default function LiveWebcams({ feeds }: Props) {
                   onClick={() => setSelectedCam(i)}
                   className={`h-1.5 rounded-full transition-all duration-300 ${
                     selectedCam === i
-                      ? "bg-white w-5"
+                      ? "bg-[var(--ink-deep)] w-5"
                       : "bg-white/30 w-1.5 hover:bg-white/50"
                   }`}
                 />
@@ -203,18 +203,18 @@ export default function LiveWebcams({ feeds }: Props) {
       </div>
 
       {/* Thumbnail grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1">
         {feeds.map((feed, i) => (
           <button
             key={feed.id}
             onClick={() => setSelectedCam(i)}
-            className={`relative overflow-hidden rounded-xl transition-all duration-300 ${
+            className={`relative overflow-hidden transition-all duration-300 ${
               selectedCam === i
                 ? "ring-2 ring-[color:var(--accent)]"
-                : "ring-1 ring-gray-100 hover:ring-gray-200"
+                : "border border-[var(--rule)] hover:border-[var(--rule-strong)]"
             }`}
           >
-            <div className="aspect-video bg-gray-100 relative">
+            <div className="aspect-video bg-[var(--ink-deep)] relative">
               {loadErrors[feed.id] ? (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <AlertCircle className="w-4 h-4 text-[color:var(--type-4)]" />
@@ -229,7 +229,7 @@ export default function LiveWebcams({ feeds }: Props) {
                 />
               )}
             </div>
-            <div className="p-2 bg-white">
+            <div className="p-2 bg-[var(--ink-deep)]">
               <span className="text-[10px] text-[color:var(--type-2)] truncate block">{feed.name}</span>
             </div>
           </button>

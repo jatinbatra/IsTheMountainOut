@@ -178,23 +178,20 @@ import { Suspense } from "react";
 function DashboardFallback() {
   return (
     <div className="flex-1 min-h-screen bg-[var(--background)]">
-      <div className="bg-[#1f2e1f] rounded-b-3xl px-5 pt-12 pb-16">
-        <div className="max-w-2xl mx-auto space-y-4">
-          <div className="h-4 w-32 rounded-full bg-white/10 animate-pulse" />
-          <div className="h-8 w-48 rounded-full bg-white/10 animate-pulse" />
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+        <div className="border-b border-[var(--rule)] pb-5 space-y-2">
+          <div className="h-4 w-40 bg-[var(--ink-deep)] animate-pulse" />
+          <div className="h-3 w-28 bg-[var(--ink-deep)] animate-pulse" />
         </div>
-      </div>
-      <div className="max-w-2xl mx-auto px-5 -mt-10 space-y-6">
-        <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col items-center gap-4">
-          <div className="w-44 h-24 rounded-full bg-gray-100 animate-pulse" />
-          <div className="h-5 w-40 rounded bg-gray-100 animate-pulse" />
+        <div className="flex flex-col items-center gap-4 py-8">
+          <div className="w-48 h-24 bg-[var(--ink-deep)] animate-pulse rounded-full" />
+          <div className="h-4 w-32 bg-[var(--ink-deep)] animate-pulse" />
         </div>
-        <div className="bg-white rounded-2xl shadow-sm p-6 space-y-3">
-          <div className="h-4 w-24 rounded bg-gray-100 animate-pulse" />
-          <div className="grid grid-cols-3 gap-3">
-            <div className="h-16 rounded-xl bg-gray-50 animate-pulse" />
-            <div className="h-16 rounded-xl bg-gray-50 animate-pulse" />
-            <div className="h-16 rounded-xl bg-gray-50 animate-pulse" />
+        <div className="border-t border-[var(--rule)] pt-6">
+          <div className="grid grid-cols-3 gap-6">
+            <div className="h-14 bg-[var(--ink-deep)] animate-pulse" />
+            <div className="h-14 bg-[var(--ink-deep)] animate-pulse" />
+            <div className="h-14 bg-[var(--ink-deep)] animate-pulse" />
           </div>
         </div>
       </div>

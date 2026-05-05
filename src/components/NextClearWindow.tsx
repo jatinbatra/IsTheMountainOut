@@ -25,7 +25,7 @@ export default function NextClearWindow({ hourlyTimeline, weeklyForecast, curren
 
   if (!window) {
     return (
-      <div className="flex items-center gap-3 py-3">
+      <div className="flex items-center gap-3 py-2">
         <CloudOff className="w-4 h-4 text-[color:var(--type-4)] flex-shrink-0" aria-hidden="true" />
         <p className="text-sm text-[color:var(--type-3)]">
           No clear stretches in the 7-day forecast.
@@ -37,7 +37,7 @@ export default function NextClearWindow({ hourlyTimeline, weeklyForecast, curren
   const isNow = window.kind === "now";
 
   return (
-    <div className="flex items-center justify-between py-3">
+    <div className="flex items-center justify-between py-2">
       <div className="min-w-0">
         <p className="text-xs text-[color:var(--type-4)] mb-0.5">
           {isNow ? "Clear right now" : "Next clear window"}

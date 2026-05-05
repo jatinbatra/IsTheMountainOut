@@ -1,43 +1,44 @@
 @import "tailwindcss";
 
 /* ─────────────────────────────────────────────────────────
-   ALPINE LIGHT
-   Nature-inspired, light-mode design with forest green accents.
-   Clean white cards, soft shadows, rounded corners.
+   ALPINE EDITORIAL
+   Warm-paper, restrained design. Green accent used sparingly.
+   Content breathes with spacing, not card wrappers.
+   Inspired by print editorial + Impeccable design principles.
    ───────────────────────────────────────────────────────── */
 
 :root {
-  --ink: #ffffff;
-  --ink-deep: #f7f8fa;
-  --paper: #1a2e1a;
-  --paper-warm: #2b3a2b;
+  --ink: #f4f1eb;
+  --ink-deep: #eae6de;
 
-  --type-1: #1a2e1a;
-  --type-2: #3d5a3d;
-  --type-3: #6b8f6b;
-  --type-4: #9bb59b;
+  --type-1: #1a1e1a;
+  --type-2: #3b3f3b;
+  --type-3: #6b706b;
+  --type-4: #9a9f9a;
 
-  --rule: rgba(26, 46, 26, 0.10);
-  --rule-strong: rgba(26, 46, 26, 0.18);
+  --rule: rgba(26, 30, 26, 0.10);
+  --rule-strong: rgba(26, 30, 26, 0.20);
 
-  --accent: #3a7c52;
+  --accent: #2d8a4e;
   --accent-clear: #2d8a4e;
   --accent-fog: #7a8a8f;
   --accent-pink: #c77d6a;
 
   --hero-bg: #1f2e1f;
   --hero-bg-light: #2b3e2b;
-  --card-bg: #ffffff;
-  --card-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
-  --card-shadow-lg: 0 4px 16px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.04);
-  --card-radius: 16px;
 
   --gauge-good: #2d8a4e;
   --gauge-mid: #d4a843;
   --gauge-poor: #c75a3a;
 
-  --background: #f0f2f0;
+  --background: #f4f1eb;
   --foreground: var(--type-1);
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @theme inline {
@@ -62,6 +63,7 @@ body {
   font-feature-settings: "ss01", "cv02", "cv11";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
   padding-top: env(safe-area-inset-top);
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
@@ -113,7 +115,7 @@ button:active:not(:disabled) {
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--type-3);
+  color: var(--type-4);
   font-weight: 500;
 }
 
@@ -146,56 +148,53 @@ button:active:not(:disabled) {
   font-size: 10px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--type-3);
+  color: var(--type-4);
 }
 
-/* ─── Cards ─── */
+/* ─── Surfaces ───
+   Flat by default. No decorative shadows.
+   Shadows appear only as hover/focus state responses.
+   Content sections separated by rules or spacing, not boxes. */
 
 .alpine-card {
-  background: var(--card-bg);
-  border-radius: var(--card-radius);
-  box-shadow: var(--card-shadow);
-  padding: 1.25rem;
+  border-top: 1px solid var(--rule);
+  padding-top: 0.5rem;
 }
 
 .alpine-card-lg {
-  background: var(--card-bg);
-  border-radius: var(--card-radius);
-  box-shadow: var(--card-shadow-lg);
-  padding: 1.5rem;
+  border-top: 1px solid var(--rule-strong);
+  padding-top: 0.625rem;
 }
 
 .editorial-card {
   border-top: 1px solid var(--rule);
-  padding-top: 1.5rem;
+  padding-top: 0.625rem;
 }
 
 .editorial-card-warm {
-  background: rgba(26, 46, 26, 0.025);
+  background: rgba(26, 30, 26, 0.03);
   border: 1px solid var(--rule);
+  border-radius: var(--radius-md);
 }
 
-/* Legacy glass — remapped to light cards */
+/* Legacy glass — mapped to rule-separated sections */
 .glass {
-  background: var(--card-bg);
-  border-radius: var(--card-radius);
-  box-shadow: var(--card-shadow);
-  border: 1px solid var(--rule);
+  border-top: 1px solid var(--rule);
+  padding-top: 0.5rem;
 }
 
 .glass-strong {
-  background: var(--card-bg);
-  border-radius: var(--card-radius);
-  box-shadow: var(--card-shadow-lg);
-  border: 1px solid var(--rule-strong);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(16px);
+  border-radius: var(--radius-md);
 }
 
 .glass-hover {
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: background 0.15s var(--ease-out-expo), border-color 0.15s var(--ease-out-expo);
 }
 
 .glass-hover:hover {
-  box-shadow: var(--card-shadow-lg);
+  background: rgba(26, 30, 26, 0.03);
   border-color: var(--rule-strong);
 }
 
@@ -204,7 +203,6 @@ button:active:not(:disabled) {
 .hero-section {
   background: linear-gradient(180deg, var(--hero-bg) 0%, var(--hero-bg-light) 100%);
   color: #ffffff;
-  border-radius: 0 0 24px 24px;
   position: relative;
   overflow: hidden;
 }
@@ -241,7 +239,7 @@ button:active:not(:disabled) {
   fill: none;
   stroke-width: var(--gauge-stroke);
   stroke-linecap: round;
-  transition: stroke-dashoffset 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: stroke-dashoffset 1.2s var(--ease-out-expo);
 }
 
 .gauge-label {
@@ -250,6 +248,17 @@ button:active:not(:disabled) {
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
+}
+
+/* ─── Interactive states ─── */
+
+.surface-interactive {
+  transition: background 0.15s var(--ease-out-expo), box-shadow 0.15s var(--ease-out-expo);
+}
+
+.surface-interactive:hover {
+  background: rgba(26, 30, 26, 0.025);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 /* ─── Animations ─── */
@@ -343,10 +352,10 @@ button:active:not(:disabled) {
   0% { stroke-dashoffset: var(--gauge-circumference); }
 }
 
-.animate-fade-up { animation: fade-up 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-.animate-fade-in { animation: fade-in 0.6s ease-out forwards; }
-.animate-score-fill { animation: score-fill 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-.animate-draw-rule { animation: draw-rule 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+.animate-fade-up { animation: fade-up 0.5s var(--ease-out-expo) forwards; }
+.animate-fade-in { animation: fade-in 0.4s ease-out forwards; }
+.animate-score-fill { animation: score-fill 1.2s var(--ease-out-expo) forwards; }
+.animate-draw-rule { animation: draw-rule 0.8s var(--ease-out-expo) forwards; }
 .animate-float { animation: float 4s ease-in-out infinite; }
 .animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
 .animate-pulse-glow-red { animation: pulse-glow-red 3s ease-in-out infinite; }
@@ -391,24 +400,15 @@ button:active:not(:disabled) {
 
 /* Legacy gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, var(--accent-clear), var(--accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--accent);
 }
 
 .gradient-text-red {
-  background: linear-gradient(135deg, var(--accent-pink), #b06148);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--accent-pink);
 }
 
 .gradient-text-amber {
-  background: linear-gradient(135deg, #d4a843, var(--accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #d4a843;
 }
 
 .noise-overlay { display: none; }

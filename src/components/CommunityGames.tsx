@@ -24,9 +24,9 @@ export default function CommunityGames({
   const [game, setGame] = useState<Game>("Hood Wars");
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-1.5">
       <div
-        className="inline-flex rounded-xl bg-gray-100 p-1"
+        className="inline-flex border-b border-[var(--rule)]"
         role="tablist"
         aria-label="Community games"
       >
@@ -36,10 +36,10 @@ export default function CommunityGames({
             role="tab"
             aria-selected={game === g}
             onClick={() => setGame(g)}
-            className={`px-4 py-2 text-xs font-medium rounded-lg transition-all ${
+            className={`px-3 py-1.5 text-xs font-medium transition-all border-b-2 -mb-px ${
               game === g
-                ? "bg-white text-[color:var(--type-1)] shadow-sm"
-                : "text-[color:var(--type-3)] hover:text-[color:var(--type-2)]"
+                ? "border-[color:var(--accent)] text-[color:var(--type-1)]"
+                : "border-transparent text-[color:var(--type-3)] hover:text-[color:var(--type-2)]"
             }`}
           >
             {g}

@@ -21,14 +21,14 @@ import { recordPeakCandidate } from "@/lib/guess";
 type CalendarData = Record<string, { score: number; isVisible: boolean }>;
 
 async function saveCalendarSnapshot(score: number, isVisible: boolean) {
-  const today = new Date().toISOString().split("T")[0];
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
   try {
     const data = (await kv.get<CalendarData>("calendar:data")) || {};
     data[today] = { score, isVisible };
 
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - 400);
-    const cutoffStr = cutoff.toISOString().split("T")[0];
+    const cutoffStr = cutoff.toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
     for (const key of Object.keys(data)) {
       if (key < cutoffStr) delete data[key];
     }

@@ -119,7 +119,7 @@ export default async function HoodPage({ params }: PageParams) {
         <section className="flex flex-wrap gap-3">
           <Link
             href={`/?hood=${encodeURIComponent(id)}`}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-white bg-[color:var(--accent)] hover:opacity-90 transition-all"
+            className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium uppercase tracking-wider text-white bg-[color:var(--accent)] hover:opacity-90 transition-all"
           >
             Live dashboard for {label}
           </Link>
@@ -127,7 +127,7 @@ export default async function HoodPage({ params }: PageParams) {
             href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${label} has caught Mt. Rainier ${standing?.outDays ?? 0} of the last ${WINDOW_DAYS} days. Rep the hood.`)}&url=${encodeURIComponent(`${SITE_URL}/hoods/${id}`)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-[color:var(--type-1)] bg-gray-100 hover:bg-gray-200 transition-all"
+            className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-[color:var(--type-2)] border border-[var(--rule)] hover:border-[var(--rule-strong)] transition-all"
           >
             Rep {label}
           </a>
@@ -167,7 +167,7 @@ function Stat({
         ? "text-orange-500"
         : "text-violet-500";
   return (
-    <div className={`rounded-2xl ${bg} p-3.5`}>
+    <div className={`border border-[var(--rule)] p-3.5`}>
       <div className="flex items-center gap-2">
         <Icon className={`w-3.5 h-3.5 ${fg}`} />
         <p className="text-[10px] uppercase tracking-wide text-[color:var(--type-4)] font-semibold truncate">{label}</p>

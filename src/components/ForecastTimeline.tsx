@@ -79,7 +79,7 @@ export default function ForecastTimeline({ hourlyTimeline, currentScore }: Props
   const activeData = activeHour !== null ? hourlyTimeline[activeHour] : null;
 
   return (
-    <div className="alpine-card space-y-4">
+    <div className="space-y-1.5">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium text-[color:var(--type-1)]">24-Hour Forecast</h3>
         <span className="text-[10px] text-[color:var(--type-4)]">
@@ -94,7 +94,7 @@ export default function ForecastTimeline({ hourlyTimeline, currentScore }: Props
         }`}
       >
         {activeData && (
-          <div className="rounded-xl bg-gray-50 p-3 flex items-center gap-4 flex-wrap">
+          <div className="rounded bg-[var(--ink-deep)] p-2 flex items-center gap-2 flex-wrap">
             <div className="flex items-center gap-3">
               {(() => {
                 const Icon = getWeatherIcon(activeData.weatherCode);
@@ -117,7 +117,7 @@ export default function ForecastTimeline({ hourlyTimeline, currentScore }: Props
                     className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${
                       activeData.isVisible
                         ? "bg-[#2d8a4e]/10 text-[#2d8a4e]"
-                        : "bg-gray-100 text-[color:var(--type-4)]"
+                        : "bg-[var(--ink-deep)] text-[color:var(--type-4)]"
                     }`}
                   >
                     {activeData.isVisible ? "Visible" : "Hidden"}

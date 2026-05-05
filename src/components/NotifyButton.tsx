@@ -24,7 +24,7 @@ export default function NotifyButton() {
 
   if (permission === "granted") {
     return (
-      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium text-[#2d8a4e] border border-[#2d8a4e]/20 bg-[#2d8a4e]/10">
+      <div className="inline-flex items-center gap-2 px-4 py-2 rounded text-xs font-medium text-[#2d8a4e] border border-[#2d8a4e]/20 bg-[#2d8a4e]/10">
         <Check className="w-3.5 h-3.5" />
         <span>Notifications on</span>
       </div>
@@ -53,7 +53,7 @@ export default function NotifyButton() {
     <button
       onClick={handleClick}
       disabled={subscribing}
-      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-medium text-[color:var(--type-2)] border border-gray-200 hover:bg-gray-50 hover:text-[color:var(--type-1)] transition-all disabled:opacity-50"
+      className="inline-flex items-center gap-2 px-4 py-2.5 rounded text-xs font-medium text-[color:var(--type-2)] border border-gray-200 hover:bg-[var(--ink-deep)] hover:text-[color:var(--type-1)] transition-all disabled:opacity-50"
     >
       <Bell className="w-3.5 h-3.5" />
       <span>{subscribing ? "Enabling..." : "Notify me when it’s out"}</span>

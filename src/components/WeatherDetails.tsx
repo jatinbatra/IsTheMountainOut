@@ -47,7 +47,7 @@ function MiniProgress({ pct, quality }: { pct: number; quality: string }) {
         : "bg-[#c75a3a]";
 
   return (
-    <div className="w-full h-1.5 rounded-full bg-gray-100 overflow-hidden">
+    <div className="w-full h-1.5 rounded-full bg-[var(--ink-deep)] overflow-hidden">
       <div
         className={`h-full rounded-full ${color} transition-all duration-700`}
         style={{ width: `${Math.max(3, pct)}%` }}
@@ -121,7 +121,7 @@ export default function WeatherDetails({ weather, reasons }: Props) {
   ];
 
   return (
-    <div className="alpine-card-lg space-y-5">
+    <div className="alpine-card-lg space-y-1.5">
       <div>
         <h2 className="font-display text-lg font-medium text-[color:var(--type-1)]">
           Conditions
@@ -129,16 +129,14 @@ export default function WeatherDetails({ weather, reasons }: Props) {
         <p className="text-xs text-[color:var(--type-3)] mt-0.5">What&apos;s affecting visibility</p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-1.5">
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
             <div key={stat.label}>
               <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-gray-50 flex items-center justify-center">
-                    <Icon className="w-3.5 h-3.5 text-[color:var(--type-3)]" />
-                  </div>
+                  <Icon className="w-3.5 h-3.5 text-[color:var(--type-3)]" />
                   <div>
                     <span className="text-sm text-[color:var(--type-1)]">{stat.label}</span>
                     {stat.detail && (
@@ -148,7 +146,7 @@ export default function WeatherDetails({ weather, reasons }: Props) {
                 </div>
                 <span className="font-mono text-sm font-medium text-[color:var(--type-1)] tabular">{stat.value}</span>
               </div>
-              <div className="ml-9">
+              <div className="ml-[22px]">
                 <MiniProgress pct={stat.pct} quality={stat.quality} />
               </div>
             </div>
@@ -166,9 +164,9 @@ export default function WeatherDetails({ weather, reasons }: Props) {
         </button>
 
         <div className={`overflow-hidden transition-all duration-500 ease-in-out ${
-          expanded ? "max-h-[500px] opacity-100 mt-4" : "max-h-0 opacity-0"
+          expanded ? "max-h-[500px] opacity-100 mt-2" : "max-h-0 opacity-0"
         }`}>
-          <ul className="space-y-2 mb-4">
+          <ul className="space-y-2 mb-2">
             {reasons.map((reason, i) => (
               <li
                 key={i}
@@ -180,7 +178,7 @@ export default function WeatherDetails({ weather, reasons }: Props) {
             ))}
           </ul>
 
-          <div className="space-y-1.5 p-3 rounded-xl bg-gray-50">
+          <div className="space-y-1.5 p-2 rounded bg-[var(--ink-deep)]">
             {stats.map((stat) => (
               <p key={stat.label} className="text-[11px] text-[color:var(--type-3)] leading-relaxed">
                 <span className="font-medium text-[color:var(--type-2)]">{stat.label}:</span> {stat.description}

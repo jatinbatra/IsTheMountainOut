@@ -93,7 +93,7 @@ export default function CommunityVote({ currentScore, isVisible }: Props) {
     <div className="alpine-card space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-violet-50">
+          <div className="p-2 rounded bg-violet-50">
             <Users className="w-4 h-4 text-violet-500" />
           </div>
           <div>
@@ -110,12 +110,12 @@ export default function CommunityVote({ currentScore, isVisible }: Props) {
         <button
           onClick={() => handleVote("yes")}
           disabled={!canVote}
-          className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-semibold transition-all ${
+          className={`flex-1 flex items-center justify-center gap-2 py-3 rounded text-sm font-semibold transition-all ${
             votes.userVote === "yes"
               ? "bg-[#2d8a4e]/10 text-[#2d8a4e] ring-2 ring-[#2d8a4e]/30"
               : canVote
-                ? "bg-gray-50 hover:bg-[#2d8a4e]/5 text-[color:var(--type-3)] hover:text-[#2d8a4e]"
-                : "bg-gray-50 text-[color:var(--type-4)] cursor-not-allowed"
+                ? "bg-[var(--ink-deep)] hover:bg-[#2d8a4e]/5 text-[color:var(--type-3)] hover:text-[#2d8a4e]"
+                : "bg-[var(--ink-deep)] text-[color:var(--type-4)] cursor-not-allowed"
           }`}
         >
           <Eye className="w-4 h-4" />
@@ -124,12 +124,12 @@ export default function CommunityVote({ currentScore, isVisible }: Props) {
         <button
           onClick={() => handleVote("no")}
           disabled={!canVote}
-          className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-semibold transition-all ${
+          className={`flex-1 flex items-center justify-center gap-2 py-3 rounded text-sm font-semibold transition-all ${
             votes.userVote === "no"
               ? "bg-red-50 text-red-500 ring-2 ring-red-300/30"
               : canVote
-                ? "bg-gray-50 hover:bg-red-50 text-[color:var(--type-3)] hover:text-red-500"
-                : "bg-gray-50 text-[color:var(--type-4)] cursor-not-allowed"
+                ? "bg-[var(--ink-deep)] hover:bg-red-50 text-[color:var(--type-3)] hover:text-red-500"
+                : "bg-[var(--ink-deep)] text-[color:var(--type-4)] cursor-not-allowed"
           }`}
         >
           <EyeOff className="w-4 h-4" />
@@ -144,7 +144,7 @@ export default function CommunityVote({ currentScore, isVisible }: Props) {
       )}
 
       <div className="space-y-2">
-        <div className="w-full h-3 rounded-full bg-gray-100 overflow-hidden flex">
+        <div className="w-full h-3 rounded-full bg-[var(--ink-deep)] overflow-hidden flex">
           <div
             className="h-full bg-[#2d8a4e]/60 transition-all duration-500"
             style={{ width: `${yesPercent}%` }}

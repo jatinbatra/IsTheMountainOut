@@ -29,9 +29,9 @@ export default function ForecastHub({
   const [tab, setTab] = useState<Tab>("24h");
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-1.5">
       <div
-        className="inline-flex rounded-xl bg-gray-100 p-1"
+        className="inline-flex border-b border-[var(--rule)]"
         role="tablist"
         aria-label="Forecast view"
       >
@@ -41,10 +41,10 @@ export default function ForecastHub({
             role="tab"
             aria-selected={tab === t}
             onClick={() => setTab(t)}
-            className={`px-4 py-2 text-xs font-medium rounded-lg transition-all ${
+            className={`px-3 py-1.5 text-xs font-medium transition-all border-b-2 -mb-px ${
               tab === t
-                ? "bg-white text-[color:var(--type-1)] shadow-sm"
-                : "text-[color:var(--type-3)] hover:text-[color:var(--type-2)]"
+                ? "border-[color:var(--accent)] text-[color:var(--type-1)]"
+                : "border-transparent text-[color:var(--type-3)] hover:text-[color:var(--type-2)]"
             }`}
           >
             {t}
@@ -68,7 +68,7 @@ export default function ForecastHub({
         {tab === "Calendar" && <MountainCalendar />}
       </div>
 
-      <div className="space-y-4 pt-2">
+      <div className="space-y-1.5">
         <WeekendAtRainier weeklyForecast={weeklyForecast} />
         <OutdoorWidget isVisible={isVisible} sunset={sunset} />
       </div>

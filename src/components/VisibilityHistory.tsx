@@ -31,7 +31,7 @@ export default function VisibilityHistory({ isVisible, weeklyForecast }: Props) 
   const today = new Date().toISOString().split("T")[0];
 
   return (
-    <div className="alpine-card space-y-4">
+    <div className="space-y-1.5">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium text-[color:var(--type-1)]">7-Day Prediction</h3>
         <span className="text-[10px] text-[color:var(--type-4)]">Based on forecast data</span>
@@ -48,13 +48,13 @@ export default function VisibilityHistory({ isVisible, weeklyForecast }: Props) 
           return (
             <div
               key={day.date}
-              className={`py-3 border-b border-gray-100 last:border-0 cursor-default transition-colors ${
-                hovered ? "bg-gray-50" : ""
+              className={`py-2 border-b border-gray-100 last:border-0 cursor-default transition-colors ${
+                hovered ? "bg-[var(--ink-deep)]" : ""
               }`}
               onMouseEnter={() => setHoveredDay(i)}
               onMouseLeave={() => setHoveredDay(null)}
             >
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
                 <div className="w-12 shrink-0">
                   <span className={`text-xs ${isToday ? "font-medium text-[color:var(--type-1)]" : "text-[color:var(--type-3)]"}`}>
                     {isToday ? "Today" : day.dayLabel}
@@ -62,7 +62,7 @@ export default function VisibilityHistory({ isVisible, weeklyForecast }: Props) 
                 </div>
 
                 <div className="flex-1 flex items-center gap-3">
-                  <div className="flex-1 h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                  <div className="flex-1 h-1.5 rounded-full bg-[var(--ink-deep)] overflow-hidden">
                     <div
                       className={`h-full rounded-full ${barColor} transition-all duration-700`}
                       style={{ width: `${day.score}%` }}
@@ -99,7 +99,7 @@ export default function VisibilityHistory({ isVisible, weeklyForecast }: Props) 
         })}
       </div>
 
-      <div className="flex items-center gap-4 text-[10px] text-[color:var(--type-4)]">
+      <div className="flex items-center gap-2 text-[10px] text-[color:var(--type-4)]">
         <span className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-[#2d8a4e]" /> Likely visible
         </span>

@@ -108,12 +108,10 @@ export default function GuessTheScore() {
   }, [revealed, submitted]);
 
   return (
-    <div className="alpine-card p-4 sm:p-5">
-      <div className="flex items-center justify-between gap-3 mb-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-violet-50 border border-violet-200">
-            <Dice5 className="w-4 h-4 text-violet-500" aria-hidden="true" />
-          </div>
+    <div>
+      <div className="flex items-center justify-between gap-3 mb-1">
+        <div className="flex items-center gap-2">
+          <Dice5 className="w-4 h-4 text-violet-500" aria-hidden="true" />
           <div>
             <h2 className="font-display text-base font-bold text-[color:var(--type-1)]">Guess the Score</h2>
             <p className="text-[11px] text-[color:var(--type-3)] font-medium tracking-wide mt-0.5">
@@ -134,7 +132,7 @@ export default function GuessTheScore() {
       </div>
 
       {revealed ? (
-        <div className="space-y-4">
+        <div className="space-y-2">
           <div className="flex items-center justify-center gap-6 py-2">
             <div className="text-center">
               <div className="text-[10px] uppercase tracking-wide text-[color:var(--type-4)] font-semibold">Actual peak</div>
@@ -163,12 +161,12 @@ export default function GuessTheScore() {
           </div>
 
           {data && data.top.length > 0 && (
-            <div className="rounded-xl bg-gray-50 border border-gray-100 overflow-hidden">
-              <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100">
+            <div className="border border-[var(--rule)] overflow-hidden">
+              <div className="flex items-center gap-2 px-3 py-2 border-b border-[var(--rule)]">
                 <Trophy className="w-3.5 h-3.5 text-amber-500" />
                 <span className="text-xs font-display font-bold text-[color:var(--type-1)]">Top guesses</span>
               </div>
-              <ul className="divide-y divide-gray-100">
+              <ul className="divide-y divide-[var(--rule)]">
                 {data.top.map((t, i) => (
                   <li key={`${t.handle}-${i}`} className="flex items-center gap-3 px-3 py-1.5">
                     <span className={`font-mono text-[10px] font-bold w-5 ${i === 0 ? "text-amber-500" : "text-[color:var(--type-4)]"}`}>
@@ -190,12 +188,12 @@ export default function GuessTheScore() {
           )}
         </div>
       ) : (
-        <div className="space-y-4">
-          <div className="flex items-end justify-center gap-3">
-            <span className="font-display text-6xl font-black text-[color:var(--type-1)] tabular-nums leading-none">
+        <div className="space-y-1">
+          <div className="flex items-end justify-center gap-2">
+            <span className="font-display text-4xl font-black text-[color:var(--type-1)] tabular-nums leading-none">
               {guess}
             </span>
-            <span className="text-[color:var(--type-4)] text-lg font-light pb-2">/100</span>
+            <span className="text-[color:var(--type-4)] text-sm font-light pb-1">/100</span>
           </div>
           <input
             type="range"
@@ -216,18 +214,18 @@ export default function GuessTheScore() {
               placeholder="handle (optional)"
               value={handleInput}
               onChange={(e) => setHandleInput(e.target.value.slice(0, 24))}
-              className="flex-1 min-w-0 px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs text-[color:var(--type-1)] placeholder:text-gray-400 focus:outline-none focus:border-violet-300 focus:ring-1 focus:ring-violet-200"
+              className="flex-1 min-w-0 px-3 py-2 bg-transparent border border-[var(--rule)] text-xs text-[color:var(--type-1)] placeholder:text-[color:var(--type-4)] focus:outline-none focus:border-[color:var(--accent)]"
               maxLength={24}
             />
             <button
               onClick={submit}
               disabled={submitting || isLoading}
-              className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-display font-bold transition-all disabled:opacity-50 ${
+              className={`inline-flex items-center gap-2 px-4 py-2 text-xs font-display font-bold transition-all disabled:opacity-50 ${
                 error
-                  ? "bg-red-50 text-red-600 border border-red-200"
+                  ? "text-red-600 border border-red-200"
                   : submitted
                     ? "bg-[#2d8a4e]/10 text-[#2d8a4e] border border-[#2d8a4e]/20"
-                    : "bg-violet-500 text-white border border-violet-600 shadow-sm hover:bg-violet-600"
+                    : "bg-[color:var(--accent)] text-white hover:opacity-90"
               }`}
             >
               {submitting ? (

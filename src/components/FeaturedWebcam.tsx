@@ -35,9 +35,9 @@ export default function FeaturedWebcam() {
   });
 
   return (
-    <div className="alpine-card !p-0 overflow-hidden">
+    <div className="overflow-hidden border border-[var(--rule)]">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--rule)]">
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5">
             <div className="relative">
@@ -50,19 +50,19 @@ export default function FeaturedWebcam() {
         </div>
         <div className="flex items-center gap-2">
           <span className="font-mono text-[10px] text-[color:var(--type-4)]">{timestamp} PT</span>
-          <button onClick={refresh} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+          <button onClick={refresh} className="p-1.5 hover:bg-[var(--ink-deep)] rounded-lg transition-colors">
             <RefreshCw className={`w-3.5 h-3.5 text-[color:var(--type-4)] ${refreshing ? "animate-spin" : ""}`} />
           </button>
-          <a href={WEBCAM_SOURCE} target="_blank" rel="noopener noreferrer" className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+          <a href={WEBCAM_SOURCE} target="_blank" rel="noopener noreferrer" className="p-1.5 hover:bg-[var(--ink-deep)] rounded-lg transition-colors">
             <ExternalLink className="w-3.5 h-3.5 text-[color:var(--type-4)]" />
           </a>
         </div>
       </div>
 
       {/* Image */}
-      <div className="relative aspect-video bg-gray-100">
+      <div className="relative aspect-video bg-[var(--ink-deep)]">
         {error ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gray-50">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[var(--ink-deep)]">
             <AlertCircle className="w-6 h-6 text-[color:var(--type-4)]" />
             <p className="text-xs text-[color:var(--type-4)]">Feed unavailable</p>
             {lastGoodSrc && (
@@ -96,7 +96,7 @@ export default function FeaturedWebcam() {
       </div>
 
       {/* Footer info */}
-      <div className="px-4 py-2.5 bg-gray-50 flex items-center justify-between">
+      <div className="px-4 py-2 border-t border-[var(--rule)] flex items-center justify-between">
         <p className="text-[10px] text-[color:var(--type-3)]">Mt. Rainier South Face · 46.75°N 121.81°W</p>
         <p className="text-[9px] text-[color:var(--type-4)]">USGS Volcanic Monitoring</p>
       </div>

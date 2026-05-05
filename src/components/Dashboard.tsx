@@ -242,36 +242,31 @@ export default function Dashboard({ initialData }: Props) {
 
       <PWAInstallPrompt />
 
-      <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 pb-6 sm:pb-10 space-y-5">
+      <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 pb-3 space-y-0">
         {/* ── Header Bar ── */}
-        <div className="hero-section px-5 py-4 !rounded-none flex items-center justify-between -mx-4 sm:-mx-6">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-              <span className="font-display text-sm text-white/90">M</span>
-            </div>
-            <div>
-              <h1 className="font-display font-medium text-white text-[15px] leading-none">
-                Is the Mountain Out<span className="text-[#6edd8f]">?</span>
-              </h1>
-              <p className="font-mono text-[9px] text-white/40 mt-0.5 tracking-wider">
-                MT. RAINIER &middot; {timeStr} PT
-              </p>
-            </div>
+        <header className="flex items-center justify-between py-2 border-b border-[var(--rule)]">
+          <div>
+            <h1 className="font-display font-medium text-[color:var(--type-1)] text-[17px] leading-none tracking-tight">
+              Is the Mountain Out?
+            </h1>
+            <p className="font-mono text-[9px] text-[color:var(--type-4)] mt-1 tracking-wider uppercase">
+              Mt. Rainier &middot; {timeStr} PT
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <GlobalStreakBadge />
             <button
               onClick={() => mutate()}
               disabled={isValidating}
-              className="p-2 rounded-lg hover:bg-white/10 transition-colors disabled:opacity-50"
+              className="p-2 hover:bg-[var(--ink-deep)] transition-colors disabled:opacity-50"
               aria-label="Refresh data"
             >
               <RefreshCw
-                className={`w-4 h-4 text-white/50 ${isValidating ? "animate-spin" : ""}`}
+                className={`w-4 h-4 text-[color:var(--type-4)] ${isValidating ? "animate-spin" : ""}`}
               />
             </button>
           </div>
-        </div>
+        </header>
 
         {/* ── Neighborhood Selector ── */}
         <div className="stagger-2 animate-fade-up">
@@ -301,7 +296,7 @@ export default function Dashboard({ initialData }: Props) {
         />
 
         {/* ── Right Now ── */}
-        <section className="alpine-card space-y-3">
+        <section className="space-y-0">
           <SpotterButton
             isVisible={adjustedIsVisible}
             score={neighborhoodAdjustedScore}
@@ -319,11 +314,11 @@ export default function Dashboard({ initialData }: Props) {
         </section>
 
         {/* ── Share + Best View ── */}
-        <section className="space-y-3">
+        <section className="space-y-0">
           {adjustedIsVisible && topViewpoint && (
-            <div className="alpine-card flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[color:var(--accent)]/10 flex items-center justify-center flex-shrink-0">
-                <span className="font-mono text-xs text-[color:var(--accent)]">1</span>
+            <div className="flex items-center gap-3 py-2 border-t border-[var(--rule)]">
+              <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
+                <span className="font-mono text-xs text-[color:var(--type-4)]">1</span>
               </div>
               <div className="min-w-0">
                 <p className="text-[10px] text-[color:var(--type-3)] uppercase tracking-wider">Best vantage</p>
@@ -355,8 +350,8 @@ export default function Dashboard({ initialData }: Props) {
           data.alpenglow.probability >= 40 &&
           data.alpenglow.minutesToSunset > 0 &&
           data.alpenglow.minutesToSunset <= 60 && (
-            <section className="alpine-card !bg-orange-50 border border-orange-200/50">
-              <p className="text-[10px] text-orange-500 uppercase tracking-wider font-mono font-medium mb-1">Alpenglow Alert</p>
+            <section className="py-2 border-t border-[var(--rule)]">
+              <p className="text-[10px] text-[color:var(--accent-pink)] uppercase tracking-wider font-mono font-medium mb-0.5">Alpenglow Alert</p>
               <p className="font-display text-[18px] text-[color:var(--type-1)] leading-snug">
                 The mountain could turn pink in ~{data.alpenglow.minutesToSunset} minutes.
               </p>
@@ -370,7 +365,7 @@ export default function Dashboard({ initialData }: Props) {
           )}
 
         {/* ── The View ── */}
-        <section className="space-y-5">
+        <section className="space-y-0">
           <h2 className="font-display text-lg font-medium text-[color:var(--type-1)]">The View</h2>
           <div
             data-reveal-index="1"
@@ -417,13 +412,11 @@ export default function Dashboard({ initialData }: Props) {
         {/* ── Alerts ── */}
         <section
           data-reveal-index="3"
-          className={`transition-all duration-700 ${
+          className={`transition-all duration-700 border-t border-[var(--rule)] pt-2 ${
             isRevealed(3) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <div className="alpine-card">
-            <NotifyCard />
-          </div>
+          <NotifyCard />
         </section>
 
         {/* ── Forecast ── */}
@@ -433,7 +426,7 @@ export default function Dashboard({ initialData }: Props) {
             isRevealed(3) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <h2 className="font-display text-lg font-medium text-[color:var(--type-1)] mb-4">Forecast</h2>
+          <h2 className="font-display text-lg font-medium text-[color:var(--type-1)] mb-1">Forecast</h2>
           <ForecastHub
             hourlyTimeline={data.hourlyTimeline}
             currentScore={data.visibility.score}
@@ -463,13 +456,13 @@ export default function Dashboard({ initialData }: Props) {
             isRevealed(4) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <div className="flex items-baseline justify-between mb-4">
+          <div className="flex items-baseline justify-between mb-1">
             <h2 className="font-display text-lg font-medium text-[color:var(--type-1)]">Vantage Points</h2>
             <span className="font-mono text-[10px] text-[color:var(--type-4)] tabular">
               {Math.min(8, data.viewpoints.length)} stations
             </span>
           </div>
-          <div className="alpine-card !p-0 overflow-hidden divide-y divide-[var(--rule)]" role="list">
+          <div className="divide-y divide-[var(--rule)]" role="list">
             {visibleViewpoints.map((vp, i) => (
               <ViewpointCard
                 key={vp.id}
@@ -501,7 +494,7 @@ export default function Dashboard({ initialData }: Props) {
             isRevealed(5) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <h2 className="font-display text-lg font-medium text-[color:var(--type-1)] mb-4">Community</h2>
+          <h2 className="font-display text-lg font-medium text-[color:var(--type-1)] mb-1">Community</h2>
           <CommunityGames
             selectedHood={neighborhood}
             onSelectHood={setNeighborhood}
@@ -511,7 +504,7 @@ export default function Dashboard({ initialData }: Props) {
         </section>
 
         {/* ── Footer ── */}
-        <section className="alpine-card space-y-5">
+        <section className="border-t border-[var(--rule)] pt-2 space-y-0.5">
           <PrivacyCommitment />
           <p className="text-sm text-[color:var(--type-3)] leading-relaxed">
             A Pacific Northwest field report. Mt. Rainier visibility scored from
@@ -534,7 +527,7 @@ export default function Dashboard({ initialData }: Props) {
           </div>
         </section>
 
-        <footer className="py-6">
+        <footer className="py-3">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-5">
               <a href="/almanac" className="text-xs text-[color:var(--type-3)] hover:text-[color:var(--type-1)] transition-colors font-medium">Almanac</a>

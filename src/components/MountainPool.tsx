@@ -176,11 +176,9 @@ export default function MountainPool() {
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-3 mb-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-blue-50 border border-blue-200">
-            <Target className="w-4 h-4 text-blue-500" aria-hidden="true" />
-          </div>
+      <div className="flex items-center justify-between gap-3 mb-1">
+        <div className="flex items-center gap-2">
+          <Target className="w-4 h-4 text-[color:var(--accent)]" aria-hidden="true" />
           <div>
             <h2 className="font-display text-base font-bold text-[color:var(--type-1)]">The Mountain Pool</h2>
             <p className="text-[11px] text-[color:var(--type-3)] font-medium tracking-wide mt-0.5">
@@ -189,32 +187,32 @@ export default function MountainPool() {
           </div>
         </div>
         {!isLocked && week && (
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-[10px] font-mono tabular-nums text-amber-600">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 border border-[var(--rule)] text-[10px] font-mono tabular-nums text-[color:var(--type-3)]">
             <Clock className="w-3 h-3" />
             {countdown}
           </div>
         )}
         {isLocked && (
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-red-50 border border-red-200 text-[10px] font-semibold uppercase tracking-wide text-red-500">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 border border-[var(--rule)] text-[10px] font-semibold uppercase tracking-wide text-[color:var(--type-3)]">
             Locked
           </div>
         )}
       </div>
 
-      <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-5 space-y-4">
-        <div className="grid grid-cols-7 gap-2">
+      <div className="border border-[var(--rule)] p-2 sm:p-3 space-y-1.5">
+        <div className="grid grid-cols-7 gap-1.5">
           {slate.map((score, i) => (
             <div key={i} className="flex flex-col items-center gap-2">
               <div className="text-[10px] text-[color:var(--type-3)] font-semibold uppercase tracking-wide">
                 {week ? dayLabel(week.startDate, i) : ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"][i]}
               </div>
-              <div className="relative w-full h-24 rounded-xl bg-gray-100 border border-gray-200 overflow-hidden">
+              <div className="relative w-full h-24 border border-[var(--rule)] overflow-hidden">
                 <div
                   className={`absolute inset-x-0 bottom-0 bg-gradient-to-t ${tierColor(score)} transition-all duration-300`}
                   style={{ height: `${score}%` }}
                 />
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <span className="font-display font-bold text-[color:var(--type-1)] text-sm tabular-nums drop-shadow-sm">
+                  <span className="font-display font-bold text-[color:var(--type-1)] text-sm tabular-nums">
                     {score}
                   </span>
                 </div>
@@ -234,7 +232,7 @@ export default function MountainPool() {
           ))}
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-3 pt-3 border-t border-gray-100">
+        <div className="flex items-center gap-2 sm:gap-3 pt-3 border-t border-[var(--rule)]">
           <div className="relative flex-1">
             <AtSign className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
@@ -242,7 +240,7 @@ export default function MountainPool() {
               placeholder="handle (optional)"
               value={handleInput}
               onChange={(e) => setHandleInput(e.target.value.slice(0, 24))}
-              className="w-full pl-8 pr-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs text-[color:var(--type-1)] placeholder:text-gray-400 focus:outline-none focus:border-blue-300 focus:ring-1 focus:ring-blue-200"
+              className="w-full pl-8 pr-3 py-2 bg-transparent border border-[var(--rule)] text-xs text-[color:var(--type-1)] placeholder:text-[color:var(--type-4)] focus:outline-none focus:border-[color:var(--accent)]"
               maxLength={24}
               disabled={isLocked}
             />
@@ -250,7 +248,7 @@ export default function MountainPool() {
           <button
             onClick={reset}
             disabled={isLocked || submitting}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-[color:var(--type-3)] bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-all disabled:opacity-40"
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-[color:var(--type-3)] border border-[var(--rule)] hover:border-[var(--rule-strong)] transition-all disabled:opacity-40"
             aria-label="Reset picks"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -258,12 +256,12 @@ export default function MountainPool() {
           <button
             onClick={submit}
             disabled={isLocked || submitting || (submitted && !isDirty && !submitError)}
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-display font-bold transition-all disabled:opacity-40 ${
+            className={`inline-flex items-center gap-2 px-4 py-2 text-xs font-display font-bold transition-all disabled:opacity-40 ${
               submitError
-                ? "bg-red-50 text-red-600 border border-red-200"
+                ? "text-red-600 border border-red-200"
                 : submitted && !isDirty
                   ? "bg-[#2d8a4e]/10 text-[#2d8a4e] border border-[#2d8a4e]/20"
-                  : "bg-blue-500 text-white border border-blue-600 shadow-sm hover:bg-blue-600"
+                  : "bg-[color:var(--accent)] text-white hover:opacity-90"
             }`}
           >
             {submitting ? (
@@ -310,15 +308,15 @@ export default function MountainPool() {
       </div>
 
       {data && data.standings.length > 0 && (
-        <div className="mt-4 rounded-2xl border border-gray-200 bg-white overflow-hidden">
-          <div className="flex items-center gap-2 px-4 py-2.5 border-b border-gray-100">
+        <div className="mt-3 border border-[var(--rule)] overflow-hidden">
+          <div className="flex items-center gap-2 px-4 py-2.5 border-b border-[var(--rule)]">
             <Trophy className="w-3.5 h-3.5 text-amber-500" />
             <span className="text-xs font-display font-bold text-[color:var(--type-1)]">Live standings</span>
             <span className="text-[10px] text-[color:var(--type-4)] ml-auto tabular-nums">
               {data.totalEntries} entries
             </span>
           </div>
-          <ul className="divide-y divide-gray-100">
+          <ul className="divide-y divide-[var(--rule)]">
             {data.standings.slice(0, 5).map((s, i) => {
               const isMe = s.userId === userId;
               return (

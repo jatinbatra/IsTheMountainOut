@@ -82,7 +82,7 @@ export default function SpotterButton({ isVisible, score }: Props) {
   const count = Math.max(data?.count ?? 0, confirmed ? 1 : 0);
 
   return (
-    <div className="flex items-center justify-between py-4 border-b border-gray-200">
+    <div className="flex items-center justify-between py-2 border-b border-gray-200">
       <div className="flex items-center gap-3 min-w-0">
         {confirmed ? (
           <Check className="w-4 h-4 text-[#2d8a4e] flex-shrink-0" aria-hidden="true" />
@@ -110,7 +110,7 @@ export default function SpotterButton({ isVisible, score }: Props) {
         className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
           confirmed
             ? "text-[#2d8a4e] bg-[#2d8a4e]/10"
-            : "text-[color:var(--type-1)] bg-gray-50 hover:bg-gray-100 border border-gray-200"
+            : "text-[color:var(--type-1)] bg-[var(--ink-deep)] hover:bg-[var(--ink-deep)] border border-gray-200"
         } disabled:cursor-default`}
         aria-label={confirmed ? "You already confirmed" : "I see the mountain"}
       >

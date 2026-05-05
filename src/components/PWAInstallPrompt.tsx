@@ -105,9 +105,9 @@ export default function PWAInstallPrompt() {
       role="dialog"
       aria-label="Install IsTheMountainOut"
     >
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-2xl shadow-black/10 p-4">
+      <div className="bg-[var(--ink-deep)] rounded border border-gray-100 shadow-black/10 p-4">
         <div className="flex items-start gap-3">
-          <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-[color:var(--accent)]/10 flex items-center justify-center">
+          <div className="flex-shrink-0 w-10 h-10 rounded bg-[color:var(--accent)]/10 flex items-center justify-center">
             <span className="font-display text-lg text-[color:var(--accent)]">M</span>
           </div>
           <div className="flex-1 min-w-0">
@@ -132,7 +132,7 @@ export default function PWAInstallPrompt() {
         {platform === "android" && deferred && (
           <button
             onClick={install}
-            className="mt-3 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium bg-[color:var(--accent)] text-white rounded-xl hover:opacity-90 transition-all"
+            className="mt-3 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium bg-[color:var(--accent)] text-white rounded hover:opacity-90 transition-all"
           >
             <Download className="w-4 h-4" />
             Install app
@@ -141,14 +141,14 @@ export default function PWAInstallPrompt() {
 
         {platform === "ios" && (
           <div className="mt-3 space-y-2 text-xs text-[color:var(--type-2)]">
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50">
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--ink-deep)]">
               <span className="font-mono text-[color:var(--type-4)] w-4">1.</span>
               <span>Tap</span>
               <Share2 className="w-3.5 h-3.5 text-[color:var(--accent)]" />
               <span className="text-[color:var(--type-3)]">Share</span>
               <span className="text-[color:var(--type-4)]">in Safari</span>
             </div>
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50">
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--ink-deep)]">
               <span className="font-mono text-[color:var(--type-4)] w-4">2.</span>
               <span>Tap</span>
               <Plus className="w-3.5 h-3.5 text-[color:var(--accent)]" />
