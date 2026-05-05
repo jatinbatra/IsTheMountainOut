@@ -8,6 +8,7 @@ import MountainSilhouetteScore from "@/components/MountainSilhouetteScore";
 import MountainMoment from "@/components/MountainMoment";
 import WeatherDetails from "@/components/WeatherDetails";
 import ViewpointCard from "@/components/ViewpointCard";
+import ViewpointMap from "@/components/ViewpointMap";
 import LiveWebcams from "@/components/LiveWebcams";
 import NightSky from "@/components/NightSky";
 import FeaturedWebcam from "@/components/FeaturedWebcam";
@@ -353,6 +354,27 @@ export default function Dashboard({ initialData }: Props) {
             <h2 className="font-display text-xl sm:text-2xl">Iconic Sightlines</h2>
             <span className="font-mono text-[10px] text-[var(--text-tertiary)] tabular">{Math.min(8, data.viewpoints.length)} vantage points</span>
           </div>
+
+          {/* Visibility Map */}
+          <div className="mb-6 alpine-card">
+            <ViewpointMap
+              viewpoints={data.viewpoints.slice(0, 8).map((vp) => ({
+                id: vp.id,
+                name: vp.name,
+                lat: vp.lat,
+                lon: vp.lon,
+                score: vp.locationScore,
+                region: vp.region,
+              }))}
+              selectedId={data.viewpoints[selectedViewpoint]?.id}
+              onSelectViewpoint={(id) => {
+                const index = data.viewpoints.findIndex((vp) => vp.id === id);
+                if (index >= 0) setSelectedViewpoint(index);
+              }}
+              baseScore={neighborhoodAdjustedScore}
+            />
+          </div>
+
           <div className="space-y-3" role="list">
             {visibleViewpoints.map((vp, i) => (
               <ViewpointCard key={vp.id} viewpoint={vp} rank={i + 1} isVisible={adjustedIsVisible} isSelected={selectedViewpoint === i} onSelect={() => setSelectedViewpoint(i)} />
