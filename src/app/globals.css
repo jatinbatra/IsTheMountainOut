@@ -105,16 +105,17 @@ button:active:not(:disabled) {
 
 /* ─── Typography ─── */
 
-/* Serif display font for headlines */
+/* Serif display font for headlines — fluid sizing with clamp() */
 .font-display {
   font-family: 'Georgia', 'Times New Roman', serif;
   font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.2;
+  font-size: clamp(1.25rem, 4vw, 2.25rem);
 }
 
 .font-mono {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
   font-feature-settings: "tnum";
 }
 
@@ -154,6 +155,15 @@ button:active:not(:disabled) {
 
 .tabular { font-feature-settings: "tnum"; }
 
+/* Data-specific monospace styling (2026 trend: raw aesthetics) */
+.data-mono {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-feature-settings: "tnum";
+  font-size: clamp(0.875rem, 2vw, 1.125rem);
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+}
+
 .ticker {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 11px;
@@ -171,14 +181,25 @@ button:active:not(:disabled) {
   background: var(--bg-secondary);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
-  padding: 1.25rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
   box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 .alpine-card:hover {
   box-shadow: var(--shadow-md);
   border-color: var(--border-lighter);
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .alpine-card {
+    transition: none;
+  }
+
+  .alpine-card:hover {
+    transition: none;
+  }
 }
 
 .alpine-card-lg {
@@ -417,6 +438,17 @@ button:active:not(:disabled) {
 .delay-200 { animation-delay: 200ms; }
 .delay-300 { animation-delay: 300ms; }
 .delay-500 { animation-delay: 500ms; }
+
+/* Respect motion preferences — disable all decorative animations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
 
 /* ─── Scrollbar ─── */
 .scrollbar-thin {
