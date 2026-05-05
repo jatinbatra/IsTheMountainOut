@@ -257,8 +257,8 @@ export default function Dashboard({ initialData }: Props) {
         </div>
 
         {/* ── Score Hero ── */}
-        <div className="py-6 sm:py-10 border-b border-[var(--rule)]">
-          <div className="flex items-end gap-6">
+        <div className="py-8 sm:py-12 border-b border-[var(--rule)]">
+          <div className="flex items-end gap-8">
             <div
               className="font-mono font-bold leading-[0.85] tabular-nums select-none"
               style={{ fontSize: "clamp(6rem, 20vw, 14rem)", color: scoreColor }}
@@ -266,12 +266,12 @@ export default function Dashboard({ initialData }: Props) {
             >
               {neighborhoodAdjustedScore}
             </div>
-            <div className="pb-2 sm:pb-4">
-              <p className="font-mono text-xs text-[var(--type-4)] tracking-widest">/100</p>
-              <p className="font-mono text-sm sm:text-base font-medium mt-1" style={{ color: scoreColor }}>
+            <div className="pb-3 sm:pb-6">
+              <p className="font-mono text-[10px] sm:text-xs text-[var(--type-4)] tracking-widest leading-tight">/100</p>
+              <p className="font-mono text-sm sm:text-base font-semibold mt-2" style={{ color: scoreColor }}>
                 {statusWord}
               </p>
-              <p className="font-mono text-[11px] text-[var(--type-4)] mt-1">{data.visibility.durationMessage}</p>
+              <p className="font-mono text-[10px] sm:text-[11px] text-[var(--type-3)] mt-2">{data.visibility.durationMessage}</p>
             </div>
           </div>
         </div>
@@ -286,10 +286,10 @@ export default function Dashboard({ initialData }: Props) {
             { label: "WIND", value: `${Math.round(data.weather.windSpeed)}`, unit: "km/h" },
             { label: "PM2.5", value: data.weather.pm25 !== undefined ? `${data.weather.pm25.toFixed(0)}` : "—", unit: "µg" },
           ].map((stat) => (
-            <div key={stat.label} className="py-3 px-2 border-r border-[var(--rule)] last:border-r-0 text-center">
-              <p className="font-mono text-[9px] text-[var(--type-4)] tracking-wider">{stat.label}</p>
-              <p className="font-mono text-lg sm:text-xl font-light text-[var(--type-1)] tabular mt-0.5">
-                {stat.value}<span className="text-[10px] text-[var(--type-4)] ml-0.5">{stat.unit}</span>
+            <div key={stat.label} className="py-4 px-2 sm:px-3 border-r border-[var(--rule)] last:border-r-0 text-center">
+              <p className="font-mono text-[8px] sm:text-[9px] text-[var(--type-4)] tracking-wider leading-tight">{stat.label}</p>
+              <p className="font-mono text-xl sm:text-2xl font-light text-[var(--type-1)] tabular mt-1 leading-tight">
+                {stat.value}<span className="text-[11px] text-[var(--type-4)] ml-1">{stat.unit}</span>
               </p>
             </div>
           ))}

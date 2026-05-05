@@ -40,11 +40,11 @@
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 
-  --hud-green: #00ff88;
-  --hud-amber: #f59e0b;
-  --hud-dim: rgba(255, 255, 255, 0.15);
-  --hud-pink: #ef4444;
-  --surface-hover: rgba(255, 255, 255, 0.05);
+  --hud-green: #22c55e;
+  --hud-amber: #fbbf24;
+  --hud-dim: rgba(255, 255, 255, 0.2);
+  --hud-pink: #f97316;
+  --surface-hover: rgba(255, 255, 255, 0.08);
 }
 
 @theme inline {
@@ -89,8 +89,8 @@ body::before {
     0deg,
     transparent,
     transparent 2px,
-    rgba(255, 255, 255, 0.012) 2px,
-    rgba(255, 255, 255, 0.012) 4px
+    rgba(255, 255, 255, 0.005) 2px,
+    rgba(255, 255, 255, 0.005) 4px
   );
 }
 
