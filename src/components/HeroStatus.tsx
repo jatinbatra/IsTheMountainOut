@@ -73,8 +73,8 @@ function getWeatherSentence(
 }
 
 function CircularGauge({ score, status }: { score: number; status: VisibilityStatus }) {
-  const size = 160;
-  const strokeWidth = 8;
+  const size = 120;
+  const strokeWidth = 6;
   const radius = (size - strokeWidth) / 2;
   const halfCircumference = Math.PI * radius;
   const fillAmount = (score / 100) * halfCircumference;
@@ -131,7 +131,7 @@ function CircularGauge({ score, status }: { score: number; status: VisibilitySta
         })}
       </svg>
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-center">
-        <div className="font-display font-light text-[color:var(--type-1)] leading-none tabular text-[2.75rem]">
+        <div className="font-display font-light text-[color:var(--type-1)] leading-none tabular text-[2rem]">
           {score}
         </div>
       </div>

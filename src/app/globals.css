@@ -158,17 +158,17 @@ button:active:not(:disabled) {
 
 .alpine-card {
   border-top: 1px solid var(--rule);
-  padding-top: 1.25rem;
+  padding-top: 0.5rem;
 }
 
 .alpine-card-lg {
   border-top: 1px solid var(--rule-strong);
-  padding-top: 1.5rem;
+  padding-top: 0.625rem;
 }
 
 .editorial-card {
   border-top: 1px solid var(--rule);
-  padding-top: 1.5rem;
+  padding-top: 0.625rem;
 }
 
 .editorial-card-warm {
@@ -180,7 +180,7 @@ button:active:not(:disabled) {
 /* Legacy glass — mapped to rule-separated sections */
 .glass {
   border-top: 1px solid var(--rule);
-  padding-top: 1rem;
+  padding-top: 0.5rem;
 }
 
 .glass-strong {

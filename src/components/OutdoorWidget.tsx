@@ -100,10 +100,10 @@ export default function OutdoorWidget({ isVisible, sunset }: Props) {
   if (!isVisible) return null;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-1">
       {/* Golden Hour Countdown */}
       {countdown && !countdown.isPast && (
-        <div className="alpine-card space-y-2">
+        <div className="alpine-card space-y-0.5">
           <div>
             <p className="text-[10px] text-orange-500 uppercase tracking-wider font-medium mb-1">Golden Hour</p>
             <h3 className="font-medium text-[color:var(--type-1)] text-sm">
@@ -146,7 +146,7 @@ export default function OutdoorWidget({ isVisible, sunset }: Props) {
       )}
 
       {/* Trail Recommendations */}
-      <div className="alpine-card space-y-2">
+      <div className="alpine-card space-y-0.5">
         <div>
           <p className="text-[10px] text-[color:var(--accent)] uppercase tracking-wider font-medium mb-1">Trail Recommendations</p>
           <h3 className="font-medium text-[color:var(--type-1)] text-sm">

@@ -176,8 +176,8 @@ export default function MountainPool() {
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-3 mb-2">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between gap-3 mb-1">
+        <div className="flex items-center gap-2">
           <Target className="w-4 h-4 text-[color:var(--accent)]" aria-hidden="true" />
           <div>
             <h2 className="font-display text-base font-bold text-[color:var(--type-1)]">The Mountain Pool</h2>
@@ -199,8 +199,8 @@ export default function MountainPool() {
         )}
       </div>
 
-      <div className="border border-[var(--rule)] p-4 sm:p-5 space-y-3">
-        <div className="grid grid-cols-7 gap-2">
+      <div className="border border-[var(--rule)] p-2 sm:p-3 space-y-1.5">
+        <div className="grid grid-cols-7 gap-1.5">
           {slate.map((score, i) => (
             <div key={i} className="flex flex-col items-center gap-2">
               <div className="text-[10px] text-[color:var(--type-3)] font-semibold uppercase tracking-wide">

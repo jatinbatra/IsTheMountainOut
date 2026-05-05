@@ -109,8 +109,8 @@ export default function GuessTheScore() {
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-3 mb-3">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between gap-3 mb-1">
+        <div className="flex items-center gap-2">
           <Dice5 className="w-4 h-4 text-violet-500" aria-hidden="true" />
           <div>
             <h2 className="font-display text-base font-bold text-[color:var(--type-1)]">Guess the Score</h2>
@@ -188,12 +188,12 @@ export default function GuessTheScore() {
           )}
         </div>
       ) : (
-        <div className="space-y-2">
-          <div className="flex items-end justify-center gap-3">
-            <span className="font-display text-6xl font-black text-[color:var(--type-1)] tabular-nums leading-none">
+        <div className="space-y-1">
+          <div className="flex items-end justify-center gap-2">
+            <span className="font-display text-4xl font-black text-[color:var(--type-1)] tabular-nums leading-none">
               {guess}
             </span>
-            <span className="text-[color:var(--type-4)] text-lg font-light pb-2">/100</span>
+            <span className="text-[color:var(--type-4)] text-sm font-light pb-1">/100</span>
           </div>
           <input
             type="range"

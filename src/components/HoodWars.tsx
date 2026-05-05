@@ -81,10 +81,10 @@ export default function HoodWars({
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-3 mb-2">
+      <div className="flex items-center justify-between gap-3 mb-1">
         <div>
           <h2 className="font-display text-base font-medium text-[color:var(--type-1)]">Hood Wars</h2>
-          <p className="ticker mt-0.5">
+          <p className="ticker mt-0">
             Mountain-out days · last {windowDays}
           </p>
         </div>
@@ -93,23 +93,23 @@ export default function HoodWars({
         </span>
       </div>
 
-      <div className={`grid grid-cols-3 gap-2.5 mb-3 ${leaderboardKick ? "animate-fade-up" : ""}`}>
+      <div className={`grid grid-cols-3 gap-1.5 mb-1.5 ${leaderboardKick ? "animate-fade-up" : ""}`}>
         {topThree.map((s, i) => {
           const isSel = selected === s.id;
           return (
             <button
               key={s.id}
               onClick={() => onSelect(s.id)}
-              className={`relative text-left p-3.5 transition-all overflow-hidden group border ${
+              className={`relative text-left p-2 transition-all overflow-hidden group border ${
                 i === 0
                   ? "border-[#2d8a4e]/30 bg-[#2d8a4e]/[0.04]"
                   : "border-[var(--rule)]"
               } ${isSel ? "border-[color:var(--type-1)]/30" : ""}`}
             >
-              <div className={`font-mono text-[10px] tracking-wider ${rankColor(i + 1)} mb-1`}>#{i + 1}</div>
-              <div className="font-display font-medium text-sm text-[color:var(--type-1)] truncate">{s.label}</div>
-              <div className="mt-2 flex items-baseline gap-1">
-                <span className="font-display text-2xl font-light text-[color:var(--type-1)] tabular">{s.outDays}</span>
+              <div className={`font-mono text-[10px] tracking-wider ${rankColor(i + 1)} mb-0`}>#{i + 1}</div>
+              <div className="font-display font-medium text-xs text-[color:var(--type-1)] truncate">{s.label}</div>
+              <div className="mt-1 flex items-baseline gap-1">
+                <span className="font-display text-xl font-light text-[color:var(--type-1)] tabular">{s.outDays}</span>
                 <span className="font-mono text-[10px] text-[color:var(--type-4)]">/ {windowDays}d</span>
               </div>
               {s.currentStreak > 1 && (

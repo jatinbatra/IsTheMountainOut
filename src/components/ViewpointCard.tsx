@@ -66,7 +66,7 @@ export default function ViewpointCard({
   return (
     <button
       onClick={onSelect}
-      className={`w-full text-left transition-all duration-200 px-4 py-3.5 ${
+      className={`w-full text-left transition-all duration-200 px-3 py-2 ${
         isSelected
           ? "bg-[color:var(--accent)]/[0.04]"
           : "hover:bg-[var(--ink-deep)]"

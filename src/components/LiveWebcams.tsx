@@ -72,7 +72,7 @@ export default function LiveWebcams({ feeds }: Props) {
   const goPrev = () => setSelectedCam((prev) => (prev - 1 + feeds.length) % feeds.length);
 
   return (
-    <section className="space-y-2">
+    <section className="space-y-0.5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h2 className="font-display text-lg font-medium text-[color:var(--type-1)]">
@@ -203,7 +203,7 @@ export default function LiveWebcams({ feeds }: Props) {
       </div>
 
       {/* Thumbnail grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1">
         {feeds.map((feed, i) => (
           <button
             key={feed.id}

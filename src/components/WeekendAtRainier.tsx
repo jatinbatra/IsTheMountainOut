@@ -86,7 +86,7 @@ function recommendation(
 function DayChip({ day, label }: { day?: WeeklyForecastDay; label: string }) {
   if (!day) {
     return (
-      <div className="flex-1 rounded bg-[var(--ink-deep)] px-3 py-3 text-center">
+      <div className="flex-1 rounded bg-[var(--ink-deep)] px-2 py-2 text-center">
         <p className="text-[10px] text-[color:var(--type-4)] uppercase tracking-wider mb-1">{label}</p>
         <p className="text-xs text-[color:var(--type-4)]">No forecast</p>
       </div>
@@ -299,9 +299,9 @@ export default function WeekendAtRainier({ weeklyForecast }: Props) {
   });
 
   return (
-    <div className="alpine-card space-y-3">
+    <div className="alpine-card space-y-1">
       <div>
-        <p className="text-[10px] text-[color:var(--accent)] uppercase tracking-wider font-medium mb-1">Weekend at Rainier</p>
+        <p className="text-[10px] text-[color:var(--accent)] uppercase tracking-wider font-medium mb-0">Weekend at Rainier</p>
         <h3 className="font-display font-medium text-[color:var(--type-1)] text-base">
           Planning a visit? Here&apos;s the weekend of {weekendLabel}.
         </h3>
@@ -321,7 +321,7 @@ export default function WeekendAtRainier({ weeklyForecast }: Props) {
       )}
 
       <div>
-        <div className="flex items-end justify-between mb-2">
+        <div className="flex items-end justify-between mb-1">
           <p className="text-[10px] text-[color:var(--type-4)] uppercase tracking-wider">Popular stops</p>
           {realtime && (
             <p className="text-[10px] font-medium text-[#2d8a4e]">Live weather</p>

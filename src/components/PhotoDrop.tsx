@@ -135,7 +135,7 @@ export default function PhotoDrop({ neighborhood }: Props) {
 
   return (
     <div className="alpine-card">
-      <div className="flex items-baseline justify-between gap-3 mb-3">
+      <div className="flex items-baseline justify-between gap-3 mb-1">
         <div className="flex items-center gap-2">
           <Crown className="w-3.5 h-3.5 text-amber-500" aria-hidden="true" />
           <h2 className="font-medium text-sm text-[color:var(--type-1)]">Photo Drop</h2>
@@ -182,7 +182,7 @@ export default function PhotoDrop({ neighborhood }: Props) {
         </div>
       )}
 
-      <div className="space-y-3 mb-3">
+      <div className="space-y-1 mb-1">
         <p className="text-sm text-[color:var(--type-3)]">
           {hoodCrown
             ? `Crown is claimed in ${hoodLabel}. Drop anyway to make the feed.`

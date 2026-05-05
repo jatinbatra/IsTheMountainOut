@@ -242,9 +242,9 @@ export default function Dashboard({ initialData }: Props) {
 
       <PWAInstallPrompt />
 
-      <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 pb-4 sm:pb-6 space-y-1.5">
+      <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 pb-3 space-y-0">
         {/* ── Header Bar ── */}
-        <header className="flex items-center justify-between py-3 border-b border-[var(--rule)]">
+        <header className="flex items-center justify-between py-2 border-b border-[var(--rule)]">
           <div>
             <h1 className="font-display font-medium text-[color:var(--type-1)] text-[17px] leading-none tracking-tight">
               Is the Mountain Out?
@@ -296,7 +296,7 @@ export default function Dashboard({ initialData }: Props) {
         />
 
         {/* ── Right Now ── */}
-        <section className="space-y-1">
+        <section className="space-y-0">
           <SpotterButton
             isVisible={adjustedIsVisible}
             score={neighborhoodAdjustedScore}
@@ -314,7 +314,7 @@ export default function Dashboard({ initialData }: Props) {
         </section>
 
         {/* ── Share + Best View ── */}
-        <section className="space-y-1.5">
+        <section className="space-y-0">
           {adjustedIsVisible && topViewpoint && (
             <div className="flex items-center gap-3 py-2 border-t border-[var(--rule)]">
               <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
@@ -365,7 +365,7 @@ export default function Dashboard({ initialData }: Props) {
           )}
 
         {/* ── The View ── */}
-        <section className="space-y-1.5">
+        <section className="space-y-0">
           <h2 className="font-display text-lg font-medium text-[color:var(--type-1)]">The View</h2>
           <div
             data-reveal-index="1"
@@ -412,7 +412,7 @@ export default function Dashboard({ initialData }: Props) {
         {/* ── Alerts ── */}
         <section
           data-reveal-index="3"
-          className={`transition-all duration-700 border-t border-[var(--rule)] pt-5 ${
+          className={`transition-all duration-700 border-t border-[var(--rule)] pt-2 ${
             isRevealed(3) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
@@ -426,7 +426,7 @@ export default function Dashboard({ initialData }: Props) {
             isRevealed(3) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <h2 className="font-display text-lg font-medium text-[color:var(--type-1)] mb-2">Forecast</h2>
+          <h2 className="font-display text-lg font-medium text-[color:var(--type-1)] mb-1">Forecast</h2>
           <ForecastHub
             hourlyTimeline={data.hourlyTimeline}
             currentScore={data.visibility.score}
@@ -456,7 +456,7 @@ export default function Dashboard({ initialData }: Props) {
             isRevealed(4) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <div className="flex items-baseline justify-between mb-2">
+          <div className="flex items-baseline justify-between mb-1">
             <h2 className="font-display text-lg font-medium text-[color:var(--type-1)]">Vantage Points</h2>
             <span className="font-mono text-[10px] text-[color:var(--type-4)] tabular">
               {Math.min(8, data.viewpoints.length)} stations
@@ -494,7 +494,7 @@ export default function Dashboard({ initialData }: Props) {
             isRevealed(5) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <h2 className="font-display text-lg font-medium text-[color:var(--type-1)] mb-2">Community</h2>
+          <h2 className="font-display text-lg font-medium text-[color:var(--type-1)] mb-1">Community</h2>
           <CommunityGames
             selectedHood={neighborhood}
             onSelectHood={setNeighborhood}
@@ -504,7 +504,7 @@ export default function Dashboard({ initialData }: Props) {
         </section>
 
         {/* ── Footer ── */}
-        <section className="border-t border-[var(--rule)] pt-3 space-y-1.5">
+        <section className="border-t border-[var(--rule)] pt-2 space-y-0.5">
           <PrivacyCommitment />
           <p className="text-sm text-[color:var(--type-3)] leading-relaxed">
             A Pacific Northwest field report. Mt. Rainier visibility scored from
