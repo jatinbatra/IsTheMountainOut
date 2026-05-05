@@ -242,18 +242,24 @@ export default function Dashboard({ initialData }: Props) {
 
       <PWAInstallPrompt />
 
-      <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 pb-3 space-y-0">
-        {/* ── Header Bar ── */}
-        <header className="flex items-center justify-between py-2 border-b border-[var(--rule)]">
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 pb-6">
+
+        {/* ── Full-width Header ── */}
+        <header className="flex items-center justify-between py-3 border-b border-[var(--rule)] mb-4">
           <div>
-            <h1 className="font-display font-medium text-[color:var(--type-1)] text-[17px] leading-none tracking-tight">
+            <h1 className="font-display font-medium text-[color:var(--type-1)] text-[19px] leading-none tracking-tight">
               Is the Mountain Out?
             </h1>
             <p className="font-mono text-[9px] text-[color:var(--type-4)] mt-1 tracking-wider uppercase">
-              Mt. Rainier &middot; {timeStr} PT
+              Mt. Rainier · Seattle · {timeStr} PT
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <NeighborhoodSelector
+              selected={neighborhood}
+              onSelect={setNeighborhood}
+              scores={allNeighborhoodScores}
+            />
             <GlobalStreakBadge />
             <button
               onClick={() => mutate()}
@@ -268,233 +274,171 @@ export default function Dashboard({ initialData }: Props) {
           </div>
         </header>
 
-        {/* ── Neighborhood Selector ── */}
-        <div className="stagger-2 animate-fade-up">
-          <NeighborhoodSelector
-            selected={neighborhood}
-            onSelect={setNeighborhood}
-            scores={allNeighborhoodScores}
-          />
-        </div>
+        {/* ── Two-column grid ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-6 items-start">
 
-        {/* ── Hero ── */}
-        <HeroStatus
-          isVisible={adjustedIsVisible}
-          score={neighborhoodAdjustedScore}
-          confidence={data.visibility.confidence}
-          durationMessage={data.visibility.durationMessage}
-          isNight={isNight}
-          sunrise={data.weather.sunrise}
-          scoreBreakdown={{
-            cloudLow: data.weather.cloudLow,
-            cloudMid: data.weather.cloudMid,
-            cloudHigh: data.weather.cloudHigh,
-            visibilityMeters: data.weather.visibilityMeters,
-            pm25: data.weather.pm25,
-            weatherCode: data.weather.weatherCode,
-          }}
-        />
+          {/* LEFT: Status panel — sticky on desktop */}
+          <div className="lg:sticky lg:top-4 space-y-0">
 
-        {/* ── Right Now ── */}
-        <section className="space-y-0">
-          <SpotterButton
-            isVisible={adjustedIsVisible}
-            score={neighborhoodAdjustedScore}
-          />
-          <CountdownStrip
-            sunrise={data.weather.sunrise}
-            sunset={data.weather.sunset}
-            alpenglow={data.alpenglow ?? null}
-          />
-          <NextClearWindow
-            hourlyTimeline={data.hourlyTimeline}
-            weeklyForecast={data.weeklyForecast}
-            currentScore={neighborhoodAdjustedScore}
-          />
-        </section>
-
-        {/* ── Share + Best View ── */}
-        <section className="space-y-0">
-          {adjustedIsVisible && topViewpoint && (
-            <div className="flex items-center gap-3 py-2 border-t border-[var(--rule)]">
-              <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
-                <span className="font-mono text-xs text-[color:var(--type-4)]">1</span>
-              </div>
-              <div className="min-w-0">
-                <p className="text-[10px] text-[color:var(--type-3)] uppercase tracking-wider">Best vantage</p>
-                <p className="font-display text-[16px] font-medium text-[color:var(--type-1)] leading-tight truncate">
-                  {topViewpoint.name}
-                  <span className="font-mono text-xs text-[color:var(--type-3)] ml-1.5 tabular">
-                    {topViewpoint.distanceMiles}mi
-                  </span>
-                </p>
-              </div>
-            </div>
-          )}
-          <div className="flex items-center gap-3 flex-wrap">
-            <MountainMoment
+            <HeroStatus
               isVisible={adjustedIsVisible}
               score={neighborhoodAdjustedScore}
-              neighborhoodLabel={neighborhoodLabel}
+              confidence={data.visibility.confidence}
               durationMessage={data.visibility.durationMessage}
+              isNight={isNight}
+              sunrise={data.weather.sunrise}
+              scoreBreakdown={{
+                cloudLow: data.weather.cloudLow,
+                cloudMid: data.weather.cloudMid,
+                cloudHigh: data.weather.cloudHigh,
+                visibilityMeters: data.weather.visibilityMeters,
+                pm25: data.weather.pm25,
+                weatherCode: data.weather.weatherCode,
+              }}
             />
-            <SmsShareButton
+
+            <SpotterButton
+              isVisible={adjustedIsVisible}
               score={neighborhoodAdjustedScore}
-              neighborhoodLabel={neighborhoodLabel}
             />
-          </div>
-        </section>
+            <CountdownStrip
+              sunrise={data.weather.sunrise}
+              sunset={data.weather.sunset}
+              alpenglow={data.alpenglow ?? null}
+            />
+            <NextClearWindow
+              hourlyTimeline={data.hourlyTimeline}
+              weeklyForecast={data.weeklyForecast}
+              currentScore={neighborhoodAdjustedScore}
+            />
 
-        {/* ── Alpenglow Bulletin ── */}
-        {data.alpenglow &&
-          data.alpenglow.probability >= 40 &&
-          data.alpenglow.minutesToSunset > 0 &&
-          data.alpenglow.minutesToSunset <= 60 && (
-            <section className="py-2 border-t border-[var(--rule)]">
-              <p className="text-[10px] text-[color:var(--accent-pink)] uppercase tracking-wider font-mono font-medium mb-0.5">Alpenglow Alert</p>
-              <p className="font-display text-[18px] text-[color:var(--type-1)] leading-snug">
-                The mountain could turn pink in ~{data.alpenglow.minutesToSunset} minutes.
-              </p>
-              <p className="text-sm text-[color:var(--type-3)] mt-1">
-                {data.alpenglow.probability}% probability.{" "}
-                {data.alpenglow.isLikely
-                  ? "Clear sightline plus high cirrus."
-                  : "Conditions are favorable."}
-              </p>
-            </section>
-          )}
+            {adjustedIsVisible && topViewpoint && (
+              <div className="flex items-center gap-3 py-2 border-t border-[var(--rule)]">
+                <div className="min-w-0">
+                  <p className="text-[10px] text-[color:var(--type-3)] uppercase tracking-wider">Best vantage</p>
+                  <p className="font-display text-[15px] font-medium text-[color:var(--type-1)] leading-tight truncate">
+                    {topViewpoint.name}
+                    <span className="font-mono text-xs text-[color:var(--type-3)] ml-1.5 tabular">
+                      {topViewpoint.distanceMiles}mi
+                    </span>
+                  </p>
+                </div>
+              </div>
+            )}
 
-        {/* ── The View ── */}
-        <section className="space-y-0">
-          <h2 className="font-display text-lg font-medium text-[color:var(--type-1)]">The View</h2>
-          <div
-            data-reveal-index="1"
-            className={`transition-all duration-700 ${
-              isRevealed(1) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-            }`}
-          >
-            <FeaturedWebcam />
-          </div>
-
-          <div
-            data-reveal-index="1"
-            className={`transition-all duration-700 delay-200 ${
-              isRevealed(1) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-            }`}
-          >
-            <PhotoDrop neighborhood={neighborhood} />
-          </div>
-
-          <div
-            data-reveal-index="2"
-            className={`transition-all duration-700 ${
-              isRevealed(2) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-            }`}
-          >
-            <LiveWebcams feeds={WEBCAM_FEEDS} />
-          </div>
-
-          {isNight && (
-            <div
-              data-reveal-index="2"
-              className={`transition-all duration-700 ${
-                isRevealed(2) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-              }`}
-            >
-              <NightSky
-                sunrise={data.weather.sunrise || ""}
-                isDay={data.weather.isDay}
+            <div className="flex items-center gap-3 flex-wrap border-t border-[var(--rule)] pt-2">
+              <MountainMoment
+                isVisible={adjustedIsVisible}
+                score={neighborhoodAdjustedScore}
+                neighborhoodLabel={neighborhoodLabel}
+                durationMessage={data.visibility.durationMessage}
+              />
+              <SmsShareButton
+                score={neighborhoodAdjustedScore}
+                neighborhoodLabel={neighborhoodLabel}
               />
             </div>
-          )}
-        </section>
 
-        {/* ── Alerts ── */}
-        <section
-          data-reveal-index="3"
-          className={`transition-all duration-700 border-t border-[var(--rule)] pt-2 ${
-            isRevealed(3) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-        >
-          <NotifyCard />
-        </section>
+            {data.alpenglow &&
+              data.alpenglow.probability >= 40 &&
+              data.alpenglow.minutesToSunset > 0 &&
+              data.alpenglow.minutesToSunset <= 60 && (
+                <div className="py-2 border-t border-[var(--rule)]">
+                  <p className="text-[10px] text-[color:var(--accent-pink)] uppercase tracking-wider font-mono font-medium mb-0.5">Alpenglow Alert</p>
+                  <p className="font-display text-[17px] text-[color:var(--type-1)] leading-snug">
+                    The mountain could turn pink in ~{data.alpenglow.minutesToSunset} minutes.
+                  </p>
+                </div>
+              )}
 
-        {/* ── Forecast ── */}
-        <section
-          data-reveal-index="3"
-          className={`transition-all duration-700 ${
-            isRevealed(3) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-        >
-          <h2 className="font-display text-lg font-medium text-[color:var(--type-1)] mb-1">Forecast</h2>
-          <ForecastHub
-            hourlyTimeline={data.hourlyTimeline}
-            currentScore={data.visibility.score}
-            isVisible={adjustedIsVisible}
-            weeklyForecast={data.weeklyForecast}
-            sunset={data.weather.sunset}
-          />
-        </section>
+            <div className="border-t border-[var(--rule)] pt-2">
+              <NotifyCard />
+            </div>
 
-        {/* ── Conditions ── */}
-        <section
-          data-reveal-index="4"
-          className={`transition-all duration-700 ${
-            isRevealed(4) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-        >
-          <WeatherDetails
-            weather={data.weather}
-            reasons={data.visibility.reasons}
-          />
-        </section>
-
-        {/* ── Viewpoints ── */}
-        <section
-          data-reveal-index="4"
-          className={`transition-all duration-700 ${
-            isRevealed(4) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-        >
-          <div className="flex items-baseline justify-between mb-1">
-            <h2 className="font-display text-lg font-medium text-[color:var(--type-1)]">Vantage Points</h2>
-            <span className="font-mono text-[10px] text-[color:var(--type-4)] tabular">
-              {Math.min(8, data.viewpoints.length)} stations
-            </span>
+            <WeatherDetails
+              weather={data.weather}
+              reasons={data.visibility.reasons}
+            />
           </div>
-          <div className="divide-y divide-[var(--rule)]" role="list">
-            {visibleViewpoints.map((vp, i) => (
-              <ViewpointCard
-                key={vp.id}
-                viewpoint={vp}
-                rank={i + 1}
-                isVisible={adjustedIsVisible}
-                isSelected={selectedViewpoint === i}
-                onSelect={() => setSelectedViewpoint(i)}
-              />
-            ))}
-          </div>
-          {data.viewpoints.length > 3 && (
-            <button
-              onClick={() => setShowAllViewpoints((v) => !v)}
-              className="mt-3 inline-flex items-center gap-1.5 text-xs text-[color:var(--accent)] font-medium hover:text-[color:var(--type-1)] transition-colors"
+
+          {/* RIGHT: Content panel */}
+          <div className="space-y-0 min-w-0">
+
+            <section className="space-y-0">
+              <FeaturedWebcam />
+              <PhotoDrop neighborhood={neighborhood} />
+              <LiveWebcams feeds={WEBCAM_FEEDS} />
+              {isNight && (
+                <NightSky
+                  sunrise={data.weather.sunrise || ""}
+                  isDay={data.weather.isDay}
+                />
+              )}
+            </section>
+
+            <section
+              data-reveal-index="3"
+              className={`transition-all duration-700 ${
+                isRevealed(3) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+              }`}
             >
-              <span>{showAllViewpoints ? "Show fewer" : `+${Math.min(8, data.viewpoints.length) - 3} more vantage points`}</span>
-              <ChevronDown
-                className={`w-3 h-3 transition-transform duration-300 ${showAllViewpoints ? "rotate-180" : ""}`}
+              <h2 className="font-display text-base font-medium text-[color:var(--type-1)] mb-1 border-t border-[var(--rule)] pt-2">Forecast</h2>
+              <ForecastHub
+                hourlyTimeline={data.hourlyTimeline}
+                currentScore={data.visibility.score}
+                isVisible={adjustedIsVisible}
+                weeklyForecast={data.weeklyForecast}
+                sunset={data.weather.sunset}
               />
-            </button>
-          )}
-        </section>
+            </section>
 
-        {/* ── Community ── */}
+            <section
+              data-reveal-index="4"
+              className={`transition-all duration-700 ${
+                isRevealed(4) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+              }`}
+            >
+              <div className="flex items-baseline justify-between border-t border-[var(--rule)] pt-2 mb-1">
+                <h2 className="font-display text-base font-medium text-[color:var(--type-1)]">Vantage Points</h2>
+                <span className="font-mono text-[10px] text-[color:var(--type-4)] tabular">
+                  {Math.min(8, data.viewpoints.length)} stations
+                </span>
+              </div>
+              <div className="divide-y divide-[var(--rule)]" role="list">
+                {visibleViewpoints.map((vp, i) => (
+                  <ViewpointCard
+                    key={vp.id}
+                    viewpoint={vp}
+                    rank={i + 1}
+                    isVisible={adjustedIsVisible}
+                    isSelected={selectedViewpoint === i}
+                    onSelect={() => setSelectedViewpoint(i)}
+                  />
+                ))}
+              </div>
+              {data.viewpoints.length > 3 && (
+                <button
+                  onClick={() => setShowAllViewpoints((v) => !v)}
+                  className="mt-2 inline-flex items-center gap-1.5 text-xs text-[color:var(--accent)] font-medium hover:text-[color:var(--type-1)] transition-colors"
+                >
+                  <span>{showAllViewpoints ? "Show fewer" : `+${Math.min(8, data.viewpoints.length) - 3} more vantage points`}</span>
+                  <ChevronDown
+                    className={`w-3 h-3 transition-transform duration-300 ${showAllViewpoints ? "rotate-180" : ""}`}
+                  />
+                </button>
+              )}
+            </section>
+          </div>
+        </div>
+
+        {/* ── Full-width: Community ── */}
         <section
           data-reveal-index="5"
-          className={`transition-all duration-700 ${
+          className={`mt-6 border-t border-[var(--rule)] pt-4 transition-all duration-700 ${
             isRevealed(5) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <h2 className="font-display text-lg font-medium text-[color:var(--type-1)] mb-1">Community</h2>
+          <h2 className="font-display text-lg font-medium text-[color:var(--type-1)] mb-2">Community</h2>
           <CommunityGames
             selectedHood={neighborhood}
             onSelectHood={setNeighborhood}
@@ -504,7 +448,7 @@ export default function Dashboard({ initialData }: Props) {
         </section>
 
         {/* ── Footer ── */}
-        <section className="border-t border-[var(--rule)] pt-2 space-y-0.5">
+        <section className="border-t border-[var(--rule)] mt-6 pt-3 space-y-1">
           <PrivacyCommitment />
           <p className="text-sm text-[color:var(--type-3)] leading-relaxed">
             A Pacific Northwest field report. Mt. Rainier visibility scored from
@@ -513,9 +457,7 @@ export default function Dashboard({ initialData }: Props) {
           </p>
           <div className="flex items-center gap-3">
             <span className="font-mono text-[10px] text-[color:var(--type-3)] tabular uppercase tracking-wider">Editor</span>
-            <span className="text-sm font-medium text-[color:var(--type-1)]">
-              Jatin Batra
-            </span>
+            <span className="text-sm font-medium text-[color:var(--type-1)]">Jatin Batra</span>
             <a
               href="https://x.com/jatin_batra1"
               target="_blank"
@@ -527,7 +469,7 @@ export default function Dashboard({ initialData }: Props) {
           </div>
         </section>
 
-        <footer className="py-3">
+        <footer className="py-3 border-t border-[var(--rule)] mt-3">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-5">
               <a href="/almanac" className="text-xs text-[color:var(--type-3)] hover:text-[color:var(--type-1)] transition-colors font-medium">Almanac</a>
@@ -535,7 +477,7 @@ export default function Dashboard({ initialData }: Props) {
               <a href="/api/stats.json" className="text-xs text-[color:var(--type-3)] hover:text-[color:var(--type-1)] transition-colors font-medium">API</a>
             </div>
             <p className="font-mono text-[9px] text-[color:var(--type-4)] tabular tracking-wider">
-              DATA / Open-Meteo &middot; REFRESH 15min
+              DATA / Open-Meteo · REFRESH 15min
             </p>
           </div>
         </footer>
