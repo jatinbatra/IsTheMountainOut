@@ -29,7 +29,7 @@ export default function MountainCalendar() {
 
   if (validDays.length === 0) {
     return (
-      <div className="alpine-card text-center py-8">
+      <div className="text-center py-6">
         <p className="text-sm font-medium text-[color:var(--type-1)] mb-1">Mountain Calendar</p>
         <p className="text-xs text-[color:var(--type-3)]">
           No historical data yet. The calendar fills in as the cron job runs daily.
@@ -38,12 +38,12 @@ export default function MountainCalendar() {
     );
   }
 
-  const todayStr = new Date().toISOString().split("T")[0];
+  const todayStr = new Date().toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
   const firstDate = new Date(days[0].date + "T12:00:00");
   const startDow = firstDate.getDay();
 
   return (
-    <div className="alpine-card space-y-4">
+    <div className="space-y-3">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium text-[color:var(--type-1)]">Mountain Calendar</h3>
         <span className="text-[10px] text-[color:var(--type-4)]">
@@ -70,14 +70,14 @@ export default function MountainCalendar() {
           return (
             <div
               key={day.date}
-              className={`aspect-square flex items-center justify-center font-mono text-[10px] rounded-lg transition-colors ${
-                isToday ? "ring-2 ring-[color:var(--accent)]" : ""
+              className={`aspect-square flex items-center justify-center font-mono text-[10px] transition-colors ${
+                isToday ? "ring-1 ring-[color:var(--accent)]" : ""
               } ${
                 !hasData
-                  ? "bg-[var(--ink-deep)] text-[color:var(--type-4)]"
+                  ? "text-[color:var(--type-4)]"
                   : day.isVisible
-                    ? "bg-[#2d8a4e]/15 text-[#2d8a4e] font-medium"
-                    : "bg-[var(--ink-deep)] text-[color:var(--type-4)]"
+                    ? "bg-[#2d8a4e]/12 text-[#2d8a4e] font-medium"
+                    : "text-[color:var(--type-4)]"
               }`}
               title={hasData ? `${day.date}: ${day.score}/100` : day.date}
             >

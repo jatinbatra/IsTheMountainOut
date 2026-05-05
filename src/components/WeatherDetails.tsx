@@ -121,7 +121,7 @@ export default function WeatherDetails({ weather, reasons }: Props) {
   ];
 
   return (
-    <div className="alpine-card-lg space-y-5">
+    <div className="alpine-card-lg space-y-3">
       <div>
         <h2 className="font-display text-lg font-medium text-[color:var(--type-1)]">
           Conditions
@@ -129,16 +129,14 @@ export default function WeatherDetails({ weather, reasons }: Props) {
         <p className="text-xs text-[color:var(--type-3)] mt-0.5">What&apos;s affecting visibility</p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
             <div key={stat.label}>
               <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-[var(--ink-deep)] flex items-center justify-center">
-                    <Icon className="w-3.5 h-3.5 text-[color:var(--type-3)]" />
-                  </div>
+                  <Icon className="w-3.5 h-3.5 text-[color:var(--type-3)]" />
                   <div>
                     <span className="text-sm text-[color:var(--type-1)]">{stat.label}</span>
                     {stat.detail && (
@@ -148,7 +146,7 @@ export default function WeatherDetails({ weather, reasons }: Props) {
                 </div>
                 <span className="font-mono text-sm font-medium text-[color:var(--type-1)] tabular">{stat.value}</span>
               </div>
-              <div className="ml-9">
+              <div className="ml-[22px]">
                 <MiniProgress pct={stat.pct} quality={stat.quality} />
               </div>
             </div>

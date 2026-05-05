@@ -79,7 +79,7 @@ export default function ForecastTimeline({ hourlyTimeline, currentScore }: Props
   const activeData = activeHour !== null ? hourlyTimeline[activeHour] : null;
 
   return (
-    <div className="alpine-card space-y-4">
+    <div className="space-y-3">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium text-[color:var(--type-1)]">24-Hour Forecast</h3>
         <span className="text-[10px] text-[color:var(--type-4)]">

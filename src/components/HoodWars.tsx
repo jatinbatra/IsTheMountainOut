@@ -100,13 +100,11 @@ export default function HoodWars({
             <button
               key={s.id}
               onClick={() => onSelect(s.id)}
-              className={`relative text-left p-3.5 rounded transition-all overflow-hidden group border ${
+              className={`relative text-left p-3.5 transition-all overflow-hidden group border ${
                 i === 0
-                  ? "border-[#2d8a4e]/30 bg-[#2d8a4e]/[0.06]"
-                  : i === 1
-                    ? "border-gray-200 bg-[var(--ink-deep)]"
-                    : "border-gray-100 bg-gray-50/50"
-              } ${isSel ? "border-[color:var(--type-1)]/30 bg-[var(--ink-deep)]" : ""}`}
+                  ? "border-[#2d8a4e]/30 bg-[#2d8a4e]/[0.04]"
+                  : "border-[var(--rule)]"
+              } ${isSel ? "border-[color:var(--type-1)]/30" : ""}`}
             >
               <div className={`font-mono text-[10px] tracking-wider ${rankColor(i + 1)} mb-1`}>#{i + 1}</div>
               <div className="font-display font-medium text-sm text-[color:var(--type-1)] truncate">{s.label}</div>
@@ -125,7 +123,7 @@ export default function HoodWars({
         })}
       </div>
 
-      <div className="divide-y divide-gray-100 border-y border-gray-100 rounded overflow-hidden">
+      <div className="divide-y divide-[var(--rule)] border-y border-[var(--rule)] overflow-hidden">
         {rest.map((s, i) => {
           const rank = i + 4;
           const isSel = selected === s.id;

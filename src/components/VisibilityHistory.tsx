@@ -31,7 +31,7 @@ export default function VisibilityHistory({ isVisible, weeklyForecast }: Props) 
   const today = new Date().toISOString().split("T")[0];
 
   return (
-    <div className="alpine-card space-y-4">
+    <div className="space-y-3">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium text-[color:var(--type-1)]">7-Day Prediction</h3>
         <span className="text-[10px] text-[color:var(--type-4)]">Based on forecast data</span>

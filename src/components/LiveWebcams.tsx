@@ -107,8 +107,8 @@ export default function LiveWebcams({ feeds }: Props) {
       </div>
 
       {/* Main webcam display */}
-      <div className={`alpine-card !p-0 overflow-hidden ${expanded ? "fixed inset-4 z-50 !rounded" : ""}`}>
-        <div className={`relative ${expanded ? "h-full" : "aspect-video"} bg-gray-100`}>
+      <div className={`overflow-hidden border border-[var(--rule)] ${expanded ? "fixed inset-4 z-50" : ""}`}>
+        <div className={`relative ${expanded ? "h-full" : "aspect-video"} bg-[var(--ink-deep)]`}>
           {loadErrors[currentFeed.id] ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[var(--ink-deep)]">
               <AlertCircle className="w-8 h-8 text-[color:var(--type-4)]" />
@@ -208,10 +208,10 @@ export default function LiveWebcams({ feeds }: Props) {
           <button
             key={feed.id}
             onClick={() => setSelectedCam(i)}
-            className={`relative overflow-hidden rounded transition-all duration-300 ${
+            className={`relative overflow-hidden transition-all duration-300 ${
               selectedCam === i
                 ? "ring-2 ring-[color:var(--accent)]"
-                : "ring-1 ring-gray-100 hover:ring-gray-200"
+                : "border border-[var(--rule)] hover:border-[var(--rule-strong)]"
             }`}
           >
             <div className="aspect-video bg-[var(--ink-deep)] relative">

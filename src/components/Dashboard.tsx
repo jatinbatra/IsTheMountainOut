@@ -242,7 +242,7 @@ export default function Dashboard({ initialData }: Props) {
 
       <PWAInstallPrompt />
 
-      <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 pb-6 sm:pb-10 space-y-5">
+      <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 pb-6 sm:pb-10 space-y-3">
         {/* ── Header Bar ── */}
         <header className="flex items-center justify-between py-5 border-b border-[var(--rule)]">
           <div>
@@ -365,7 +365,7 @@ export default function Dashboard({ initialData }: Props) {
           )}
 
         {/* ── The View ── */}
-        <section className="space-y-5">
+        <section className="space-y-3">
           <h2 className="font-display text-lg font-medium text-[color:var(--type-1)]">The View</h2>
           <div
             data-reveal-index="1"
@@ -504,7 +504,7 @@ export default function Dashboard({ initialData }: Props) {
         </section>
 
         {/* ── Footer ── */}
-        <section className="border-t border-[var(--rule)] pt-8 space-y-5">
+        <section className="border-t border-[var(--rule)] pt-5 space-y-3">
           <PrivacyCommitment />
           <p className="text-sm text-[color:var(--type-3)] leading-relaxed">
             A Pacific Northwest field report. Mt. Rainier visibility scored from

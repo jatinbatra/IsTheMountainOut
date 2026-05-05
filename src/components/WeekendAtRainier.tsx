@@ -299,7 +299,7 @@ export default function WeekendAtRainier({ weeklyForecast }: Props) {
   });
 
   return (
-    <div className="alpine-card space-y-5">
+    <div className="alpine-card space-y-3">
       <div>
         <p className="text-[10px] text-[color:var(--accent)] uppercase tracking-wider font-medium mb-1">Weekend at Rainier</p>
         <h3 className="font-display font-medium text-[color:var(--type-1)] text-base">

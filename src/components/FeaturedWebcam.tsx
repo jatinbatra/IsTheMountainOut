@@ -35,9 +35,9 @@ export default function FeaturedWebcam() {
   });
 
   return (
-    <div className="alpine-card !p-0 overflow-hidden">
+    <div className="overflow-hidden border border-[var(--rule)]">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--rule)]">
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5">
             <div className="relative">
@@ -96,7 +96,7 @@ export default function FeaturedWebcam() {
       </div>
 
       {/* Footer info */}
-      <div className="px-4 py-2.5 bg-[var(--ink-deep)] flex items-center justify-between">
+      <div className="px-4 py-2 border-t border-[var(--rule)] flex items-center justify-between">
         <p className="text-[10px] text-[color:var(--type-3)]">Mt. Rainier South Face · 46.75°N 121.81°W</p>
         <p className="text-[9px] text-[color:var(--type-4)]">USGS Volcanic Monitoring</p>
       </div>

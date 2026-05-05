@@ -57,17 +57,17 @@ export default function NeighborhoodSelector({ selected, onSelect, scores }: Pro
     <div ref={ref} className="relative inline-flex">
       <button
         onClick={() => setOpen(!open)}
-        className="inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--ink-deep)] rounded border border-gray-100 hover:border-gray-200 transition-all text-sm"
+        className="inline-flex items-center gap-2 py-2 text-sm hover:opacity-80 transition-opacity"
         aria-expanded={open}
         aria-haspopup="listbox"
       >
         <MapPin className="w-3.5 h-3.5 text-[color:var(--accent)]" />
         {selected && (
-          <span className="text-[10px] text-[color:var(--type-3)] uppercase tracking-wider">Your hood:</span>
+          <span className="text-[10px] text-[color:var(--type-4)] uppercase tracking-wider">Hood:</span>
         )}
         <span className="text-[color:var(--type-1)] font-medium">{label}</span>
         {selectedScore !== undefined && (
-          <span className={`font-mono text-xs tabular px-1.5 py-0.5 rounded-full ${selectedScore >= 50 ? "bg-[#2d8a4e]/10 text-[#2d8a4e]" : "bg-[var(--ink-deep)] text-[color:var(--type-4)]"}`}>
+          <span className={`font-mono text-xs tabular ${selectedScore >= 50 ? "text-[#2d8a4e]" : "text-[color:var(--type-4)]"}`}>
             {selectedScore}
           </span>
         )}
@@ -80,7 +80,7 @@ export default function NeighborhoodSelector({ selected, onSelect, scores }: Pro
 
       {open && (
         <div
-          className="absolute top-full mt-2 left-0 z-50 bg-[var(--ink-deep)] rounded border border-gray-100 py-1.5 min-w-[260px] max-h-[320px] overflow-y-auto scrollbar-thin"
+          className="absolute top-full mt-1 left-0 z-50 bg-[var(--background)] border border-[var(--rule)] py-1 min-w-[240px] max-h-[320px] overflow-y-auto scrollbar-thin"
           role="listbox"
         >
           <button
@@ -88,12 +88,11 @@ export default function NeighborhoodSelector({ selected, onSelect, scores }: Pro
               onSelect(null);
               setOpen(false);
             }}
-            className={`w-full text-left px-4 py-2.5 text-xs transition-colors rounded-lg mx-1 ${
+            className={`w-full text-left px-4 py-2 text-xs transition-colors ${
               !selected
-                ? "text-[color:var(--accent)] bg-[color:var(--accent)]/[0.06] font-medium"
-                : "text-[color:var(--type-3)] hover:bg-[var(--ink-deep)] hover:text-[color:var(--type-2)]"
+                ? "text-[color:var(--accent)] font-medium"
+                : "text-[color:var(--type-3)] hover:text-[color:var(--type-2)]"
             }`}
-            style={{ width: "calc(100% - 0.5rem)" }}
             role="option"
             aria-selected={!selected}
           >
@@ -108,10 +107,10 @@ export default function NeighborhoodSelector({ selected, onSelect, scores }: Pro
                   onSelect(n.id);
                   setOpen(false);
                 }}
-                className={`w-full text-left px-4 py-2.5 text-xs transition-colors flex items-center justify-between ${
+                className={`w-full text-left px-4 py-2 text-xs transition-colors flex items-center justify-between ${
                   selected === n.id
-                    ? "text-[color:var(--accent)] bg-[color:var(--accent)]/[0.06] font-medium"
-                    : "text-[color:var(--type-2)] hover:bg-[var(--ink-deep)]"
+                    ? "text-[color:var(--accent)] font-medium"
+                    : "text-[color:var(--type-2)] hover:text-[color:var(--type-1)]"
                 }`}
                 role="option"
                 aria-selected={selected === n.id}
