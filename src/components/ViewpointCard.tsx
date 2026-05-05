@@ -69,7 +69,7 @@ export default function ViewpointCard({
       className={`w-full text-left transition-all duration-200 px-4 py-3.5 ${
         isSelected
           ? "bg-[color:var(--accent)]/[0.04]"
-          : "hover:bg-gray-50"
+          : "hover:bg-[var(--ink-deep)]"
       }`}
     >
       <div className="flex items-start justify-between gap-3 mb-1.5">
@@ -77,7 +77,7 @@ export default function ViewpointCard({
           <span className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-mono font-bold shrink-0 ${
             rank === 1 && isVisible
               ? "bg-[color:var(--accent)]/10 text-[color:var(--accent)]"
-              : "bg-gray-100 text-[color:var(--type-4)]"
+              : "bg-[var(--ink-deep)] text-[color:var(--type-4)]"
           }`}>
             {rank}
           </span>
@@ -98,7 +98,7 @@ export default function ViewpointCard({
       </div>
 
       <div className="ml-8 mb-2">
-        <div className="w-full h-1.5 rounded-full bg-gray-100 overflow-hidden">
+        <div className="w-full h-1.5 rounded-full bg-[var(--ink-deep)] overflow-hidden">
           <div
             className={`h-full rounded-full ${getBarColor(viewpoint.locationConfidence)} transition-all duration-500`}
             style={{ width: `${viewpoint.locationScore}%` }}

@@ -30,7 +30,7 @@ export default function GlobalStreakBadge() {
     <div
       className={`inline-flex items-center gap-1.5 px-2.5 py-1 font-mono text-[10px] tracking-wider uppercase tabular-nums rounded-full ${
         isGloom
-          ? "bg-gray-100 text-[color:var(--type-3)]"
+          ? "bg-[var(--ink-deep)] text-[color:var(--type-3)]"
           : "bg-[#2d8a4e]/10 text-[#2d8a4e]"
       }`}
       title={`Since ${streak.since}`}

@@ -64,8 +64,8 @@ function nextWeekend(forecast?: WeeklyForecastDay[]): {
 function scoreBadge(score: number): { label: string; color: string; bg: string } {
   if (score >= 70) return { label: "Clear", color: "text-[#2d8a4e]", bg: "bg-[#2d8a4e]/10" };
   if (score >= 50) return { label: "Peeking", color: "text-[#d4a843]", bg: "bg-[#d4a843]/10" };
-  if (score >= 30) return { label: "Hiding", color: "text-[color:var(--type-4)]", bg: "bg-gray-100" };
-  return { label: "Gloomy", color: "text-[color:var(--type-4)]", bg: "bg-gray-100" };
+  if (score >= 30) return { label: "Hiding", color: "text-[color:var(--type-4)]", bg: "bg-[var(--ink-deep)]" };
+  return { label: "Gloomy", color: "text-[color:var(--type-4)]", bg: "bg-[var(--ink-deep)]" };
 }
 
 function recommendation(
@@ -86,7 +86,7 @@ function recommendation(
 function DayChip({ day, label }: { day?: WeeklyForecastDay; label: string }) {
   if (!day) {
     return (
-      <div className="flex-1 rounded-xl bg-gray-50 px-3 py-3 text-center">
+      <div className="flex-1 rounded bg-[var(--ink-deep)] px-3 py-3 text-center">
         <p className="text-[10px] text-[color:var(--type-4)] uppercase tracking-wider mb-1">{label}</p>
         <p className="text-xs text-[color:var(--type-4)]">No forecast</p>
       </div>
@@ -94,7 +94,7 @@ function DayChip({ day, label }: { day?: WeeklyForecastDay; label: string }) {
   }
   const badge = scoreBadge(day.score);
   return (
-    <div className="flex-1 rounded-xl bg-gray-50 px-3 py-3 text-center">
+    <div className="flex-1 rounded bg-[var(--ink-deep)] px-3 py-3 text-center">
       <p className="text-[10px] text-[color:var(--type-4)] uppercase tracking-wider mb-1">{label}</p>
       <p className="font-display text-xl font-light text-[color:var(--type-1)] tabular mt-0.5">
         {day.score}
@@ -128,9 +128,9 @@ function DestinationRow({
       href={dest.mapsUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex items-start gap-3 p-3 hover:bg-gray-50 transition-colors rounded-xl"
+      className="group flex items-start gap-3 p-3 hover:bg-[var(--ink-deep)] transition-colors rounded"
     >
-      <div className="relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 overflow-hidden rounded-xl ring-1 ring-gray-100 bg-gray-50">
+      <div className="relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 overflow-hidden rounded ring-1 ring-gray-100 bg-[var(--ink-deep)]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={dest.photoUrl}
@@ -148,7 +148,7 @@ function DestinationRow({
         />
         <div
           className={`absolute inset-0 items-center justify-center hidden ${
-            open ? "bg-[#2d8a4e]/10" : "bg-gray-100"
+            open ? "bg-[#2d8a4e]/10" : "bg-[var(--ink-deep)]"
           }`}
         >
           <MapPin
@@ -172,7 +172,7 @@ function DestinationRow({
               <CheckCircle2 className="w-3 h-3" aria-hidden="true" /> Open
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1 text-[10px] text-[color:var(--type-4)] bg-gray-100 px-1.5 py-0.5 rounded-full">
+            <span className="inline-flex items-center gap-1 text-[10px] text-[color:var(--type-4)] bg-[var(--ink-deep)] px-1.5 py-0.5 rounded-full">
               <XCircle className="w-3 h-3" aria-hidden="true" /> Closed
             </span>
           )}
@@ -227,7 +227,7 @@ function AlertsBlock({ alerts }: { alerts: ParkAlert[] }) {
   if (alerts.length === 0) return null;
   const top = alerts.slice(0, 3);
   return (
-    <div className="rounded-xl border border-orange-200 bg-orange-50 p-3 space-y-2">
+    <div className="rounded border border-orange-200 bg-orange-50 p-3 space-y-2">
       <div className="flex items-center gap-2">
         <AlertTriangle className="w-4 h-4 text-orange-500" aria-hidden="true" />
         <p className="text-[10px] font-medium text-orange-600 uppercase tracking-wider">
@@ -340,7 +340,7 @@ export default function WeekendAtRainier({ weeklyForecast }: Props) {
         </div>
       </div>
 
-      <div className="rounded-xl bg-gray-50 p-4 space-y-2">
+      <div className="rounded bg-[var(--ink-deep)] p-4 space-y-2">
         <p className="text-[10px] text-[color:var(--accent)] uppercase tracking-wider font-medium">
           Do you need a pass?
         </p>

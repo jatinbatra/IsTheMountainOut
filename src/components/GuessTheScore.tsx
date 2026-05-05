@@ -111,7 +111,7 @@ export default function GuessTheScore() {
     <div className="alpine-card p-4 sm:p-5">
       <div className="flex items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-violet-50 border border-violet-200">
+          <div className="p-2 rounded bg-violet-50 border border-violet-200">
             <Dice5 className="w-4 h-4 text-violet-500" aria-hidden="true" />
           </div>
           <div>
@@ -163,7 +163,7 @@ export default function GuessTheScore() {
           </div>
 
           {data && data.top.length > 0 && (
-            <div className="rounded-xl bg-gray-50 border border-gray-100 overflow-hidden">
+            <div className="rounded bg-[var(--ink-deep)] border border-gray-100 overflow-hidden">
               <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100">
                 <Trophy className="w-3.5 h-3.5 text-amber-500" />
                 <span className="text-xs font-display font-bold text-[color:var(--type-1)]">Top guesses</span>
@@ -216,18 +216,18 @@ export default function GuessTheScore() {
               placeholder="handle (optional)"
               value={handleInput}
               onChange={(e) => setHandleInput(e.target.value.slice(0, 24))}
-              className="flex-1 min-w-0 px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs text-[color:var(--type-1)] placeholder:text-gray-400 focus:outline-none focus:border-violet-300 focus:ring-1 focus:ring-violet-200"
+              className="flex-1 min-w-0 px-3 py-2 rounded bg-[var(--ink-deep)] border border-gray-200 text-xs text-[color:var(--type-1)] placeholder:text-gray-400 focus:outline-none focus:border-violet-300 focus:ring-1 focus:ring-violet-200"
               maxLength={24}
             />
             <button
               onClick={submit}
               disabled={submitting || isLoading}
-              className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-display font-bold transition-all disabled:opacity-50 ${
+              className={`inline-flex items-center gap-2 px-4 py-2 rounded text-xs font-display font-bold transition-all disabled:opacity-50 ${
                 error
                   ? "bg-red-50 text-red-600 border border-red-200"
                   : submitted
                     ? "bg-[#2d8a4e]/10 text-[#2d8a4e] border border-[#2d8a4e]/20"
-                    : "bg-violet-500 text-white border border-violet-600 shadow-sm hover:bg-violet-600"
+                    : "bg-violet-500 text-white border border-violet-600 hover:bg-violet-600"
               }`}
             >
               {submitting ? (

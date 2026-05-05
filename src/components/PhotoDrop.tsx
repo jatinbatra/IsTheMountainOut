@@ -153,7 +153,7 @@ export default function PhotoDrop({ neighborhood }: Props) {
       </div>
 
       {hoodCrown && (
-        <div className="relative mb-4 overflow-hidden rounded-xl">
+        <div className="relative mb-4 overflow-hidden rounded">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={hoodCrown.url}
@@ -203,7 +203,7 @@ export default function PhotoDrop({ neighborhood }: Props) {
             setHandleInput(v);
             persistHandle(v);
           }}
-          className="w-full px-4 py-2.5 bg-gray-50 rounded-xl border border-gray-100 text-sm text-[color:var(--type-1)] placeholder:text-[color:var(--type-4)] focus:outline-none focus:border-[color:var(--accent)] focus:ring-1 focus:ring-[color:var(--accent)]/20"
+          className="w-full px-4 py-2.5 bg-[var(--ink-deep)] rounded border border-gray-100 text-sm text-[color:var(--type-1)] placeholder:text-[color:var(--type-4)] focus:outline-none focus:border-[color:var(--accent)] focus:ring-1 focus:ring-[color:var(--accent)]/20"
           maxLength={24}
         />
         <input
@@ -221,13 +221,13 @@ export default function PhotoDrop({ neighborhood }: Props) {
         <button
           onClick={() => fileRef.current?.click()}
           disabled={busy || !hoodId}
-          className={`w-full inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-medium rounded-xl transition-colors ${
+          className={`w-full inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-medium rounded transition-colors ${
             busy
-              ? "bg-gray-50 text-[color:var(--type-4)] cursor-wait border border-gray-100"
+              ? "bg-[var(--ink-deep)] text-[color:var(--type-4)] cursor-wait border border-gray-100"
               : state === "success"
                 ? "bg-[#2d8a4e]/10 text-[#2d8a4e] border border-[#2d8a4e]/20"
                 : !hoodId
-                  ? "bg-gray-50 text-[color:var(--type-4)] cursor-not-allowed border border-gray-100"
+                  ? "bg-[var(--ink-deep)] text-[color:var(--type-4)] cursor-not-allowed border border-gray-100"
                   : "bg-[color:var(--accent)] text-white hover:opacity-90"
           }`}
         >
@@ -273,7 +273,7 @@ export default function PhotoDrop({ neighborhood }: Props) {
                 href={d.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="relative aspect-square overflow-hidden rounded-xl ring-1 ring-gray-100 bg-gray-50 group"
+                className="relative aspect-square overflow-hidden rounded ring-1 ring-gray-100 bg-[var(--ink-deep)] group"
                 title={`${NEIGHBORHOOD_LABELS[d.hoodId] ?? d.hoodId} · ${formatTimeShort(d.capturedAt)}`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -26,7 +26,7 @@ export default function CommunityGames({
   return (
     <div className="space-y-4">
       <div
-        className="inline-flex rounded-xl bg-gray-100 p-1"
+        className="inline-flex rounded bg-[var(--ink-deep)] p-1"
         role="tablist"
         aria-label="Community games"
       >
@@ -38,7 +38,7 @@ export default function CommunityGames({
             onClick={() => setGame(g)}
             className={`px-4 py-2 text-xs font-medium rounded-lg transition-all ${
               game === g
-                ? "bg-white text-[color:var(--type-1)] shadow-sm"
+                ? "bg-[var(--ink-deep)] text-[color:var(--type-1)]"
                 : "text-[color:var(--type-3)] hover:text-[color:var(--type-2)]"
             }`}
           >

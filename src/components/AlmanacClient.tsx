@@ -26,7 +26,7 @@ function CopyButton({ text, label = "Copy" }: { text: string; label?: string }) 
           /* ignore */
         }
       }}
-      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-semibold uppercase tracking-wide bg-gray-100 hover:bg-gray-200 text-[color:var(--type-3)] ring-1 ring-gray-200 transition-colors"
+      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-semibold uppercase tracking-wide bg-[var(--ink-deep)] hover:bg-gray-200 text-[color:var(--type-3)] ring-1 ring-gray-200 transition-colors"
       aria-label={copied ? "Copied" : label}
     >
       {copied ? (
@@ -61,8 +61,8 @@ function StatCard({
     tone === "clear"
       ? "bg-[#2d8a4e]/5 ring-[#2d8a4e]/20"
       : tone === "gloom"
-        ? "bg-gray-50 ring-gray-200"
-        : "bg-gray-50 ring-gray-200";
+        ? "bg-[var(--ink-deep)] ring-gray-200"
+        : "bg-[var(--ink-deep)] ring-gray-200";
   const iconTone =
     tone === "clear"
       ? "text-[#2d8a4e]"
@@ -71,7 +71,7 @@ function StatCard({
         : "text-blue-500";
   return (
     <div
-      className={`rounded-2xl ${toneClass} ring-1 p-4 space-y-2`}
+      className={`rounded ${toneClass} ring-1 p-4 space-y-2`}
     >
       <div className="flex items-center gap-2">
         <Icon className={`w-4 h-4 ${iconTone}`} aria-hidden="true" />
@@ -131,7 +131,7 @@ export default function AlmanacClient({ stats }: { stats: AlmanacStats }) {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {records.longestClear ? (
-            <div className="rounded-xl bg-[#2d8a4e]/5 ring-1 ring-[#2d8a4e]/20 p-4">
+            <div className="rounded bg-[#2d8a4e]/5 ring-1 ring-[#2d8a4e]/20 p-4">
               <p className="text-[10px] uppercase tracking-widest font-semibold text-[#2d8a4e]">
                 Longest clear streak
               </p>
@@ -143,12 +143,12 @@ export default function AlmanacClient({ stats }: { stats: AlmanacStats }) {
               </p>
             </div>
           ) : (
-            <div className="rounded-xl bg-gray-50 ring-1 ring-gray-200 p-4 text-xs text-[color:var(--type-3)]">
+            <div className="rounded bg-[var(--ink-deep)] ring-1 ring-gray-200 p-4 text-xs text-[color:var(--type-3)]">
               Longest clear streak: not yet on record
             </div>
           )}
           {records.longestGloom ? (
-            <div className="rounded-xl bg-gray-50 ring-1 ring-gray-200 p-4">
+            <div className="rounded bg-[var(--ink-deep)] ring-1 ring-gray-200 p-4">
               <p className="text-[10px] uppercase tracking-widest font-semibold text-[color:var(--type-4)]">
                 Longest gloom streak
               </p>
@@ -160,12 +160,12 @@ export default function AlmanacClient({ stats }: { stats: AlmanacStats }) {
               </p>
             </div>
           ) : (
-            <div className="rounded-xl bg-gray-50 ring-1 ring-gray-200 p-4 text-xs text-[color:var(--type-3)]">
+            <div className="rounded bg-[var(--ink-deep)] ring-1 ring-gray-200 p-4 text-xs text-[color:var(--type-3)]">
               Longest gloom streak: not yet on record
             </div>
           )}
           {records.bestSingleDay && (
-            <div className="rounded-xl bg-gray-50 ring-1 ring-gray-200 p-4">
+            <div className="rounded bg-[var(--ink-deep)] ring-1 ring-gray-200 p-4">
               <div className="flex items-center gap-2">
                 <TrendingUp className="w-3.5 h-3.5 text-[#2d8a4e]" aria-hidden="true" />
                 <p className="text-[10px] uppercase tracking-widest font-semibold text-[color:var(--type-4)]">
@@ -178,7 +178,7 @@ export default function AlmanacClient({ stats }: { stats: AlmanacStats }) {
             </div>
           )}
           {records.worstSingleDay && (
-            <div className="rounded-xl bg-gray-50 ring-1 ring-gray-200 p-4">
+            <div className="rounded bg-[var(--ink-deep)] ring-1 ring-gray-200 p-4">
               <div className="flex items-center gap-2">
                 <TrendingDown className="w-3.5 h-3.5 text-[color:var(--type-4)]" aria-hidden="true" />
                 <p className="text-[10px] uppercase tracking-widest font-semibold text-[color:var(--type-4)]">
@@ -199,10 +199,10 @@ export default function AlmanacClient({ stats }: { stats: AlmanacStats }) {
             <Calendar className="w-4 h-4 text-blue-500" aria-hidden="true" />
             Monthly breakdown
           </h2>
-          <div className="rounded-xl bg-white ring-1 ring-gray-200 overflow-hidden">
+          <div className="rounded bg-[var(--ink-deep)] ring-1 ring-gray-200 overflow-hidden">
             <table className="w-full text-xs">
               <thead>
-                <tr className="text-[10px] uppercase tracking-wide text-[color:var(--type-4)] bg-gray-50">
+                <tr className="text-[10px] uppercase tracking-wide text-[color:var(--type-4)] bg-[var(--ink-deep)]">
                   <th className="text-left px-3 py-2 font-semibold">Month</th>
                   <th className="text-right px-3 py-2 font-semibold">Clear</th>
                   <th className="text-right px-3 py-2 font-semibold">Tracked</th>
@@ -244,7 +244,7 @@ export default function AlmanacClient({ stats }: { stats: AlmanacStats }) {
             {pressQuotes.map((q, i) => (
               <div
                 key={i}
-                className="rounded-xl bg-gray-50 ring-1 ring-gray-200 p-3 flex items-start gap-3"
+                className="rounded bg-[var(--ink-deep)] ring-1 ring-gray-200 p-3 flex items-start gap-3"
               >
                 <p className="flex-1 text-xs text-[color:var(--type-2)] leading-relaxed">
                   &ldquo;{q}&rdquo;

@@ -49,7 +49,7 @@ export default function VisibilityHistory({ isVisible, weeklyForecast }: Props) 
             <div
               key={day.date}
               className={`py-3 border-b border-gray-100 last:border-0 cursor-default transition-colors ${
-                hovered ? "bg-gray-50" : ""
+                hovered ? "bg-[var(--ink-deep)]" : ""
               }`}
               onMouseEnter={() => setHoveredDay(i)}
               onMouseLeave={() => setHoveredDay(null)}
@@ -62,7 +62,7 @@ export default function VisibilityHistory({ isVisible, weeklyForecast }: Props) 
                 </div>
 
                 <div className="flex-1 flex items-center gap-3">
-                  <div className="flex-1 h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                  <div className="flex-1 h-1.5 rounded-full bg-[var(--ink-deep)] overflow-hidden">
                     <div
                       className={`h-full rounded-full ${barColor} transition-all duration-700`}
                       style={{ width: `${day.score}%` }}

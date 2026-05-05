@@ -47,7 +47,7 @@ function MiniProgress({ pct, quality }: { pct: number; quality: string }) {
         : "bg-[#c75a3a]";
 
   return (
-    <div className="w-full h-1.5 rounded-full bg-gray-100 overflow-hidden">
+    <div className="w-full h-1.5 rounded-full bg-[var(--ink-deep)] overflow-hidden">
       <div
         className={`h-full rounded-full ${color} transition-all duration-700`}
         style={{ width: `${Math.max(3, pct)}%` }}
@@ -136,7 +136,7 @@ export default function WeatherDetails({ weather, reasons }: Props) {
             <div key={stat.label}>
               <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-gray-50 flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-lg bg-[var(--ink-deep)] flex items-center justify-center">
                     <Icon className="w-3.5 h-3.5 text-[color:var(--type-3)]" />
                   </div>
                   <div>
@@ -180,7 +180,7 @@ export default function WeatherDetails({ weather, reasons }: Props) {
             ))}
           </ul>
 
-          <div className="space-y-1.5 p-3 rounded-xl bg-gray-50">
+          <div className="space-y-1.5 p-3 rounded bg-[var(--ink-deep)]">
             {stats.map((stat) => (
               <p key={stat.label} className="text-[11px] text-[color:var(--type-3)] leading-relaxed">
                 <span className="font-medium text-[color:var(--type-2)]">{stat.label}:</span> {stat.description}

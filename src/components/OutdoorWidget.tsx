@@ -160,7 +160,7 @@ export default function OutdoorWidget({ isVisible, sunset }: Props) {
               key={trail.name}
               className="group flex items-start gap-3 py-3 border-b border-gray-100 last:border-0"
             >
-              <div className="mt-0.5 flex-shrink-0 w-6 h-6 rounded-lg bg-gray-50 flex items-center justify-center">
+              <div className="mt-0.5 flex-shrink-0 w-6 h-6 rounded-lg bg-[var(--ink-deep)] flex items-center justify-center">
                 <MapPin className="w-3 h-3 text-[color:var(--type-4)]" />
               </div>
               <div className="flex-1 min-w-0">

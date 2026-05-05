@@ -117,23 +117,22 @@ function MountainSilhouette() {
 }
 
 function CircularGauge({ score, status }: { score: number; status: VisibilityStatus }) {
-  const size = 180;
-  const strokeWidth = 12;
+  const size = 200;
+  const strokeWidth = 10;
   const radius = (size - strokeWidth) / 2;
-  const circumference = Math.PI * radius;
-  const halfCircumference = circumference;
+  const halfCircumference = Math.PI * radius;
   const fillAmount = (score / 100) * halfCircumference;
   const dashOffset = halfCircumference - fillAmount;
 
   const gaugeColor =
     status === "out"
-      ? "#2d8a4e"
+      ? "var(--gauge-good)"
       : status === "peeking"
-        ? "#d4a843"
-        : "#c75a3a";
+        ? "var(--gauge-mid)"
+        : "var(--gauge-poor)";
 
   return (
-    <div className="relative flex flex-col items-center" style={{ width: size, height: size / 2 + 30 }}>
+    <div className="relative flex flex-col items-center" style={{ width: size, height: size / 2 + 36 }}>
       <svg
         width={size}
         height={size / 2 + strokeWidth}
@@ -144,7 +143,7 @@ function CircularGauge({ score, status }: { score: number; status: VisibilitySta
         <path
           d={`M ${strokeWidth / 2} ${size / 2} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${size / 2}`}
           fill="none"
-          stroke="rgba(255,255,255,0.15)"
+          stroke="var(--rule)"
           strokeWidth={strokeWidth}
           strokeLinecap="round"
         />
@@ -157,16 +156,14 @@ function CircularGauge({ score, status }: { score: number; status: VisibilitySta
           strokeLinecap="round"
           strokeDasharray={halfCircumference}
           strokeDashoffset={dashOffset}
-          className="transition-all duration-1000 ease-out"
-          style={{
-            filter: `drop-shadow(0 0 8px ${gaugeColor}40)`,
-          }}
+          className="transition-all duration-1000"
+          style={{ transitionTimingFunction: "var(--ease-out-expo)" }}
         />
         {/* Tick marks */}
         {[0, 25, 50, 75, 100].map((tick) => {
           const angle = Math.PI * (1 - tick / 100);
           const innerR = radius - strokeWidth / 2 - 4;
-          const outerR = radius - strokeWidth / 2 - 8;
+          const outerR = radius - strokeWidth / 2 - 10;
           const x1 = size / 2 + innerR * Math.cos(angle);
           const y1 = size / 2 - innerR * Math.sin(angle);
           const x2 = size / 2 + outerR * Math.cos(angle);
@@ -175,7 +172,7 @@ function CircularGauge({ score, status }: { score: number; status: VisibilitySta
             <line
               key={tick}
               x1={x1} y1={y1} x2={x2} y2={y2}
-              stroke="rgba(255,255,255,0.25)"
+              stroke="var(--rule-strong)"
               strokeWidth="1"
             />
           );
@@ -183,8 +180,8 @@ function CircularGauge({ score, status }: { score: number; status: VisibilitySta
       </svg>
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-center">
         <div
-          className="font-display font-light text-white leading-none tabular"
-          style={{ fontSize: "3rem" }}
+          className="font-display font-light text-[color:var(--type-1)] leading-none tabular"
+          style={{ fontSize: "3.25rem" }}
         >
           {score}
         </div>
@@ -227,105 +224,84 @@ export default function HeroStatus({
     ? (scoreBreakdown.visibilityMeters / 1609.34).toFixed(0)
     : null;
 
+  const gaugeColor =
+    status === "out" ? "var(--gauge-good)" : status === "peeking" ? "var(--gauge-mid)" : "var(--gauge-poor)";
+
   return (
-    <div className="space-y-6">
-      {/* Hero with mountain silhouette */}
+    <div className="space-y-8">
+      {/* Hero */}
       <div
-        className="hero-section px-5 pt-10 pb-24 sm:pt-14 sm:pb-28 stagger-1 animate-fade-up"
+        className="text-center pt-8 pb-4 stagger-1 animate-fade-up"
         role="region"
         aria-label="Mountain visibility status"
       >
-        <MountainSilhouette />
-
-        <div className="relative z-10 flex flex-col items-center text-center">
-          <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-white/50 mb-1">
-            Is the mountain out?
-          </p>
-
+        <div className="flex flex-col items-center">
           <CircularGauge score={score} status={status} />
 
-          <div className="mt-2">
-            <span
-              className="inline-block px-3 py-1 rounded-full text-sm font-medium"
-              style={{
-                background:
-                  status === "out"
-                    ? "rgba(45,138,78,0.2)"
-                    : status === "peeking"
-                      ? "rgba(212,168,67,0.2)"
-                      : "rgba(199,90,58,0.2)",
-                color:
-                  status === "out"
-                    ? "#6edd8f"
-                    : status === "peeking"
-                      ? "#f0d080"
-                      : "#f0a080",
-              }}
+          <div className="mt-3 space-y-2">
+            <p
+              className="font-mono text-xs font-medium uppercase tracking-widest"
+              style={{ color: gaugeColor }}
             >
               {statusCopy.label}
-            </span>
+            </p>
+            <p className="text-[color:var(--type-3)] text-sm max-w-xs mx-auto">
+              {isNight && isVisible
+                ? `Skies are clear tonight. The mountain returns at ${sunriseStr}.`
+                : statusCopy.verdict}
+            </p>
           </div>
-
-          {isNight && isVisible ? (
-            <p className="text-white/60 text-sm mt-3 max-w-xs">
-              Skies are clear tonight. The mountain returns at {sunriseStr}.
-            </p>
-          ) : (
-            <p className="text-white/60 text-sm mt-3 max-w-xs">
-              {statusCopy.verdict}
-            </p>
-          )}
         </div>
       </div>
 
-      {/* Quick Stats Row */}
+      {/* Quick Stats */}
       {scoreBreakdown && (
-        <div className="alpine-card stagger-2 animate-fade-up">
-          <div className="grid grid-cols-3 gap-4 text-center">
+        <div className="border-t border-[var(--rule)] pt-6 stagger-2 animate-fade-up">
+          <div className="grid grid-cols-3 gap-6 text-center">
             <div>
               <p className="font-mono text-2xl font-light text-[color:var(--type-1)] tabular">
-                {scoreBreakdown.cloudLow}<span className="text-sm text-[color:var(--type-3)]">%</span>
+                {scoreBreakdown.cloudLow}<span className="text-sm text-[color:var(--type-4)]">%</span>
               </p>
-              <p className="text-[11px] text-[color:var(--type-3)] mt-0.5">Low Clouds</p>
+              <p className="text-[11px] text-[color:var(--type-4)] mt-1">Low Clouds</p>
             </div>
             <div>
               <p className="font-mono text-2xl font-light text-[color:var(--type-1)] tabular">
-                {visMiles}<span className="text-sm text-[color:var(--type-3)]"> mi</span>
+                {visMiles}<span className="text-sm text-[color:var(--type-4)]"> mi</span>
               </p>
-              <p className="text-[11px] text-[color:var(--type-3)] mt-0.5">Visibility</p>
+              <p className="text-[11px] text-[color:var(--type-4)] mt-1">Visibility</p>
             </div>
             <div>
               <p className="font-mono text-2xl font-light text-[color:var(--type-1)] tabular">
                 {scoreBreakdown.pm25 !== undefined
                   ? scoreBreakdown.pm25.toFixed(0)
                   : "—"}
-                <span className="text-sm text-[color:var(--type-3)]"> µg</span>
+                <span className="text-sm text-[color:var(--type-4)]"> µg</span>
               </p>
-              <p className="text-[11px] text-[color:var(--type-3)] mt-0.5">PM2.5</p>
+              <p className="text-[11px] text-[color:var(--type-4)] mt-1">PM2.5</p>
             </div>
           </div>
 
-          <div className="flex items-center justify-between mt-4 pt-3 border-t border-[var(--rule)]">
-            <span className="text-xs text-[color:var(--type-3)]">
+          <div className="flex items-center justify-between mt-5 pt-3 border-t border-[var(--rule)]">
+            <span className="text-xs text-[color:var(--type-4)]">
               Confidence: <span className="text-[color:var(--type-1)] font-medium">{confidence}</span>
             </span>
-            <span className="text-xs text-[color:var(--type-3)]">{durationMessage}</span>
+            <span className="text-xs text-[color:var(--type-4)]">{durationMessage}</span>
           </div>
         </div>
       )}
 
-      {/* Weather sentence + math expandable */}
+      {/* Weather sentence */}
       {weatherSentence && (
-        <div className="alpine-card stagger-3 animate-fade-up">
-          <p className="text-[color:var(--type-2)] text-[15px] leading-relaxed">
+        <div className="stagger-3 animate-fade-up">
+          <p className="pullquote text-[color:var(--type-2)] text-lg leading-relaxed">
             {weatherSentence}
           </p>
 
           {scoreBreakdown && (
-            <div className="mt-3">
+            <div className="mt-4">
               <button
                 onClick={() => setShowMath(!showMath)}
-                className="inline-flex items-center gap-1.5 text-xs text-[color:var(--accent)] hover:text-[color:var(--type-1)] transition-colors font-medium"
+                className="inline-flex items-center gap-1.5 text-xs text-[color:var(--type-3)] hover:text-[color:var(--type-1)] transition-colors font-medium"
                 aria-expanded={showMath}
                 aria-controls="score-math"
               >
@@ -338,9 +314,10 @@ export default function HeroStatus({
 
               <div
                 id="score-math"
-                className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                className={`overflow-hidden transition-all duration-500 ${
                   showMath ? "max-h-[300px] opacity-100 mt-4" : "max-h-0 opacity-0"
                 }`}
+                style={{ transitionTimingFunction: "var(--ease-out-expo)" }}
               >
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-3 border-t border-[var(--rule)]">
                   {[
@@ -353,7 +330,7 @@ export default function HeroStatus({
                       : []),
                   ].map((item) => (
                     <div key={item.label}>
-                      <p className="text-[10px] text-[color:var(--type-3)] uppercase tracking-wider mb-0.5">{item.label}</p>
+                      <p className="text-[10px] text-[color:var(--type-4)] uppercase tracking-wider mb-0.5">{item.label}</p>
                       <p className="font-mono text-sm text-[color:var(--type-1)] tabular">{item.value}</p>
                     </div>
                   ))}

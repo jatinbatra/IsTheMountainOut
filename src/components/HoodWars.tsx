@@ -100,13 +100,13 @@ export default function HoodWars({
             <button
               key={s.id}
               onClick={() => onSelect(s.id)}
-              className={`relative text-left p-3.5 rounded-xl transition-all overflow-hidden group border ${
+              className={`relative text-left p-3.5 rounded transition-all overflow-hidden group border ${
                 i === 0
                   ? "border-[#2d8a4e]/30 bg-[#2d8a4e]/[0.06]"
                   : i === 1
-                    ? "border-gray-200 bg-gray-50"
+                    ? "border-gray-200 bg-[var(--ink-deep)]"
                     : "border-gray-100 bg-gray-50/50"
-              } ${isSel ? "border-[color:var(--type-1)]/30 bg-white shadow-sm" : ""}`}
+              } ${isSel ? "border-[color:var(--type-1)]/30 bg-[var(--ink-deep)]" : ""}`}
             >
               <div className={`font-mono text-[10px] tracking-wider ${rankColor(i + 1)} mb-1`}>#{i + 1}</div>
               <div className="font-display font-medium text-sm text-[color:var(--type-1)] truncate">{s.label}</div>
@@ -125,7 +125,7 @@ export default function HoodWars({
         })}
       </div>
 
-      <div className="divide-y divide-gray-100 border-y border-gray-100 rounded-xl overflow-hidden">
+      <div className="divide-y divide-gray-100 border-y border-gray-100 rounded overflow-hidden">
         {rest.map((s, i) => {
           const rank = i + 4;
           const isSel = selected === s.id;
@@ -134,7 +134,7 @@ export default function HoodWars({
               key={s.id}
               onClick={() => onSelect(s.id)}
               className={`w-full flex items-center gap-3 px-3.5 py-2.5 text-left transition-colors ${
-                isSel ? "bg-gray-50" : "hover:bg-gray-50/60"
+                isSel ? "bg-[var(--ink-deep)]" : "hover:bg-gray-50/60"
               }`}
             >
               <span className="font-mono text-[10px] text-[color:var(--type-4)] w-6 tabular">#{rank}</span>

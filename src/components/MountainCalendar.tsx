@@ -74,10 +74,10 @@ export default function MountainCalendar() {
                 isToday ? "ring-2 ring-[color:var(--accent)]" : ""
               } ${
                 !hasData
-                  ? "bg-gray-50 text-[color:var(--type-4)]"
+                  ? "bg-[var(--ink-deep)] text-[color:var(--type-4)]"
                   : day.isVisible
                     ? "bg-[#2d8a4e]/15 text-[#2d8a4e] font-medium"
-                    : "bg-gray-100 text-[color:var(--type-4)]"
+                    : "bg-[var(--ink-deep)] text-[color:var(--type-4)]"
               }`}
               title={hasData ? `${day.date}: ${day.score}/100` : day.date}
             >
@@ -92,10 +92,10 @@ export default function MountainCalendar() {
           <span className="w-2.5 h-2.5 rounded bg-[#2d8a4e]/15" /> Mountain out
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded bg-gray-100" /> Hidden
+          <span className="w-2.5 h-2.5 rounded bg-[var(--ink-deep)]" /> Hidden
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded bg-gray-50 ring-1 ring-gray-200" /> No data
+          <span className="w-2.5 h-2.5 rounded bg-[var(--ink-deep)] ring-1 ring-gray-200" /> No data
         </span>
       </div>
     </div>
