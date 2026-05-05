@@ -183,7 +183,7 @@ export default function HeroStatus({
       aria-label="Mountain visibility status"
     >
       {/* Gauge + status + stats — one continuous block */}
-      <div className="flex flex-col items-center text-center pt-4 pb-3">
+      <div className="flex flex-col items-center text-center pt-2 pb-2">
         <CircularGauge score={score} status={status} />
         <p
           className="font-mono text-[11px] font-medium uppercase tracking-[0.2em] mt-1"
@@ -200,7 +200,7 @@ export default function HeroStatus({
 
       {/* Stats inline */}
       {scoreBreakdown && (
-        <div className="grid grid-cols-3 gap-2 text-center py-2 border-t border-[var(--rule)]">
+        <div className="grid grid-cols-3 gap-2 text-center py-1.5 border-t border-[var(--rule)]">
           <div>
             <p className="font-mono text-xl font-light text-[color:var(--type-1)] tabular">
               {scoreBreakdown.cloudLow}<span className="text-xs text-[color:var(--type-4)]">%</span>
@@ -225,7 +225,7 @@ export default function HeroStatus({
 
       {/* Confidence + duration */}
       {scoreBreakdown && (
-        <div className="flex items-center justify-between py-2 border-t border-[var(--rule)] text-[11px] text-[color:var(--type-4)]">
+        <div className="flex items-center justify-between py-1 border-t border-[var(--rule)] text-[11px] text-[color:var(--type-4)]">
           <span>Confidence: <span className="text-[color:var(--type-1)] font-medium">{confidence}</span></span>
           <span>{durationMessage}</span>
         </div>
@@ -233,7 +233,7 @@ export default function HeroStatus({
 
       {/* Weather sentence */}
       {weatherSentence && (
-        <div className="py-3 border-t border-[var(--rule)]">
+        <div className="py-2 border-t border-[var(--rule)]">
           <p className="pullquote text-[color:var(--type-2)] text-base">
             {weatherSentence}
           </p>

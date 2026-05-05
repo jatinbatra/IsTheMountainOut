@@ -29,8 +29,8 @@ export default function MountainCalendar() {
 
   if (validDays.length === 0) {
     return (
-      <div className="text-center py-6">
-        <p className="text-sm font-medium text-[color:var(--type-1)] mb-1">Mountain Calendar</p>
+      <div className="text-center py-3">
+        <p className="text-sm font-medium text-[color:var(--type-1)] mb-0.5">Mountain Calendar</p>
         <p className="text-xs text-[color:var(--type-3)]">
           No historical data yet. The calendar fills in as the cron job runs daily.
         </p>
@@ -43,7 +43,7 @@ export default function MountainCalendar() {
   const startDow = firstDate.getDay();
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-1.5">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium text-[color:var(--type-1)]">Mountain Calendar</h3>
         <span className="text-[10px] text-[color:var(--type-4)]">

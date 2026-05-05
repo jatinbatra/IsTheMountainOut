@@ -121,7 +121,7 @@ export default function WeatherDetails({ weather, reasons }: Props) {
   ];
 
   return (
-    <div className="alpine-card-lg space-y-3">
+    <div className="alpine-card-lg space-y-1.5">
       <div>
         <h2 className="font-display text-lg font-medium text-[color:var(--type-1)]">
           Conditions
@@ -129,7 +129,7 @@ export default function WeatherDetails({ weather, reasons }: Props) {
         <p className="text-xs text-[color:var(--type-3)] mt-0.5">What&apos;s affecting visibility</p>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-1.5">
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
@@ -178,7 +178,7 @@ export default function WeatherDetails({ weather, reasons }: Props) {
             ))}
           </ul>
 
-          <div className="space-y-1.5 p-3 rounded bg-[var(--ink-deep)]">
+          <div className="space-y-1.5 p-2 rounded bg-[var(--ink-deep)]">
             {stats.map((stat) => (
               <p key={stat.label} className="text-[11px] text-[color:var(--type-3)] leading-relaxed">
                 <span className="font-medium text-[color:var(--type-2)]">{stat.label}:</span> {stat.description}

@@ -242,7 +242,7 @@ export default function Dashboard({ initialData }: Props) {
 
       <PWAInstallPrompt />
 
-      <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 pb-6 sm:pb-10 space-y-2">
+      <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 pb-4 sm:pb-6 space-y-1.5">
         {/* ── Header Bar ── */}
         <header className="flex items-center justify-between py-3 border-b border-[var(--rule)]">
           <div>
@@ -296,7 +296,7 @@ export default function Dashboard({ initialData }: Props) {
         />
 
         {/* ── Right Now ── */}
-        <section className="space-y-2">
+        <section className="space-y-1">
           <SpotterButton
             isVisible={adjustedIsVisible}
             score={neighborhoodAdjustedScore}
@@ -314,7 +314,7 @@ export default function Dashboard({ initialData }: Props) {
         </section>
 
         {/* ── Share + Best View ── */}
-        <section className="space-y-2">
+        <section className="space-y-1.5">
           {adjustedIsVisible && topViewpoint && (
             <div className="flex items-center gap-3 py-2 border-t border-[var(--rule)]">
               <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
@@ -350,8 +350,8 @@ export default function Dashboard({ initialData }: Props) {
           data.alpenglow.probability >= 40 &&
           data.alpenglow.minutesToSunset > 0 &&
           data.alpenglow.minutesToSunset <= 60 && (
-            <section className="py-3 border-t border-[var(--rule)]">
-              <p className="text-[10px] text-[color:var(--accent-pink)] uppercase tracking-wider font-mono font-medium mb-1">Alpenglow Alert</p>
+            <section className="py-2 border-t border-[var(--rule)]">
+              <p className="text-[10px] text-[color:var(--accent-pink)] uppercase tracking-wider font-mono font-medium mb-0.5">Alpenglow Alert</p>
               <p className="font-display text-[18px] text-[color:var(--type-1)] leading-snug">
                 The mountain could turn pink in ~{data.alpenglow.minutesToSunset} minutes.
               </p>
@@ -365,7 +365,7 @@ export default function Dashboard({ initialData }: Props) {
           )}
 
         {/* ── The View ── */}
-        <section className="space-y-2">
+        <section className="space-y-1.5">
           <h2 className="font-display text-lg font-medium text-[color:var(--type-1)]">The View</h2>
           <div
             data-reveal-index="1"
@@ -426,7 +426,7 @@ export default function Dashboard({ initialData }: Props) {
             isRevealed(3) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <h2 className="font-display text-lg font-medium text-[color:var(--type-1)] mb-4">Forecast</h2>
+          <h2 className="font-display text-lg font-medium text-[color:var(--type-1)] mb-2">Forecast</h2>
           <ForecastHub
             hourlyTimeline={data.hourlyTimeline}
             currentScore={data.visibility.score}
@@ -456,7 +456,7 @@ export default function Dashboard({ initialData }: Props) {
             isRevealed(4) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <div className="flex items-baseline justify-between mb-4">
+          <div className="flex items-baseline justify-between mb-2">
             <h2 className="font-display text-lg font-medium text-[color:var(--type-1)]">Vantage Points</h2>
             <span className="font-mono text-[10px] text-[color:var(--type-4)] tabular">
               {Math.min(8, data.viewpoints.length)} stations
@@ -494,7 +494,7 @@ export default function Dashboard({ initialData }: Props) {
             isRevealed(5) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <h2 className="font-display text-lg font-medium text-[color:var(--type-1)] mb-4">Community</h2>
+          <h2 className="font-display text-lg font-medium text-[color:var(--type-1)] mb-2">Community</h2>
           <CommunityGames
             selectedHood={neighborhood}
             onSelectHood={setNeighborhood}
@@ -504,7 +504,7 @@ export default function Dashboard({ initialData }: Props) {
         </section>
 
         {/* ── Footer ── */}
-        <section className="border-t border-[var(--rule)] pt-4 space-y-2">
+        <section className="border-t border-[var(--rule)] pt-3 space-y-1.5">
           <PrivacyCommitment />
           <p className="text-sm text-[color:var(--type-3)] leading-relaxed">
             A Pacific Northwest field report. Mt. Rainier visibility scored from
@@ -527,7 +527,7 @@ export default function Dashboard({ initialData }: Props) {
           </div>
         </section>
 
-        <footer className="py-6">
+        <footer className="py-3">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-5">
               <a href="/almanac" className="text-xs text-[color:var(--type-3)] hover:text-[color:var(--type-1)] transition-colors font-medium">Almanac</a>
