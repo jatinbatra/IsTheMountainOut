@@ -1,37 +1,37 @@
 @import "tailwindcss";
 
 /* ─────────────────────────────────────────────────────────
-   ALPINE EDITORIAL
-   Warm-paper, restrained design. Green accent used sparingly.
-   Content breathes with spacing, not card wrappers.
-   Inspired by print editorial + Impeccable design principles.
+   TERMINAL HUD
+   Dark, data-dense display. Monospace-first.
+   Electric green / amber / red status palette.
+   Sections breathe with spacing, no card chrome.
    ───────────────────────────────────────────────────────── */
 
 :root {
-  --ink: #f4f1eb;
-  --ink-deep: #eae6de;
+  --ink: #0a0a0a;
+  --ink-deep: #0c0c0c;
 
-  --type-1: #1a1e1a;
-  --type-2: #3b3f3b;
-  --type-3: #6b706b;
-  --type-4: #9a9f9a;
+  --type-1: #e8e8e8;
+  --type-2: #aaaaaa;
+  --type-3: #888888;
+  --type-4: #555555;
 
-  --rule: rgba(26, 30, 26, 0.10);
-  --rule-strong: rgba(26, 30, 26, 0.20);
+  --rule: rgba(255, 255, 255, 0.06);
+  --rule-strong: rgba(255, 255, 255, 0.12);
 
-  --accent: #2d8a4e;
-  --accent-clear: #2d8a4e;
-  --accent-fog: #7a8a8f;
-  --accent-pink: #c77d6a;
+  --accent: #00ff88;
+  --accent-clear: #22c55e;
+  --accent-fog: #f59e0b;
+  --accent-pink: #ef4444;
 
-  --hero-bg: #1f2e1f;
-  --hero-bg-light: #2b3e2b;
+  --hero-bg: #0a0a0a;
+  --hero-bg-light: #0c0c0c;
 
-  --gauge-good: #2d8a4e;
-  --gauge-mid: #d4a843;
-  --gauge-poor: #c75a3a;
+  --gauge-good: #00ff88;
+  --gauge-mid: #f59e0b;
+  --gauge-poor: #ef4444;
 
-  --background: #f4f1eb;
+  --background: #0a0a0a;
   --foreground: var(--type-1);
 
   --radius-sm: 4px;
@@ -39,6 +39,12 @@
   --radius-lg: 12px;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --hud-green: #00ff88;
+  --hud-amber: #f59e0b;
+  --hud-dim: rgba(255, 255, 255, 0.15);
+  --hud-pink: #ef4444;
+  --surface-hover: rgba(255, 255, 255, 0.05);
 }
 
 @theme inline {
@@ -59,8 +65,8 @@ html {
 body {
   background: var(--background);
   color: var(--type-1);
-  font-family: var(--font-sans), system-ui, sans-serif;
-  font-feature-settings: "ss01", "cv02", "cv11";
+  font-family: var(--font-mono), ui-monospace, 'JetBrains Mono', 'Fira Code', monospace;
+  font-feature-settings: "tnum", "ss01", "cv02";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
@@ -72,13 +78,42 @@ body {
   position: relative;
 }
 
-.theme-clear { --accent: #2d8a4e; }
-.theme-overcast { --accent: #7a8a8f; }
-.theme-alpenglow { --accent: #c77d6a; }
+/* Subtle scanline overlay */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.012) 2px,
+    rgba(255, 255, 255, 0.012) 4px
+  );
+}
+
+/* Optional grid pattern background */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.theme-clear { --accent: #00ff88; }
+.theme-overcast { --accent: #f59e0b; }
+.theme-alpenglow { --accent: #ef4444; }
 
 ::selection {
   background: var(--accent);
-  color: #ffffff;
+  color: #0a0a0a;
 }
 
 button, a[role="button"], [role="tab"], [role="option"] {
@@ -101,12 +136,12 @@ button:active:not(:disabled) {
 /* ─── Typography ─── */
 
 .font-display {
-  font-family: var(--font-display), Georgia, serif;
-  font-feature-settings: "ss01" on;
+  font-family: var(--font-mono), ui-monospace, 'JetBrains Mono', monospace;
+  font-feature-settings: "tnum", "ss01";
 }
 
 .font-mono {
-  font-family: var(--font-mono), ui-monospace, monospace;
+  font-family: var(--font-mono), ui-monospace, 'JetBrains Mono', monospace;
   font-feature-settings: "tnum", "ss01";
 }
 
@@ -134,11 +169,12 @@ button:active:not(:disabled) {
 }
 
 .pullquote {
-  font-family: var(--font-display), Georgia, serif;
-  font-style: italic;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-style: normal;
   font-weight: 400;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: var(--type-2);
 }
 
 .tabular { font-feature-settings: "tnum"; }
@@ -152,39 +188,38 @@ button:active:not(:disabled) {
 }
 
 /* ─── Surfaces ───
-   Flat by default. No decorative shadows.
-   Shadows appear only as hover/focus state responses.
-   Content sections separated by rules or spacing, not boxes. */
+   Dark, borderless. Sections separated by spacing only.
+   Subtle background shifts on hover for interactive elements. */
 
 .alpine-card {
-  border-top: 1px solid var(--rule);
-  padding-top: 0.5rem;
+  padding-top: 0.75rem;
+  margin-top: 0.25rem;
 }
 
 .alpine-card-lg {
-  border-top: 1px solid var(--rule-strong);
-  padding-top: 0.625rem;
+  padding-top: 1rem;
+  margin-top: 0.5rem;
 }
 
 .editorial-card {
-  border-top: 1px solid var(--rule);
-  padding-top: 0.625rem;
+  padding-top: 0.75rem;
+  margin-top: 0.25rem;
 }
 
 .editorial-card-warm {
-  background: rgba(26, 30, 26, 0.03);
-  border: 1px solid var(--rule);
+  background: rgba(255, 255, 255, 0.02);
   border-radius: var(--radius-md);
+  padding: 0.75rem;
 }
 
-/* Legacy glass — mapped to rule-separated sections */
+/* Legacy glass — dark translucent panels */
 .glass {
-  border-top: 1px solid var(--rule);
-  padding-top: 0.5rem;
+  padding-top: 0.75rem;
+  margin-top: 0.25rem;
 }
 
 .glass-strong {
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(16px);
   border-radius: var(--radius-md);
 }
@@ -194,22 +229,21 @@ button:active:not(:disabled) {
 }
 
 .glass-hover:hover {
-  background: rgba(26, 30, 26, 0.03);
-  border-color: var(--rule-strong);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 /* ─── Hero Section ─── */
 
 .hero-section {
-  background: linear-gradient(180deg, var(--hero-bg) 0%, var(--hero-bg-light) 100%);
-  color: #ffffff;
+  background: var(--background);
+  color: var(--type-1);
   position: relative;
   overflow: hidden;
 }
 
 .hero-section .ticker,
 .hero-section .dateline {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--type-4);
 }
 
 /* ─── Circular Gauge ─── */
@@ -230,7 +264,7 @@ button:active:not(:disabled) {
 
 .gauge-ring .gauge-track {
   fill: none;
-  stroke: rgba(255,255,255,0.12);
+  stroke: rgba(255, 255, 255, 0.06);
   stroke-width: var(--gauge-stroke);
   stroke-linecap: round;
 }
@@ -257,8 +291,8 @@ button:active:not(:disabled) {
 }
 
 .surface-interactive:hover {
-  background: rgba(26, 30, 26, 0.025);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: 0 0 12px rgba(0, 255, 136, 0.04);
 }
 
 /* ─── Animations ─── */
@@ -288,13 +322,13 @@ button:active:not(:disabled) {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { filter: drop-shadow(0 0 8px rgba(45, 138, 78, 0.3)); }
-  50% { filter: drop-shadow(0 0 20px rgba(45, 138, 78, 0.5)); }
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.3)); }
+  50% { filter: drop-shadow(0 0 20px rgba(0, 255, 136, 0.5)); }
 }
 
 @keyframes pulse-glow-red {
-  0%, 100% { filter: drop-shadow(0 0 8px rgba(199, 90, 58, 0.3)); }
-  50% { filter: drop-shadow(0 0 20px rgba(199, 90, 58, 0.5)); }
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.3)); }
+  50% { filter: drop-shadow(0 0 20px rgba(239, 68, 68, 0.5)); }
 }
 
 @keyframes cloud-drift {
@@ -398,7 +432,7 @@ button:active:not(:disabled) {
   background: var(--type-3);
 }
 
-/* Legacy gradient text */
+/* Status-colored text */
 .gradient-text {
   color: var(--accent);
 }
@@ -408,7 +442,7 @@ button:active:not(:disabled) {
 }
 
 .gradient-text-amber {
-  color: #d4a843;
+  color: #f59e0b;
 }
 
 .noise-overlay { display: none; }
