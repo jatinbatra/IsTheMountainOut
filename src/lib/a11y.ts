@@ -69,20 +69,6 @@ export function manageFocus(element: HTMLElement | null) {
 }
 
 /**
- * Create accessible skip link for keyboard navigation
- */
-export function createSkipLink(): React.ReactNode {
-  return (
-    <a
-      href="#main"
-      className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:bg-[var(--season-accent)] focus:text-white focus:px-4 focus:py-2 focus:rounded"
-    >
-      Skip to main content
-    </a>
-  );
-}
-
-/**
  * Keyboard navigation handler
  */
 export function handleKeyNavigation(
