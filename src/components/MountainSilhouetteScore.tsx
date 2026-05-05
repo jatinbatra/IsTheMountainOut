@@ -1,5 +1,7 @@
 "use client";
 
+import { memo } from "react";
+
 interface Props {
   score: number;
   isVisible: boolean;
@@ -7,7 +9,12 @@ interface Props {
   seasonLabel: string;
 }
 
-export default function MountainSilhouetteScore({ score, isVisible, isNight, seasonLabel }: Props) {
+const MountainSilhouetteScore = memo(function MountainSilhouetteScore({
+  score,
+  isVisible,
+  isNight,
+  seasonLabel,
+}: Props) {
   const height = Math.max(20, (score / 100) * 100);
   const snowCapHeight = height * 0.25;
   const baseHeight = height - snowCapHeight;
@@ -83,4 +90,6 @@ export default function MountainSilhouetteScore({ score, isVisible, isNight, sea
       </div>
     </div>
   );
-}
+});
+
+export default MountainSilhouetteScore;
