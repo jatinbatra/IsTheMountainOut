@@ -148,7 +148,7 @@ export default function NotifyCard() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           {enabled && verified ? (

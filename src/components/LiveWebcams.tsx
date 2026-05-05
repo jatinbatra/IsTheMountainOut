@@ -72,7 +72,7 @@ export default function LiveWebcams({ feeds }: Props) {
   const goPrev = () => setSelectedCam((prev) => (prev - 1 + feeds.length) % feeds.length);
 
   return (
-    <section className="space-y-4">
+    <section className="space-y-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h2 className="font-display text-lg font-medium text-[color:var(--type-1)]">

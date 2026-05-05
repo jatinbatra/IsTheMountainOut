@@ -242,9 +242,9 @@ export default function Dashboard({ initialData }: Props) {
 
       <PWAInstallPrompt />
 
-      <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 pb-6 sm:pb-10 space-y-3">
+      <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 pb-6 sm:pb-10 space-y-2">
         {/* ── Header Bar ── */}
-        <header className="flex items-center justify-between py-5 border-b border-[var(--rule)]">
+        <header className="flex items-center justify-between py-3 border-b border-[var(--rule)]">
           <div>
             <h1 className="font-display font-medium text-[color:var(--type-1)] text-[17px] leading-none tracking-tight">
               Is the Mountain Out?
@@ -296,7 +296,7 @@ export default function Dashboard({ initialData }: Props) {
         />
 
         {/* ── Right Now ── */}
-        <section className="space-y-3">
+        <section className="space-y-2">
           <SpotterButton
             isVisible={adjustedIsVisible}
             score={neighborhoodAdjustedScore}
@@ -314,9 +314,9 @@ export default function Dashboard({ initialData }: Props) {
         </section>
 
         {/* ── Share + Best View ── */}
-        <section className="space-y-3">
+        <section className="space-y-2">
           {adjustedIsVisible && topViewpoint && (
-            <div className="flex items-center gap-3 py-3 border-t border-[var(--rule)]">
+            <div className="flex items-center gap-3 py-2 border-t border-[var(--rule)]">
               <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
                 <span className="font-mono text-xs text-[color:var(--type-4)]">1</span>
               </div>
@@ -350,7 +350,7 @@ export default function Dashboard({ initialData }: Props) {
           data.alpenglow.probability >= 40 &&
           data.alpenglow.minutesToSunset > 0 &&
           data.alpenglow.minutesToSunset <= 60 && (
-            <section className="py-4 border-t border-[var(--rule)]">
+            <section className="py-3 border-t border-[var(--rule)]">
               <p className="text-[10px] text-[color:var(--accent-pink)] uppercase tracking-wider font-mono font-medium mb-1">Alpenglow Alert</p>
               <p className="font-display text-[18px] text-[color:var(--type-1)] leading-snug">
                 The mountain could turn pink in ~{data.alpenglow.minutesToSunset} minutes.
@@ -365,7 +365,7 @@ export default function Dashboard({ initialData }: Props) {
           )}
 
         {/* ── The View ── */}
-        <section className="space-y-3">
+        <section className="space-y-2">
           <h2 className="font-display text-lg font-medium text-[color:var(--type-1)]">The View</h2>
           <div
             data-reveal-index="1"
@@ -504,7 +504,7 @@ export default function Dashboard({ initialData }: Props) {
         </section>
 
         {/* ── Footer ── */}
-        <section className="border-t border-[var(--rule)] pt-5 space-y-3">
+        <section className="border-t border-[var(--rule)] pt-4 space-y-2">
           <PrivacyCommitment />
           <p className="text-sm text-[color:var(--type-3)] leading-relaxed">
             A Pacific Northwest field report. Mt. Rainier visibility scored from

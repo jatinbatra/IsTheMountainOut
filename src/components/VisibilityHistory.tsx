@@ -54,7 +54,7 @@ export default function VisibilityHistory({ isVisible, weeklyForecast }: Props) 
               onMouseEnter={() => setHoveredDay(i)}
               onMouseLeave={() => setHoveredDay(null)}
             >
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
                 <div className="w-12 shrink-0">
                   <span className={`text-xs ${isToday ? "font-medium text-[color:var(--type-1)]" : "text-[color:var(--type-3)]"}`}>
                     {isToday ? "Today" : day.dayLabel}
@@ -99,7 +99,7 @@ export default function VisibilityHistory({ isVisible, weeklyForecast }: Props) 
         })}
       </div>
 
-      <div className="flex items-center gap-4 text-[10px] text-[color:var(--type-4)]">
+      <div className="flex items-center gap-2 text-[10px] text-[color:var(--type-4)]">
         <span className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-[#2d8a4e]" /> Likely visible
         </span>

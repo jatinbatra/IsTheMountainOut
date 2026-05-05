@@ -94,7 +94,7 @@ export default function ForecastTimeline({ hourlyTimeline, currentScore }: Props
         }`}
       >
         {activeData && (
-          <div className="rounded bg-[var(--ink-deep)] p-3 flex items-center gap-4 flex-wrap">
+          <div className="rounded bg-[var(--ink-deep)] p-3 flex items-center gap-2 flex-wrap">
             <div className="flex items-center gap-3">
               {(() => {
                 const Icon = getWeatherIcon(activeData.weatherCode);

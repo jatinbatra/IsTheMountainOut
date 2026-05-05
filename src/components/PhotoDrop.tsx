@@ -151,7 +151,7 @@ export default function PhotoDrop({ neighborhood }: Props) {
       </div>
 
       {hoodCrown && (
-        <div className="relative mb-4 overflow-hidden rounded">
+        <div className="relative mb-2 overflow-hidden rounded">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={hoodCrown.url}

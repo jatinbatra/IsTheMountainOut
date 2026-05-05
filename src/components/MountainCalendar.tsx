@@ -87,7 +87,7 @@ export default function MountainCalendar() {
         })}
       </div>
 
-      <div className="flex items-center gap-4 text-[10px] text-[color:var(--type-4)]">
+      <div className="flex items-center gap-2 text-[10px] text-[color:var(--type-4)]">
         <span className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded bg-[#2d8a4e]/15" /> Mountain out
         </span>

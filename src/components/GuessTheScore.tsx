@@ -132,7 +132,7 @@ export default function GuessTheScore() {
       </div>
 
       {revealed ? (
-        <div className="space-y-4">
+        <div className="space-y-2">
           <div className="flex items-center justify-center gap-6 py-2">
             <div className="text-center">
               <div className="text-[10px] uppercase tracking-wide text-[color:var(--type-4)] font-semibold">Actual peak</div>
@@ -188,7 +188,7 @@ export default function GuessTheScore() {
           )}
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-2">
           <div className="flex items-end justify-center gap-3">
             <span className="font-display text-6xl font-black text-[color:var(--type-1)] tabular-nums leading-none">
               {guess}

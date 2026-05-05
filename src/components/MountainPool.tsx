@@ -176,7 +176,7 @@ export default function MountainPool() {
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-3 mb-4">
+      <div className="flex items-center justify-between gap-3 mb-2">
         <div className="flex items-center gap-3">
           <Target className="w-4 h-4 text-[color:var(--accent)]" aria-hidden="true" />
           <div>

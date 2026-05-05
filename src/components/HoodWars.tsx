@@ -81,7 +81,7 @@ export default function HoodWars({
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-3 mb-4">
+      <div className="flex items-center justify-between gap-3 mb-2">
         <div>
           <h2 className="font-display text-base font-medium text-[color:var(--type-1)]">Hood Wars</h2>
           <p className="ticker mt-0.5">

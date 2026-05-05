@@ -122,7 +122,7 @@ export default function OutdoorWidget({ isVisible, sunset }: Props) {
             <span className="text-sm text-orange-300">m</span>
           </div>
 
-          <div className="flex items-center gap-4 text-[10px] text-[color:var(--type-4)]">
+          <div className="flex items-center gap-2 text-[10px] text-[color:var(--type-4)]">
             <span className="flex items-center gap-1">
               <Camera className="w-3 h-3" />
               Golden hour starts at {countdown.goldenStart}
