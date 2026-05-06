@@ -1,57 +1,57 @@
 @import "tailwindcss";
 
 /* ─────────────────────────────────────────────────────
-   PACIFIC NORTHWEST SEASONAL THEME
-   Seattle/PNW regional identity design system.
-   Warm earth tones, evergreen accents, seasonal colors.
-   Inspired by mountain views, topo maps, cedar, and rain.
+   DARK DASHBOARD THEME
+   Moody PNW forest aesthetic with glassmorphism cards.
    ───────────────────────────────────────────────────── */
 
 :root {
-  /* Seasonal color system (summer defaults — override per season) */
-  --season-sky: #4a90d9;
-  --season-accent: #2d6a4f;
+  /* Core dark palette */
+  --bg-primary: #0f1a14;
+  --bg-secondary: rgba(20, 35, 28, 0.85);
+  --bg-tertiary: rgba(30, 50, 40, 0.7);
+  --bg-card: rgba(18, 32, 25, 0.9);
+
+  /* Text */
+  --text-primary: #e8ece9;
+  --text-secondary: #9aaa9f;
+  --text-tertiary: #5c6e63;
+
+  /* Accent */
+  --season-accent: #4ade80;
   --season-accent-secondary: #d4a574;
-  --season-mountain-base: #6b7b8d;
-  --season-mountain-snow: #f0f4f8;
+  --season-sky: #4a90d9;
+  --season-mountain-base: #3a5a48;
+  --season-mountain-snow: #d0ddd5;
   --season-water: #3b82a0;
 
-  /* Background system */
-  --bg-primary: #f9f7f4;
-  --bg-secondary: #f3f0ec;
-  --bg-tertiary: #ebe7e2;
-
-  /* Text system */
-  --text-primary: #1a1a1a;
-  --text-secondary: #4a4a4a;
-  --text-tertiary: #8a8a8a;
-
   /* Borders */
-  --border-light: rgba(0, 0, 0, 0.08);
-  --border-medium: rgba(0, 0, 0, 0.12);
+  --border-light: rgba(74, 222, 128, 0.12);
+  --border-medium: rgba(74, 222, 128, 0.2);
 
   /* Shadows */
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 20px rgba(74, 222, 128, 0.08);
 
   /* Radii */
-  --radius-sm: 6px;
-  --radius-md: 10px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
   --radius-lg: 16px;
 
   /* Easing */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 
-  /* Backward compatibility */
+  /* Backward compat */
   --background: var(--bg-primary);
   --foreground: var(--text-primary);
   --hud-green: var(--season-accent);
   --hud-amber: var(--season-accent-secondary);
 
-  /* Status colors */
-  --status-good: #059669;
-  --status-warning: #d97706;
-  --status-critical: #dc2626;
+  /* Status */
+  --status-good: #4ade80;
+  --status-warning: #fbbf24;
+  --status-critical: #f87171;
 }
 
 @theme inline {
@@ -76,7 +76,7 @@ body {
   font-feature-settings: "kern";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  line-height: 1.6;
+  line-height: 1.5;
   padding-top: env(safe-area-inset-top);
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
@@ -87,7 +87,7 @@ body {
 
 ::selection {
   background: var(--season-accent);
-  color: white;
+  color: #0f1a14;
 }
 
 button, a[role="button"], [role="tab"], [role="option"] {
@@ -114,7 +114,6 @@ button:active:not(:disabled) {
   font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.15;
-  font-size: clamp(1.25rem, 3vw + 0.5rem, 2.5rem);
 }
 
 .font-mono {
@@ -122,49 +121,43 @@ button:active:not(:disabled) {
   font-feature-settings: "tnum";
 }
 
-.dateline {
+.tabular { font-feature-settings: "tnum"; }
+
+/* ─── Dashboard Card System ─── */
+
+.dash-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dash-card:hover {
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-glow);
+}
+
+.dash-card-header {
   font-size: 11px;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-tertiary);
-  font-weight: 500;
+  margin-bottom: 12px;
 }
 
-.ticker {
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-tertiary);
-  font-weight: 500;
-}
-
-.pullquote {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-style: italic;
-  font-weight: 400;
-  letter-spacing: -0.01em;
-  line-height: 1.5;
-  color: var(--text-secondary);
-  font-size: 18px;
-}
-
-.tabular { font-feature-settings: "tnum"; }
-
-.data-value {
-  font-family: var(--font-mono), 'JetBrains Mono', monospace;
-  font-feature-settings: "tnum";
-  font-size: clamp(1rem, 2.5vw, 1.5rem);
-  color: var(--text-primary);
-}
-
-/* ─── Card / Surface System ─── */
-
+/* Alpine card backward compat */
 .alpine-card {
-  background: var(--bg-secondary);
+  background: var(--bg-card);
   border: 1px solid var(--border-light);
-  border-left: 3px solid rgba(45, 106, 79, 0.2);
+  border-left: 3px solid rgba(74, 222, 128, 0.3);
   border-radius: var(--radius-md);
   padding: clamp(1rem, 3vw, 1.5rem);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   box-shadow: var(--shadow-sm);
   transition: box-shadow 0.15s ease, border-color 0.15s ease;
 }
@@ -174,27 +167,71 @@ button:active:not(:disabled) {
 }
 
 .alpine-card-lg {
-  background: var(--bg-secondary);
+  background: var(--bg-card);
   border: 1px solid var(--border-light);
-  border-left: 3px solid rgba(45, 106, 79, 0.2);
+  border-left: 3px solid rgba(74, 222, 128, 0.3);
   border-radius: var(--radius-lg);
   padding: clamp(1.25rem, 4vw, 2rem);
+  backdrop-filter: blur(12px);
   box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.15s ease;
-}
-
-.alpine-card-lg:hover {
-  box-shadow: var(--shadow-md);
 }
 
 .glass {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(18, 32, 25, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
   padding: 1.25rem;
   box-shadow: var(--shadow-sm);
+}
+
+/* ─── Sidebar ─── */
+
+.sidebar {
+  width: 72px;
+  background: rgba(10, 18, 14, 0.95);
+  border-right: 1px solid var(--border-light);
+  backdrop-filter: blur(16px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0;
+  gap: 4px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 50;
+}
+
+.sidebar-item {
+  width: 52px;
+  height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.sidebar-item:hover {
+  color: var(--text-secondary);
+  background: rgba(74, 222, 128, 0.06);
+}
+
+.sidebar-item.active {
+  color: var(--season-accent);
+  background: rgba(74, 222, 128, 0.1);
 }
 
 /* ─── Hero Section ─── */
@@ -202,80 +239,87 @@ button:active:not(:disabled) {
 .hero-section {
   position: relative;
   overflow: hidden;
-  min-height: 50vh;
 }
 
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, var(--bg-primary) 0%, transparent 40%, transparent 100%);
+  background: linear-gradient(
+    to bottom,
+    rgba(15, 26, 20, 0.3) 0%,
+    rgba(15, 26, 20, 0.6) 60%,
+    rgba(15, 26, 20, 0.95) 100%
+  );
   pointer-events: none;
 }
 
-.hero-content {
+/* ─── Viewpoint Carousel ─── */
+
+.viewpoint-carousel {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 8px 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.viewpoint-carousel::-webkit-scrollbar { display: none; }
+
+.viewpoint-thumb {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.viewpoint-thumb:hover { transform: translateY(-2px); }
+
+.viewpoint-thumb-img {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid var(--border-light);
+  object-fit: cover;
+  transition: border-color 0.2s ease;
+}
+
+.viewpoint-thumb.active .viewpoint-thumb-img {
+  border-color: var(--season-accent);
+  box-shadow: 0 0 12px rgba(74, 222, 128, 0.3);
+}
+
+/* ─── Score Gauge ─── */
+
+.score-gauge {
   position: relative;
-  z-index: 10;
-  padding: clamp(1.5rem, 4vw, 3rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* ─── PNW Patterns ─── */
-
-.pattern-evergreen {
-  background-image:
-    linear-gradient(120deg, transparent 30%, rgba(45, 106, 79, 0.04) 30%, rgba(45, 106, 79, 0.04) 31%, transparent 31%),
-    linear-gradient(240deg, transparent 30%, rgba(45, 106, 79, 0.03) 30%, rgba(45, 106, 79, 0.03) 31%, transparent 31%),
-    linear-gradient(120deg, transparent 60%, rgba(45, 106, 79, 0.04) 60%, rgba(45, 106, 79, 0.04) 61%, transparent 61%),
-    linear-gradient(240deg, transparent 60%, rgba(45, 106, 79, 0.03) 60%, rgba(45, 106, 79, 0.03) 61%, transparent 61%);
-  background-size: 60px 80px;
+.score-gauge svg {
+  transform: rotate(-90deg);
 }
 
-.pattern-topo {
-  background-image:
-    repeating-linear-gradient(
-      35deg,
-      transparent,
-      transparent 40px,
-      rgba(0, 0, 0, 0.02) 40px,
-      rgba(0, 0, 0, 0.02) 41px
-    ),
-    repeating-linear-gradient(
-      -35deg,
-      transparent,
-      transparent 60px,
-      rgba(0, 0, 0, 0.015) 60px,
-      rgba(0, 0, 0, 0.015) 61px
-    );
+.score-gauge .gauge-track {
+  fill: none;
+  stroke: rgba(74, 222, 128, 0.1);
+  stroke-width: 8;
+  stroke-linecap: round;
 }
 
-.pattern-rain {
-  background-image: repeating-linear-gradient(
-    90deg,
-    transparent,
-    transparent 8px,
-    rgba(59, 130, 160, 0.03) 8px,
-    rgba(59, 130, 160, 0.03) 9px
-  );
+.score-gauge .gauge-fill {
+  fill: none;
+  stroke: var(--season-accent);
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1.5s var(--ease-out-expo);
+  filter: drop-shadow(0 0 6px rgba(74, 222, 128, 0.4));
 }
-
-.divider-cedar {
-  border-top: 2px solid #8b6f47;
-}
-
-/* ─── Score Status Colors ─── */
-
-.score-visible {
-  color: var(--season-accent);
-}
-
-.score-peeking {
-  color: var(--season-accent-secondary);
-}
-
-.score-hidden {
-  color: var(--text-tertiary);
-}
-
-/* ─── Circular Gauge ─── */
 
 .gauge-ring {
   --gauge-size: 180px;
@@ -316,6 +360,62 @@ button:active:not(:disabled) {
   color: var(--text-secondary);
 }
 
+/* ─── Factor Bars ─── */
+
+.factor-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(74, 222, 128, 0.1);
+  overflow: hidden;
+}
+
+.factor-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1s var(--ease-out-expo);
+}
+
+.factor-bar-fill.good { background: var(--status-good); }
+.factor-bar-fill.warning { background: var(--status-warning); }
+.factor-bar-fill.critical { background: var(--status-critical); }
+
+/* ─── PNW Patterns ─── */
+
+.pattern-topo {
+  background-image:
+    repeating-linear-gradient(
+      35deg,
+      transparent,
+      transparent 40px,
+      rgba(74, 222, 128, 0.02) 40px,
+      rgba(74, 222, 128, 0.02) 41px
+    ),
+    repeating-linear-gradient(
+      -35deg,
+      transparent,
+      transparent 60px,
+      rgba(74, 222, 128, 0.015) 60px,
+      rgba(74, 222, 128, 0.015) 61px
+    );
+}
+
+.pattern-evergreen {
+  background-image:
+    linear-gradient(120deg, transparent 30%, rgba(74, 222, 128, 0.03) 30%, rgba(74, 222, 128, 0.03) 31%, transparent 31%),
+    linear-gradient(240deg, transparent 30%, rgba(74, 222, 128, 0.02) 30%, rgba(74, 222, 128, 0.02) 31%, transparent 31%);
+  background-size: 60px 80px;
+}
+
+.divider-cedar {
+  border-top: 1px solid rgba(139, 111, 71, 0.3);
+}
+
+/* ─── Score Colors ─── */
+
+.score-visible { color: var(--season-accent); }
+.score-peeking { color: var(--season-accent-secondary); }
+.score-hidden { color: var(--text-tertiary); }
+
 /* ─── Interactive States ─── */
 
 .surface-interactive {
@@ -327,6 +427,28 @@ button:active:not(:disabled) {
   background: var(--bg-tertiary);
   box-shadow: var(--shadow-md);
 }
+
+/* ─── Bottom Info Bar ─── */
+
+.info-strip {
+  display: flex;
+  gap: 1px;
+  background: rgba(74, 222, 128, 0.06);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.info-strip-item {
+  flex: 1;
+  padding: 12px 16px;
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-strip-item:first-child { border-radius: var(--radius-md) 0 0 var(--radius-md); }
+.info-strip-item:last-child { border-radius: 0 var(--radius-md) var(--radius-md) 0; }
 
 /* ─── Animations ─── */
 
@@ -355,13 +477,13 @@ button:active:not(:disabled) {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { filter: drop-shadow(0 0 4px rgba(5, 150, 105, 0.2)); }
-  50% { filter: drop-shadow(0 0 12px rgba(5, 150, 105, 0.3)); }
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(74, 222, 128, 0.2)); }
+  50% { filter: drop-shadow(0 0 12px rgba(74, 222, 128, 0.4)); }
 }
 
 @keyframes pulse-glow-red {
-  0%, 100% { filter: drop-shadow(0 0 4px rgba(220, 38, 38, 0.2)); }
-  50% { filter: drop-shadow(0 0 12px rgba(220, 38, 38, 0.3)); }
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(248, 113, 113, 0.2)); }
+  50% { filter: drop-shadow(0 0 12px rgba(248, 113, 113, 0.3)); }
 }
 
 @keyframes cloud-drift {
@@ -473,8 +595,13 @@ button:active:not(:disabled) {
 .scrollbar-thin::-webkit-scrollbar-thumb {
   background: var(--text-tertiary);
   border-radius: 3px;
-  transition: background 0.2s;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: var(--text-secondary);
+}
+
+/* ─── Responsive: hide sidebar on mobile ─── */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main-with-sidebar { margin-left: 0 !important; }
 }
