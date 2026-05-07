@@ -4,6 +4,7 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import { RefreshCw, Home, MapPin, Map, BarChart3, Clock, Star, Info, Mountain, Compass, Share2, Eye } from "lucide-react";
+import MountainSilhouetteScore from "@/components/MountainSilhouetteScore";
 import MountainMoment from "@/components/MountainMoment";
 import WeatherDetails from "@/components/WeatherDetails";
 import ViewpointMap from "@/components/ViewpointMap";
@@ -243,10 +244,10 @@ export default function Dashboard({ initialData }: Props) {
   const lightingScore = data.weather.isDay ? 85 : 40;
 
   const factors = [
-    { label: "Cloud Cover", desc: "Low clouds directly block the peak", value: cloudScore, suffix: `${data.weather.cloudLow}%`, weight: "+40%" },
-    { label: "Air Quality (PM2.5)", desc: "Particulates in the air", value: aqScore, suffix: data.weather.pm25 !== undefined ? `${data.weather.pm25.toFixed(1)} µg/m³` : "Good", weight: "+10%" },
-    { label: "Humidity", desc: "Moisture in the atmosphere", value: humidityScore, suffix: `${data.weather.humidity}%`, weight: "+20%" },
-    { label: "Lighting", desc: "Sun angle and daylight", value: lightingScore, suffix: data.weather.isDay ? "Daylight" : "Night", weight: "+20%" },
+    { label: "Cloud Cover", desc: "Low clouds directly block the peak", value: cloudScore, suffix: `${data.weather.cloudLow}% coverage` },
+    { label: "Air Quality (PM2.5)", desc: "Particulates in the air", value: aqScore, suffix: data.weather.pm25 !== undefined ? `${data.weather.pm25.toFixed(1)} µg/m³` : "Good" },
+    { label: "Humidity", desc: "Moisture in the atmosphere", value: humidityScore, suffix: `${data.weather.humidity}%` },
+    { label: "Lighting", desc: "Sun angle and daylight", value: lightingScore, suffix: data.weather.isDay ? "Daylight" : "Night" },
   ];
 
   const selectedVpName = VIEWPOINT_NAMES[selectedViewpoint] ?? VIEWPOINT_NAMES[0];
@@ -264,7 +265,11 @@ export default function Dashboard({ initialData }: Props) {
           <button
             key={item.id}
             className={`sidebar-item ${activeNav === item.id ? "active" : ""}`}
-            onClick={() => setActiveNav(item.id)}
+            onClick={() => {
+              setActiveNav(item.id);
+              const el = document.getElementById(`section-${item.id}`);
+              if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
           >
             <item.icon className="w-4 h-4" />
             <span>{item.label}</span>
@@ -280,12 +285,12 @@ export default function Dashboard({ initialData }: Props) {
 
       {/* ── MAIN CONTENT ── */}
       <main
-        className="main-with-sidebar flex-1 ml-[72px] min-h-screen"
+        className="main-with-sidebar flex-1 ml-[80px] min-h-screen"
         role="main"
         aria-label="Mountain visibility dashboard"
       >
         {/* ── HERO: Seattle skyline + YES. CLEAR PEAK. ── */}
-        <section className="hero-section relative w-full h-[280px]">
+        <section id="section-home" className="hero-section relative w-full h-[280px]">
           <div className="absolute inset-0">
             <FeaturedWebcam />
           </div>
@@ -334,7 +339,7 @@ export default function Dashboard({ initialData }: Props) {
         </section>
 
         {/* ── VIEWPOINT CAROUSEL ── */}
-        <div className="px-6 py-4 border-b border-[var(--border-light)]">
+        <div id="section-viewpoints" className="px-6 py-4 border-b border-[var(--border-light)]">
           <div className="viewpoint-carousel">
             {VIEWPOINT_NAMES.map((vp, i) => (
               <button
@@ -372,45 +377,36 @@ export default function Dashboard({ initialData }: Props) {
             {/* Card 1: Mountain Visibility Score */}
             <div className="dash-card flex flex-col items-center">
               <div className="dash-card-header w-full">Mountain Visibility Score</div>
-
-              {/* Circular gauge */}
-              <div className="relative my-4" style={{ width: 180, height: 180 }}>
-                <svg width="180" height="180" viewBox="0 0 180 180" className="transform -rotate-90">
-                  <circle cx="90" cy="90" r={gaugeRadius} fill="none" stroke="rgba(74,222,128,0.08)" strokeWidth="10" />
+              <div className="score-gauge my-2">
+                <svg width="160" height="160" viewBox="0 0 160 160">
+                  <circle cx="80" cy="80" r={gaugeRadius} className="gauge-track" />
                   <circle
-                    cx="90" cy="90" r={gaugeRadius}
-                    fill="none"
-                    stroke="var(--season-accent)"
-                    strokeWidth="10"
-                    strokeLinecap="round"
+                    cx="80" cy="80" r={gaugeRadius}
+                    className="gauge-fill"
                     strokeDasharray={gaugeCircumference}
                     strokeDashoffset={gaugeDashoffset}
-                    style={{ transition: "stroke-dashoffset 1.5s cubic-bezier(0.16,1,0.3,1)", filter: "drop-shadow(0 0 8px rgba(74,222,128,0.3))" }}
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="font-display text-5xl text-[var(--season-accent)] tabular">{neighborhoodAdjustedScore}<span className="text-2xl">%</span></span>
-                  <span className="text-[10px] text-[var(--text-secondary)] uppercase tracking-wider font-medium mt-1">
+                  <span className="font-display text-4xl text-[var(--season-accent)] tabular">{neighborhoodAdjustedScore}%</span>
+                  <span className="text-[10px] text-[var(--text-secondary)] uppercase tracking-wider font-medium">
                     {neighborhoodAdjustedScore >= 76 ? "Great Visibility" : neighborhoodAdjustedScore >= 50 ? "Moderate" : "Poor Visibility"}
                   </span>
                 </div>
               </div>
-
-              {/* Mountain silhouette (no score text) */}
-              <div className="w-full px-2">
-                <svg viewBox="0 0 200 60" className="w-full h-auto opacity-40" aria-hidden="true">
-                  <path d={`M 0 60 L 40 ${60 - (neighborhoodAdjustedScore / 100) * 40} L 70 ${60 - (neighborhoodAdjustedScore / 100) * 55} L 100 ${60 - (neighborhoodAdjustedScore / 100) * 40} L 200 60 Z`} fill="var(--season-mountain-base)" />
-                  <path d={`M 40 ${60 - (neighborhoodAdjustedScore / 100) * 40} L 70 ${60 - (neighborhoodAdjustedScore / 100) * 55} L 100 ${60 - (neighborhoodAdjustedScore / 100) * 40} L 90 ${60 - (neighborhoodAdjustedScore / 100) * 35} L 50 ${60 - (neighborhoodAdjustedScore / 100) * 35} Z`} fill="var(--season-mountain-snow)" opacity="0.6" />
-                  {[15, 25, 160, 175, 185].map((x) => (
-                    <polygon key={x} points={`${x},60 ${x+3},50 ${x+6},60`} fill="var(--season-accent)" opacity="0.25" />
-                  ))}
-                </svg>
+              {/* Mountain illustration */}
+              <div className="w-full mt-2">
+                <MountainSilhouetteScore
+                  score={neighborhoodAdjustedScore}
+                  isVisible={adjustedIsVisible}
+                  isNight={isNight}
+                  seasonLabel=""
+                />
               </div>
-
               <div className="flex items-center gap-2 mt-3 text-[10px] text-[var(--text-tertiary)]">
                 <RefreshCw className={`w-3 h-3 ${isValidating ? "animate-spin" : ""}`} />
                 <span>Updated {Math.round((Date.now() - lastUpdate.getTime()) / 60000)} min ago</span>
-                <span>·</span>
+                <span className="text-[var(--text-tertiary)]">·</span>
                 <span className={adjustedIsVisible ? "text-[var(--season-accent)]" : "text-[var(--status-warning)]"}>
                   {adjustedIsVisible ? "Improving" : "Declining"}
                 </span>
@@ -420,14 +416,13 @@ export default function Dashboard({ initialData }: Props) {
             {/* Card 2: Why the Mountain is Out */}
             <div className="dash-card">
               <div className="dash-card-header">Why the Mountain is {adjustedIsVisible ? "Out" : "Hidden"}</div>
-              <div className="space-y-5 mt-2">
+              <div className="space-y-4">
                 {factors.map((f) => (
                   <div key={f.label}>
-                    <div className="flex items-center justify-between mb-0.5">
-                      <span className="text-[13px] text-[var(--text-primary)] font-medium">{f.label}</span>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs text-[var(--text-primary)] font-medium">{f.label}</span>
                       <span className="text-[10px] text-[var(--text-tertiary)] font-mono tabular">{f.suffix}</span>
                     </div>
-                    <p className="text-[10px] text-[var(--text-tertiary)] mb-1.5">{f.desc} · {f.weight}</p>
                     <div className="factor-bar">
                       <div
                         className={`factor-bar-fill ${f.value >= 70 ? "good" : f.value >= 40 ? "warning" : "critical"}`}
@@ -437,13 +432,13 @@ export default function Dashboard({ initialData }: Props) {
                   </div>
                 ))}
               </div>
-              <button className="mt-5 text-[10px] text-[var(--season-accent)] font-mono uppercase tracking-wider hover:text-[var(--text-primary)] transition-colors">
+              <button className="mt-4 text-[10px] text-[var(--season-accent)] font-mono uppercase tracking-wider hover:text-[var(--text-primary)] transition-colors">
                 How it works →
               </button>
             </div>
 
             {/* Card 3: Visibility by Neighborhood */}
-            <div className="dash-card">
+            <div id="section-map" className="dash-card">
               <div className="dash-card-header">Visibility by Neighborhood</div>
               <ViewpointMap
                 viewpoints={data.viewpoints.slice(0, 8).map((vp) => ({
@@ -475,7 +470,7 @@ export default function Dashboard({ initialData }: Props) {
             </div>
 
             {/* Card 4: Forecast */}
-            <div className="dash-card">
+            <div id="section-forecast" className="dash-card">
               <div className="dash-card-header">Forecast for {selectedVpName.name}</div>
               <ForecastHub
                 hourlyTimeline={data.hourlyTimeline}
@@ -538,7 +533,7 @@ export default function Dashboard({ initialData }: Props) {
           </div>
 
           {/* ── BOTTOM INFO STRIP ── */}
-          <div className="info-strip mt-4">
+          <div id="section-history" className="info-strip mt-4">
             {/* Did You Know */}
             <div className="info-strip-item">
               <span className="text-[9px] text-[var(--text-tertiary)] uppercase tracking-wider font-medium">Did You Know</span>
@@ -584,7 +579,7 @@ export default function Dashboard({ initialData }: Props) {
           </div>
 
           {/* ── EXPANDABLE SECTIONS ── */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
+          <div id="section-favorites" className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
             {/* Weather Details */}
             <div className="dash-card">
               <div className="dash-card-header">Weather Details</div>
@@ -625,7 +620,7 @@ export default function Dashboard({ initialData }: Props) {
           )}
 
           {/* ── FOOTER ── */}
-          <footer className="divider-cedar mt-8 pt-6 pb-8">
+          <footer id="section-about" className="divider-cedar mt-8 pt-6 pb-8">
             <PrivacyCommitment />
             <p className="text-xs text-[var(--text-tertiary)] mt-3 leading-relaxed">
               A Pacific Northwest field report. Mt. Rainier visibility scored from real-time cloud layers, atmospheric clarity, and particulate matter across the Puget Sound region.
