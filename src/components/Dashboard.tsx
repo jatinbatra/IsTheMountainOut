@@ -159,37 +159,49 @@ const VIEWPOINTS = [
     id: "kerry-park",
     name: "Kerry Park",
     sub: "Queen Anne",
-    gradient: "linear-gradient(155deg, #1c3018 0%, #3a5020 30%, #7a6828 65%, #b88820 100%)",
+    image: "/images/viewpoints/kerry-park.jpg",
   },
   {
     id: "space-needle",
     name: "Space Needle",
     sub: "Downtown",
-    gradient: "linear-gradient(155deg, #0c1825 0%, #1a3050 35%, #2a507a 70%, #4880a8 100%)",
+    image: "/images/viewpoints/space-needle.jpg",
   },
   {
-    id: "gas-works",
-    name: "Gas Works",
-    sub: "Wallingford",
-    gradient: "linear-gradient(155deg, #28200c 0%, #4a3818 35%, #6a5028 65%, #906a30 100%)",
+    id: "uw-campus",
+    name: "UW Campus",
+    sub: "University District",
+    image: "/images/viewpoints/uw-campus.jpg",
   },
   {
-    id: "bellevue",
-    name: "Bellevue",
-    sub: "Eastside",
-    gradient: "linear-gradient(155deg, #0c1830 0%, #1a3868 35%, #2a5898 70%, #4888c0 100%)",
+    id: "i90-bridge",
+    name: "I-90 Bridge",
+    sub: "Lake Washington",
+    image: "/images/viewpoints/i90-bridge.jpg",
   },
   {
-    id: "green-lake",
-    name: "Green Lake",
-    sub: "North Seattle",
-    gradient: "linear-gradient(155deg, #0c1c0c 0%, #183818 35%, #286028 65%, #388038 100%)",
+    id: "sculpture-park",
+    name: "Sculpture Park",
+    sub: "Waterfront",
+    image: "/images/viewpoints/sculpture-park.jpg",
   },
   {
-    id: "snoqualmie",
-    name: "Snoqualmie",
-    sub: "Cascades",
-    gradient: "linear-gradient(155deg, #181c28 0%, #384868 35%, #6880a0 65%, #b8c8d8 100%)",
+    id: "harbor-view",
+    name: "Harbor View",
+    sub: "Port of Seattle",
+    image: "/images/viewpoints/harbor-view.jpg",
+  },
+  {
+    id: "alki-beach",
+    name: "Alki Beach",
+    sub: "West Seattle",
+    image: "/images/viewpoints/alki-beach.jpg",
+  },
+  {
+    id: "sodo",
+    name: "SODO",
+    sub: "South Seattle",
+    image: "/images/viewpoints/sodo.jpg",
   },
 ];
 
@@ -367,8 +379,17 @@ export default function Dashboard({ initialData }: Props) {
           className="hero-section"
           style={{ height: "62vh", minHeight: "500px" }}
         >
-          {/* Cinematic background */}
+          {/* Cinematic background — real PNW photography */}
           <div className="hero-bg-fallback" />
+          <div
+            className="absolute inset-0 z-[0] transition-opacity duration-1000"
+            style={{
+              backgroundImage: `url(${VIEWPOINTS[selectedVp]?.image})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center 30%",
+              opacity: 0.6,
+            }}
+          />
           <div className="absolute inset-0 z-[1]">
             <FeaturedWebcam />
           </div>
@@ -489,21 +510,20 @@ export default function Dashboard({ initialData }: Props) {
                 >
                   <div
                     className={`viewpoint-circle ${selectedVp === i ? "selected" : ""}`}
-                    style={{ background: vp.gradient }}
                   >
-                    {/* Atmospheric overlay on thumbnail */}
+                    <img
+                      src={vp.image}
+                      alt={`${vp.name} viewpoint`}
+                      className="absolute inset-0 w-full h-full rounded-full object-cover"
+                      loading="lazy"
+                    />
+                    {/* Cinematic vignette over photo */}
                     <div
                       className="absolute inset-0 rounded-full"
                       style={{
-                        background: "linear-gradient(160deg, rgba(255,255,255,0.05) 0%, transparent 40%, rgba(0,0,0,0.2) 100%)",
-                      }}
-                    />
-                    {/* Location icon */}
-                    <MapPin
-                      className="w-5 h-5 relative z-10"
-                      style={{
-                        color: selectedVp === i ? accentColor : "rgba(200,210,204,0.35)",
-                        filter: selectedVp === i ? `drop-shadow(${accentGlow})` : "none",
+                        background: selectedVp === i
+                          ? "linear-gradient(160deg, rgba(255,255,255,0.08) 0%, transparent 40%, rgba(0,0,0,0.15) 100%)"
+                          : "linear-gradient(160deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.25) 50%, rgba(0,0,0,0.45) 100%)",
                       }}
                     />
                   </div>

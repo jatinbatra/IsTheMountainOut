@@ -334,19 +334,14 @@ button, [role="button"], [role="tab"] {
   z-index: 2;
 }
 
-/* Cinematic background fallback */
+/* Cinematic background fallback — real Rainier photograph */
 .hero-bg-fallback {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    160deg,
-    #0a1e14 0%,
-    #0e2a1a 20%,
-    #14321e 40%,
-    #0c1e14 60%,
-    #0a1810 80%,
-    #081410 100%
-  );
+  background-image: url("/images/hero/rainier-waterfront.jpg");
+  background-size: cover;
+  background-position: center 30%;
+  background-repeat: no-repeat;
   z-index: 0;
 }
 
