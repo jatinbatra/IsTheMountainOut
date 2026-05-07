@@ -265,7 +265,11 @@ export default function Dashboard({ initialData }: Props) {
           <button
             key={item.id}
             className={`sidebar-item ${activeNav === item.id ? "active" : ""}`}
-            onClick={() => setActiveNav(item.id)}
+            onClick={() => {
+              setActiveNav(item.id);
+              const el = document.getElementById(`section-${item.id}`);
+              if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
           >
             <item.icon className="w-4 h-4" />
             <span>{item.label}</span>
@@ -281,12 +285,12 @@ export default function Dashboard({ initialData }: Props) {
 
       {/* ── MAIN CONTENT ── */}
       <main
-        className="main-with-sidebar flex-1 ml-[72px] min-h-screen"
+        className="main-with-sidebar flex-1 ml-[80px] min-h-screen"
         role="main"
         aria-label="Mountain visibility dashboard"
       >
         {/* ── HERO: Seattle skyline + YES. CLEAR PEAK. ── */}
-        <section className="hero-section relative w-full h-[280px]">
+        <section id="section-home" className="hero-section relative w-full h-[280px]">
           <div className="absolute inset-0">
             <FeaturedWebcam />
           </div>
@@ -335,7 +339,7 @@ export default function Dashboard({ initialData }: Props) {
         </section>
 
         {/* ── VIEWPOINT CAROUSEL ── */}
-        <div className="px-6 py-4 border-b border-[var(--border-light)]">
+        <div id="section-viewpoints" className="px-6 py-4 border-b border-[var(--border-light)]">
           <div className="viewpoint-carousel">
             {VIEWPOINT_NAMES.map((vp, i) => (
               <button
@@ -434,7 +438,7 @@ export default function Dashboard({ initialData }: Props) {
             </div>
 
             {/* Card 3: Visibility by Neighborhood */}
-            <div className="dash-card">
+            <div id="section-map" className="dash-card">
               <div className="dash-card-header">Visibility by Neighborhood</div>
               <ViewpointMap
                 viewpoints={data.viewpoints.slice(0, 8).map((vp) => ({
@@ -466,7 +470,7 @@ export default function Dashboard({ initialData }: Props) {
             </div>
 
             {/* Card 4: Forecast */}
-            <div className="dash-card">
+            <div id="section-forecast" className="dash-card">
               <div className="dash-card-header">Forecast for {selectedVpName.name}</div>
               <ForecastHub
                 hourlyTimeline={data.hourlyTimeline}
@@ -529,7 +533,7 @@ export default function Dashboard({ initialData }: Props) {
           </div>
 
           {/* ── BOTTOM INFO STRIP ── */}
-          <div className="info-strip mt-4">
+          <div id="section-history" className="info-strip mt-4">
             {/* Did You Know */}
             <div className="info-strip-item">
               <span className="text-[9px] text-[var(--text-tertiary)] uppercase tracking-wider font-medium">Did You Know</span>
@@ -575,7 +579,7 @@ export default function Dashboard({ initialData }: Props) {
           </div>
 
           {/* ── EXPANDABLE SECTIONS ── */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
+          <div id="section-favorites" className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
             {/* Weather Details */}
             <div className="dash-card">
               <div className="dash-card-header">Weather Details</div>
@@ -616,7 +620,7 @@ export default function Dashboard({ initialData }: Props) {
           )}
 
           {/* ── FOOTER ── */}
-          <footer className="divider-cedar mt-8 pt-6 pb-8">
+          <footer id="section-about" className="divider-cedar mt-8 pt-6 pb-8">
             <PrivacyCommitment />
             <p className="text-xs text-[var(--text-tertiary)] mt-3 leading-relaxed">
               A Pacific Northwest field report. Mt. Rainier visibility scored from real-time cloud layers, atmospheric clarity, and particulate matter across the Puget Sound region.
