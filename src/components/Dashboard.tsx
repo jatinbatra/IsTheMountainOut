@@ -398,7 +398,7 @@ export default function Dashboard({ initialData }: Props) {
             <div
               className="absolute pointer-events-none"
               style={{
-                background: "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(6,17,13,0.22) 0%, transparent 75%)",
+                background: "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(12,10,7,0.22) 0%, transparent 75%)",
                 inset: "-10% -20%",
               }}
             />
