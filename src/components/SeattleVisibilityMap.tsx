@@ -34,8 +34,8 @@ const REGIONS: {
 ];
 
 function scoreColor(s: number): string {
-  if (s >= 90) return "#c8956a";
-  if (s >= 70) return "#a8845a";
+  if (s >= 90) return "#5a9e6a";
+  if (s >= 70) return "#4a8858";
   if (s >= 50) return "#d4a373";
   if (s >= 30) return "#b07848";
   return "#c47d8a";
