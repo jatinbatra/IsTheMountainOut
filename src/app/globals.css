@@ -367,7 +367,7 @@ button, [role="button"], [role="tab"] {
   justify-content: space-between;
   flex: 1;
   padding: 10px 20px;
-  background: rgba(20, 17, 13, 0.6);
+  background: rgba(24, 20, 16, 0.55);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border: 1px solid rgba(255, 255, 255, 0.044);
@@ -424,7 +424,7 @@ button, [role="button"], [role="tab"] {
 }
 
 .hero-headline-positive {
-  color: var(--season-accent, var(--accent));
+  color: var(--accent);
   text-shadow:
     0 0 60px rgba(90, 158, 106, 0.2),
     0 2px 12px rgba(0, 0, 0, 0.3);
@@ -506,15 +506,15 @@ button, [role="button"], [role="tab"] {
 /* ─── Warm Card Variant ─── */
 
 .dash-card-warm {
-  border-color: rgba(212, 163, 115, 0.1);
-  background: rgba(20, 16, 10, 0.55);
+  border-color: rgba(212, 163, 115, 0.15);
+  background: linear-gradient(165deg, rgba(36, 28, 18, 0.75) 0%, rgba(24, 20, 14, 0.7) 100%);
 }
 .dash-card-warm::before {
-  background: linear-gradient(90deg, transparent, rgba(212, 163, 115, 0.06) 30%, rgba(212, 163, 115, 0.06) 70%, transparent);
+  background: linear-gradient(90deg, transparent, rgba(212, 163, 115, 0.1) 30%, rgba(212, 163, 115, 0.1) 70%, transparent);
 }
 .dash-card-warm:hover {
-  border-color: rgba(212, 163, 115, 0.15);
-  box-shadow: var(--shadow-card), 0 0 48px rgba(212, 163, 115, 0.04);
+  border-color: rgba(212, 163, 115, 0.2);
+  box-shadow: var(--shadow-card), 0 0 48px rgba(212, 163, 115, 0.06);
 }
 
 /* ─── Fun Fact Badge ─── */
@@ -581,15 +581,15 @@ button, [role="button"], [role="tab"] {
 }
 
 .viewpoint-glass {
-  background: rgba(20, 17, 13, 0.65);
+  background: linear-gradient(168deg, rgba(38, 33, 25, 0.82) 0%, rgba(28, 24, 18, 0.78) 100%);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.042);
+  border: 1px solid rgba(180, 150, 100, 0.16);
   border-radius: 26px;
   padding: 14px 16px;
   box-shadow:
-    0 12px 40px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.028);
+    0 12px 40px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(212, 180, 140, 0.04);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -683,13 +683,13 @@ button, [role="button"], [role="tab"] {
 /* ─── Glass Cards ─── */
 
 .dash-card {
-  background: var(--glass);
+  background: linear-gradient(168deg, rgba(38, 33, 25, 0.82) 0%, rgba(28, 24, 18, 0.78) 100%);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
-  border: 1px solid var(--glass-border);
+  border: 1px solid rgba(180, 150, 100, 0.16);
   border-radius: var(--radius-xl);
   padding: 22px;
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04);
   transition: border-color 0.3s ease, box-shadow 0.4s ease;
   position: relative;
   overflow: hidden;
@@ -702,14 +702,14 @@ button, [role="button"], [role="tab"] {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(212,180,140,0.04) 30%, rgba(255,255,255,0.04) 70%, transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06) 30%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.06) 70%, transparent);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   pointer-events: none;
 }
 
 .dash-card:hover {
-  border-color: rgba(212, 163, 115, 0.08);
-  box-shadow: var(--shadow-card), 0 0 32px rgba(212, 163, 115, 0.03);
+  border-color: rgba(212, 163, 115, 0.22);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04), 0 0 40px rgba(212, 163, 115, 0.05);
 }
 
 .dash-card-header {
@@ -722,16 +722,16 @@ button, [role="button"], [role="tab"] {
 }
 
 .card {
-  background: var(--glass);
+  background: linear-gradient(168deg, rgba(38, 33, 25, 0.82) 0%, rgba(28, 24, 18, 0.78) 100%);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
-  border: 1px solid var(--glass-border);
+  border: 1px solid rgba(180, 150, 100, 0.16);
   border-radius: var(--radius-xl);
   padding: 22px;
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04);
 }
 .card:hover {
-  border-color: rgba(212, 163, 115, 0.08);
+  border-color: rgba(212, 163, 115, 0.22);
 }
 
 .card-title {
@@ -807,7 +807,7 @@ button, [role="button"], [role="tab"] {
   fill: none;
   stroke-width: 9;
   stroke-linecap: round;
-  stroke: var(--season-accent, var(--accent));
+  stroke: var(--accent);
   filter: drop-shadow(0 0 12px rgba(90, 158, 106, 0.3));
   transition: stroke-dashoffset 1.6s var(--ease);
 }
@@ -823,7 +823,7 @@ button, [role="button"], [role="tab"] {
   fill: none;
   stroke-width: 9;
   stroke-linecap: round;
-  stroke: var(--season-accent, var(--accent));
+  stroke: var(--accent);
   filter: drop-shadow(0 0 12px rgba(90, 158, 106, 0.3));
   transition: stroke-dashoffset 1.6s var(--ease);
 }
@@ -884,7 +884,7 @@ button, [role="button"], [role="tab"] {
 }
 
 /* ─── Score Colors ─── */
-.score-visible { color: var(--season-accent, var(--accent)); }
+.score-visible { color: var(--accent); }
 .score-peeking { color: var(--accent-gold); }
 .score-hidden  { color: var(--accent-pink); }
 

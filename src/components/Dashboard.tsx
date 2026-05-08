@@ -281,7 +281,7 @@ export default function Dashboard({ initialData }: Props) {
     { label: "Lighting",           desc: isNight ? "Night — reduced visibility" : "Golden hour boost", value: lightScore, status: lightScore >= 70 ? "EXCELLENT" : lightScore >= 40 ? "FAIR" : "POOR" },
   ];
 
-  const accentColor = isVisible ? "var(--season-accent, #5a9e6a)" : "var(--accent-pink, #c47d8a)";
+  const accentColor = isVisible ? "var(--accent)" : "var(--accent-pink)";
   const accentGlow  = isVisible ? "0 0 14px rgba(90,158,106,0.3)" : "0 0 14px rgba(196,125,138,0.3)";
 
   const weatherLabel = data.weather.cloudLow < 20 ? "Sunny" : data.weather.cloudLow < 50 ? "Partly Cloudy" : data.weather.cloudLow < 80 ? "Mostly Cloudy" : "Overcast";
