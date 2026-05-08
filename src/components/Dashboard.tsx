@@ -281,8 +281,8 @@ export default function Dashboard({ initialData }: Props) {
     { label: "Lighting",           desc: isNight ? "Night — reduced visibility" : "Golden hour boost", value: lightScore, status: lightScore >= 70 ? "EXCELLENT" : lightScore >= 40 ? "FAIR" : "POOR" },
   ];
 
-  const accentColor = isVisible ? "var(--season-accent, #2db87a)" : "var(--accent-pink, #ff5cad)";
-  const accentGlow  = isVisible ? "0 0 12px rgba(45,184,122,0.25)" : "0 0 12px rgba(255,92,173,0.25)";
+  const accentColor = isVisible ? "var(--season-accent, #c8956a)" : "var(--accent-pink, #c47d8a)";
+  const accentGlow  = isVisible ? "0 0 14px rgba(200,149,106,0.3)" : "0 0 14px rgba(196,125,138,0.3)";
 
   const weatherLabel = data.weather.cloudLow < 20 ? "Sunny" : data.weather.cloudLow < 50 ? "Partly Cloudy" : data.weather.cloudLow < 80 ? "Mostly Cloudy" : "Overcast";
 
@@ -302,8 +302,8 @@ export default function Dashboard({ initialData }: Props) {
             <polygon points="18,4 6,30 12,30 18,17 24,30 30,30" fill="#d4a373" opacity="0.75" />
             <polygon points="14,19 18,10 22,19 20,15 16,15" fill="white" opacity="0.4" />
             <line x1="4" y1="31" x2="32" y2="31" stroke="#d4a373" strokeWidth="0.8" opacity="0.25" />
-            <polygon points="8,31 10,26 12,31" fill="#2db87a" opacity="0.18" />
-            <polygon points="26,31 28,27 30,31" fill="#2db87a" opacity="0.18" />
+            <polygon points="8,31 10,26 12,31" fill="#c8956a" opacity="0.18" />
+            <polygon points="26,31 28,27 30,31" fill="#c8956a" opacity="0.18" />
           </svg>
         </div>
 
@@ -615,11 +615,11 @@ export default function Dashboard({ initialData }: Props) {
 
               <div className="flex flex-wrap gap-3 mt-4 pt-3" style={{ borderTop: "1px solid rgba(180,165,130,0.04)" }}>
                 {[
-                  { label: "90–100%", c: "#2db87a" },
-                  { label: "70–89%",  c: "#4a9060" },
+                  { label: "90–100%", c: "#c8956a" },
+                  { label: "70–89%",  c: "#a8845a" },
                   { label: "50–69%",  c: "#d4a373" },
-                  { label: "30–49%",  c: "#c06828" },
-                  { label: "0–29%",   c: "#ff5cad" },
+                  { label: "30–49%",  c: "#b07848" },
+                  { label: "0–29%",   c: "#c47d8a" },
                 ].map((l) => (
                   <div key={l.label} className="flex items-center gap-1.5 text-[8px]" style={{ color: "var(--text-tertiary)" }}>
                     <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: l.c }} />
@@ -681,7 +681,7 @@ export default function Dashboard({ initialData }: Props) {
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="flex -space-x-2">
-                    {["#2db87a","#d4a373","#60a5fa","#f59e0b"].map((c, i) => (
+                    {["#c8956a","#d4a373","#60a5fa","#f59e0b"].map((c, i) => (
                       <div
                         key={i}
                         className="w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold"
