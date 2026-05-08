@@ -21,9 +21,9 @@
   --text-warm: #d4a373;
 
   /* ── Accents — natural PNW tones, no neon ── */
-  --accent: #c8956a;
-  --accent-dim: rgba(200, 149, 106, 0.12);
-  --accent-glow: rgba(200, 149, 106, 0.22);
+  --accent: #5a9e6a;
+  --accent-dim: rgba(90, 158, 106, 0.12);
+  --accent-glow: rgba(90, 158, 106, 0.22);
   --accent-pink: #c47d8a;
   --accent-pink-dim: rgba(196, 125, 138, 0.12);
   --accent-pink-glow: rgba(196, 125, 138, 0.22);
@@ -41,7 +41,7 @@
   --shadow-card: 0 12px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(212,180,120,0.04);
   --shadow-deep: 0 24px 64px rgba(0,0,0,0.55);
   --shadow-glow: 0 0 48px rgba(212, 163, 115, 0.06);
-  --shadow-glow-green: 0 0 48px rgba(200, 149, 106, 0.08);
+  --shadow-glow-green: 0 0 48px rgba(90, 158, 106, 0.08);
   --shadow-glow-pink: 0 0 48px rgba(196, 125, 138, 0.08);
 
   /* ── Radii ── */
@@ -56,7 +56,7 @@
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 
   /* ── Status ── */
-  --status-good: #c8956a;
+  --status-good: #5a9e6a;
   --status-warning: #d4a373;
   --status-critical: #c47d8a;
 
@@ -426,7 +426,7 @@ button, [role="button"], [role="tab"] {
 .hero-headline-positive {
   color: var(--season-accent, var(--accent));
   text-shadow:
-    0 0 60px rgba(200, 149, 106, 0.2),
+    0 0 60px rgba(90, 158, 106, 0.2),
     0 2px 12px rgba(0, 0, 0, 0.3);
 }
 
@@ -808,7 +808,7 @@ button, [role="button"], [role="tab"] {
   stroke-width: 9;
   stroke-linecap: round;
   stroke: var(--season-accent, var(--accent));
-  filter: drop-shadow(0 0 12px rgba(200, 149, 106, 0.3));
+  filter: drop-shadow(0 0 12px rgba(90, 158, 106, 0.3));
   transition: stroke-dashoffset 1.6s var(--ease);
 }
 .gauge-fill-negative {
@@ -824,7 +824,7 @@ button, [role="button"], [role="tab"] {
   stroke-width: 9;
   stroke-linecap: round;
   stroke: var(--season-accent, var(--accent));
-  filter: drop-shadow(0 0 12px rgba(200, 149, 106, 0.3));
+  filter: drop-shadow(0 0 12px rgba(90, 158, 106, 0.3));
   transition: stroke-dashoffset 1.6s var(--ease);
 }
 
@@ -855,7 +855,7 @@ button, [role="button"], [role="tab"] {
   transition: width 1.4s var(--ease);
 }
 
-.factor-bar-fill.good     { background: linear-gradient(90deg, #9a7048, #c8956a); }
+.factor-bar-fill.good     { background: linear-gradient(90deg, #3d7a4d, #5a9e6a); }
 .factor-bar-fill.warning  { background: linear-gradient(90deg, #a07040, #d4a373); }
 .factor-bar-fill.critical { background: linear-gradient(90deg, #9a5a66, #c47d8a); }
 
@@ -903,7 +903,7 @@ button, [role="button"], [role="tab"] {
 @keyframes fade-up   { 0%{opacity:0;transform:translateY(18px)} 100%{opacity:1;transform:translateY(0)} }
 @keyframes fade-in   { 0%{opacity:0} 100%{opacity:1} }
 @keyframes float     { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
-@keyframes pulse-glow      { 0%,100%{filter:drop-shadow(0 0 4px rgba(200,149,106,0.2))} 50%{filter:drop-shadow(0 0 14px rgba(200,149,106,0.35))} }
+@keyframes pulse-glow      { 0%,100%{filter:drop-shadow(0 0 4px rgba(90,158,106,0.2))} 50%{filter:drop-shadow(0 0 14px rgba(90,158,106,0.35))} }
 @keyframes pulse-glow-pink { 0%,100%{filter:drop-shadow(0 0 4px rgba(196,125,138,0.2))} 50%{filter:drop-shadow(0 0 14px rgba(196,125,138,0.35))} }
 @keyframes shimmer   { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
 @keyframes breathe   { 0%,100%{transform:scale(1);opacity:.6} 50%{transform:scale(1.015);opacity:1} }

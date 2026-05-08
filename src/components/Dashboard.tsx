@@ -281,8 +281,8 @@ export default function Dashboard({ initialData }: Props) {
     { label: "Lighting",           desc: isNight ? "Night — reduced visibility" : "Golden hour boost", value: lightScore, status: lightScore >= 70 ? "EXCELLENT" : lightScore >= 40 ? "FAIR" : "POOR" },
   ];
 
-  const accentColor = isVisible ? "var(--season-accent, #c8956a)" : "var(--accent-pink, #c47d8a)";
-  const accentGlow  = isVisible ? "0 0 14px rgba(200,149,106,0.3)" : "0 0 14px rgba(196,125,138,0.3)";
+  const accentColor = isVisible ? "var(--season-accent, #5a9e6a)" : "var(--accent-pink, #c47d8a)";
+  const accentGlow  = isVisible ? "0 0 14px rgba(90,158,106,0.3)" : "0 0 14px rgba(196,125,138,0.3)";
 
   const weatherLabel = data.weather.cloudLow < 20 ? "Sunny" : data.weather.cloudLow < 50 ? "Partly Cloudy" : data.weather.cloudLow < 80 ? "Mostly Cloudy" : "Overcast";
 
@@ -302,8 +302,8 @@ export default function Dashboard({ initialData }: Props) {
             <polygon points="18,4 6,30 12,30 18,17 24,30 30,30" fill="#d4a373" opacity="0.75" />
             <polygon points="14,19 18,10 22,19 20,15 16,15" fill="white" opacity="0.4" />
             <line x1="4" y1="31" x2="32" y2="31" stroke="#d4a373" strokeWidth="0.8" opacity="0.25" />
-            <polygon points="8,31 10,26 12,31" fill="#c8956a" opacity="0.18" />
-            <polygon points="26,31 28,27 30,31" fill="#c8956a" opacity="0.18" />
+            <polygon points="8,31 10,26 12,31" fill="#5a9e6a" opacity="0.18" />
+            <polygon points="26,31 28,27 30,31" fill="#5a9e6a" opacity="0.18" />
           </svg>
         </div>
 
@@ -336,11 +336,11 @@ export default function Dashboard({ initialData }: Props) {
         {/* ═══ HERO — Real PNW Photography ═══ */}
         <section id="section-home" className="hero-section" style={{ height: "62vh", minHeight: "500px" }}>
           <div
-            className="absolute inset-0 z-[0] transition-all duration-1000"
+            className="absolute inset-0 z-[0]"
             style={{
-              backgroundImage: `url(${VIEWPOINTS[selectedVp]?.image})`,
+              backgroundImage: "url(/images/hero/rainier-waterfront.jpg)",
               backgroundSize: "cover",
-              backgroundPosition: "center 25%",
+              backgroundPosition: "center 30%",
             }}
           />
 
@@ -446,34 +446,35 @@ export default function Dashboard({ initialData }: Props) {
             </button>
 
             <div ref={carouselRef} className="viewpoint-carousel">
-              {VIEWPOINTS.map((vp, i) => (
-                <motion.button
-                  key={vp.id}
-                  whileHover={{ y: -3 }}
-                  transition={{ duration: 0.2 }}
-                  className={`viewpoint-item ${selectedVp === i ? "selected" : ""}`}
-                  onClick={() => setSelectedVp(i)}
-                >
-                  <div className={`viewpoint-circle ${selectedVp === i ? "selected" : ""}`}>
-                    <img
-                      src={vp.image}
-                      alt={`${vp.name} viewpoint`}
-                      className="absolute inset-0 w-full h-full rounded-full object-cover"
-                      loading="lazy"
-                    />
-                    <div
-                      className="absolute inset-0 rounded-full z-10"
-                      style={{
-                        background: selectedVp === i
-                          ? "linear-gradient(160deg, rgba(255,255,255,0.08) 0%, transparent 40%, rgba(0,0,0,0.15) 100%)"
-                          : "linear-gradient(160deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.25) 50%, rgba(0,0,0,0.45) 100%)",
-                      }}
-                    />
-                  </div>
-                  <span className="viewpoint-name">{vp.name}</span>
-                  <span className="viewpoint-sub">{vp.sub}</span>
-                </motion.button>
-              ))}
+              {VIEWPOINTS.map((vp, i) => {
+                const vpScore = data.viewpoints.find(v => v.id === vp.id)?.locationScore ?? score;
+                const vpColor = vpScore >= 70 ? "#5a9e6a" : vpScore >= 50 ? "#d4a373" : "#c47d8a";
+                return (
+                  <motion.button
+                    key={vp.id}
+                    whileHover={{ y: -3 }}
+                    transition={{ duration: 0.2 }}
+                    className={`viewpoint-item ${selectedVp === i ? "selected" : ""}`}
+                    onClick={() => setSelectedVp(i)}
+                  >
+                    <div className={`viewpoint-circle ${selectedVp === i ? "selected" : ""}`}>
+                      <div
+                        className="absolute inset-0 rounded-full"
+                        style={{
+                          background: selectedVp === i
+                            ? `radial-gradient(circle at 35% 35%, ${vpColor}30, ${vpColor}10 60%, rgba(21,18,16,0.8))`
+                            : `radial-gradient(circle at 35% 35%, ${vpColor}18, rgba(21,18,16,0.7) 70%)`,
+                        }}
+                      />
+                      <div className="absolute inset-0 rounded-full flex items-center justify-center z-10">
+                        <MapPin className="w-5 h-5" style={{ color: selectedVp === i ? vpColor : "var(--text-tertiary)", opacity: selectedVp === i ? 0.9 : 0.5 }} />
+                      </div>
+                    </div>
+                    <span className="viewpoint-name">{vp.name}</span>
+                    <span className="viewpoint-sub">{vp.sub}</span>
+                  </motion.button>
+                );
+              })}
             </div>
 
             <button className="carousel-btn" onClick={() => carouselRef.current?.scrollBy({ left: 220, behavior: "smooth" })} aria-label="Next">
@@ -615,8 +616,8 @@ export default function Dashboard({ initialData }: Props) {
 
               <div className="flex flex-wrap gap-3 mt-4 pt-3" style={{ borderTop: "1px solid rgba(180,165,130,0.04)" }}>
                 {[
-                  { label: "90–100%", c: "#c8956a" },
-                  { label: "70–89%",  c: "#a8845a" },
+                  { label: "90–100%", c: "#5a9e6a" },
+                  { label: "70–89%",  c: "#4a8858" },
                   { label: "50–69%",  c: "#d4a373" },
                   { label: "30–49%",  c: "#b07848" },
                   { label: "0–29%",   c: "#c47d8a" },
@@ -681,7 +682,7 @@ export default function Dashboard({ initialData }: Props) {
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="flex -space-x-2">
-                    {["#c8956a","#d4a373","#60a5fa","#f59e0b"].map((c, i) => (
+                    {["#5a9e6a","#d4a373","#60a5fa","#f59e0b"].map((c, i) => (
                       <div
                         key={i}
                         className="w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold"
