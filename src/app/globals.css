@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
 /* ═══════════════════════════════════════════════════════
    IS THE MOUNTAIN OUT — CINEMATIC PNW DESIGN SYSTEM
@@ -445,6 +446,108 @@ button, [role="button"], [role="tab"] {
   line-height: 1.5;
 }
 
+/* ─── Weather Widget (warm standalone card) ─── */
+
+.weather-widget {
+  flex-shrink: 0;
+  background: rgba(30, 22, 12, 0.65);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(212, 163, 115, 0.18);
+  border-radius: 18px;
+  padding: 12px 18px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(212, 163, 115, 0.06);
+  min-width: 120px;
+}
+
+.weather-widget-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.weather-widget-temp {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #ede6d8;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.weather-widget-label {
+  font-size: 10px;
+  color: rgba(212, 163, 115, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  display: block;
+  margin-top: 4px;
+}
+
+.weather-widget-details {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(212, 163, 115, 0.1);
+}
+
+.weather-widget-detail {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9.5px;
+  font-family: var(--font-mono), monospace;
+  color: rgba(200, 190, 170, 0.55);
+}
+
+/* ─── Warm Card Variant ─── */
+
+.dash-card-warm {
+  border-color: rgba(212, 163, 115, 0.1);
+  background: rgba(20, 16, 10, 0.55);
+}
+.dash-card-warm::before {
+  background: linear-gradient(90deg, transparent, rgba(212, 163, 115, 0.06) 30%, rgba(212, 163, 115, 0.06) 70%, transparent);
+}
+.dash-card-warm:hover {
+  border-color: rgba(212, 163, 115, 0.15);
+  box-shadow: var(--shadow-card), 0 0 48px rgba(212, 163, 115, 0.04);
+}
+
+/* ─── Fun Fact Badge ─── */
+
+.fun-fact-badge {
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 8px rgba(212, 163, 115, 0.15));
+}
+
+/* ─── Map Container ─── */
+
+.seattle-map-container {
+  width: 100%;
+  height: 220px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(200, 210, 204, 0.06);
+  position: relative;
+}
+
+.map-tooltip {
+  background: rgba(8, 18, 13, 0.9) !important;
+  border: 1px solid rgba(200, 210, 204, 0.1) !important;
+  border-radius: 10px !important;
+  padding: 6px 10px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+  font-family: var(--font-sans), system-ui, sans-serif !important;
+}
+.map-tooltip::before { display: none !important; }
+
+.leaflet-container {
+  background: #06110d !important;
+}
+
 /* ─── Viewpoint Carousel ─── */
 
 .viewpoint-section {
@@ -576,14 +679,14 @@ button, [role="button"], [role="tab"] {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05) 30%, rgba(255,255,255,0.05) 70%, transparent);
+  background: linear-gradient(90deg, transparent, rgba(212,180,140,0.04) 30%, rgba(255,255,255,0.04) 70%, transparent);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   pointer-events: none;
 }
 
 .dash-card:hover {
-  border-color: rgba(45, 184, 122, 0.08);
-  box-shadow: var(--shadow-card), var(--shadow-glow);
+  border-color: rgba(212, 163, 115, 0.08);
+  box-shadow: var(--shadow-card), 0 0 32px rgba(212, 163, 115, 0.03);
 }
 
 .dash-card-header {
