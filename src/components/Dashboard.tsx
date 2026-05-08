@@ -3,13 +3,12 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import useSWR from "swr";
-import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   RefreshCw, Home, MapPin, Map, BarChart3, Clock, Star, Info,
   Mountain, Compass, Eye, Sun, Wind, Droplets, ChevronLeft,
   ChevronRight, TrendingUp, TrendingDown, TreePine, Gauge,
-  Thermometer, CloudRain, Camera,
+  Thermometer, CloudRain, Camera, Sparkles,
 } from "lucide-react";
 import MountainSilhouetteScore from "@/components/MountainSilhouetteScore";
 import MountainMoment from "@/components/MountainMoment";
@@ -42,10 +41,7 @@ import {
   getCSSVariables,
 } from "@/lib/seasonal";
 
-const SeattleVisibilityMap = dynamic(
-  () => import("@/components/SeattleVisibilityMap"),
-  { ssr: false, loading: () => <div className="seattle-map-container animate-pulse" style={{ background: "rgba(200,210,204,0.03)" }} /> }
-);
+import SeattleVisibilityMap from "@/components/SeattleVisibilityMap";
 
 interface ViewpointData {
   id: string;
@@ -497,7 +493,10 @@ export default function Dashboard({ initialData }: Props) {
           >
             {/* ── Card 1: Visibility Score ── */}
             <motion.div variants={fadeUp} className="dash-card flex flex-col items-center">
-              <div className="dash-card-header w-full">Mountain Visibility Score</div>
+              <div className="dash-card-header w-full flex items-center justify-between">
+                <span>Mountain Visibility Score</span>
+                <span className="ai-badge"><Sparkles className="w-3 h-3" /><span className="ai-badge-dot" /> AI Prediction</span>
+              </div>
 
               <div className="relative my-2">
                 <div className="score-gauge-wrap">
@@ -533,7 +532,7 @@ export default function Dashboard({ initialData }: Props) {
                   <RefreshCw className={`w-[11px] h-[11px] ${isValidating ? "animate-spin" : ""}`} />
                   <span>Updated {Math.round((Date.now() - lastUpdate.getTime()) / 60000)} min ago</span>
                 </div>
-                <span style={{ color: "rgba(61,85,72,0.4)" }}>·</span>
+                <span style={{ color: "rgba(90,79,62,0.4)" }}>·</span>
                 <div className="flex items-center gap-1">
                   <span>Trend</span>
                   {isVisible
@@ -594,7 +593,7 @@ export default function Dashboard({ initialData }: Props) {
             <motion.div variants={fadeUp} id="section-map" className="dash-card">
               <div className="dash-card-header">Visibility by Neighborhood</div>
 
-              <SeattleVisibilityMap scores={allScores} labels={NEIGHBORHOOD_LABELS} baseScore={score} />
+              <SeattleVisibilityMap scores={allScores} labels={NEIGHBORHOOD_LABELS} baseScore={score} onSelectNeighborhood={setNeighborhood} />
 
               <div className="mt-4 space-y-2">
                 {allScores.slice(0, 6).map((ns) => (
@@ -614,7 +613,7 @@ export default function Dashboard({ initialData }: Props) {
                 ))}
               </div>
 
-              <div className="flex flex-wrap gap-3 mt-4 pt-3" style={{ borderTop: "1px solid rgba(200,210,204,0.04)" }}>
+              <div className="flex flex-wrap gap-3 mt-4 pt-3" style={{ borderTop: "1px solid rgba(180,165,130,0.04)" }}>
                 {[
                   { label: "90–100%", c: "#2db87a" },
                   { label: "70–89%",  c: "#4a9060" },
@@ -763,8 +762,8 @@ export default function Dashboard({ initialData }: Props) {
                     key={i}
                     className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[7px] font-bold"
                     style={{
-                      background: i < 3 ? `${accentColor}18` : "rgba(200,210,204,0.04)",
-                      border: `1px solid ${i < 3 ? `${accentColor}30` : "rgba(200,210,204,0.06)"}`,
+                      background: i < 3 ? `${accentColor}18` : "rgba(180,165,130,0.04)",
+                      border: `1px solid ${i < 3 ? `${accentColor}30` : "rgba(180,165,130,0.06)"}`,
                       color: i < 3 ? accentColor : "var(--text-tertiary)",
                     }}
                   >
@@ -785,13 +784,13 @@ export default function Dashboard({ initialData }: Props) {
                   </p>
                 </div>
                 <svg viewBox="0 0 56 80" className="w-12 h-16 flex-shrink-0" aria-hidden="true">
-                  <line x1="52" y1="4" x2="52" y2="76" stroke="rgba(200,210,204,0.06)" strokeWidth="1" />
+                  <line x1="52" y1="4" x2="52" y2="76" stroke="rgba(180,165,130,0.06)" strokeWidth="1" />
                   <path d="M8 76 L24 38 L32 22 L40 38 L56 76 Z" fill="var(--season-mountain-base)" opacity="0.3" />
                   <path d="M24 38 L32 22 L40 38 L36 30 L28 30 Z" fill="var(--season-mountain-snow)" opacity="0.4" />
                   <text x="54" y="7" fill="var(--text-tertiary)" fontSize="4.5" opacity="0.5">14,411</text>
                   <text x="54" y="75" fill="var(--text-tertiary)" fontSize="4.5" opacity="0.5">275 ft</text>
-                  <line x1="50" y1="73" x2="52" y2="73" stroke="rgba(200,210,204,0.2)" strokeWidth="0.8" />
-                  <line x1="50" y1="5" x2="52" y2="5" stroke="rgba(200,210,204,0.2)" strokeWidth="0.8" />
+                  <line x1="50" y1="73" x2="52" y2="73" stroke="rgba(180,165,130,0.2)" strokeWidth="0.8" />
+                  <line x1="50" y1="5" x2="52" y2="5" stroke="rgba(180,165,130,0.2)" strokeWidth="0.8" />
                 </svg>
               </div>
             </motion.div>
@@ -914,7 +913,7 @@ export default function Dashboard({ initialData }: Props) {
                 @jatin_batra1
               </a>
             </div>
-            <div className="flex items-center gap-6 mt-5 pt-5" style={{ borderTop: "1px solid rgba(200,210,204,0.04)" }}>
+            <div className="flex items-center gap-6 mt-5 pt-5" style={{ borderTop: "1px solid rgba(180,165,130,0.04)" }}>
               <a href="/almanac" className="text-[10px] transition-opacity hover:opacity-70" style={{ color: "var(--text-tertiary)" }}>Almanac</a>
               <a href="/embed" className="text-[10px] transition-opacity hover:opacity-70" style={{ color: "var(--text-tertiary)" }}>Embed</a>
               <a href="/api/stats.json" className="text-[10px] transition-opacity hover:opacity-70" style={{ color: "var(--text-tertiary)" }}>API</a>
