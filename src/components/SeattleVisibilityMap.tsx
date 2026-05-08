@@ -34,11 +34,11 @@ const REGIONS: {
 ];
 
 function scoreColor(s: number): string {
-  if (s >= 90) return "#2db87a";
-  if (s >= 70) return "#4a9060";
+  if (s >= 90) return "#c8956a";
+  if (s >= 70) return "#a8845a";
   if (s >= 50) return "#d4a373";
-  if (s >= 30) return "#c06828";
-  return "#ff5cad";
+  if (s >= 30) return "#b07848";
+  return "#c47d8a";
 }
 
 export default function SeattleVisibilityMap({ scores, labels, onSelectNeighborhood }: Props) {
@@ -53,19 +53,19 @@ export default function SeattleVisibilityMap({ scores, labels, onSelectNeighborh
     <div className="seattle-map-svg">
       <svg viewBox="0 0 380 280" className="w-full">
         {/* Water / Puget Sound */}
-        <rect width="380" height="280" fill="#0a0d14" rx="12" />
+        <rect width="380" height="280" fill="#161310" rx="12" />
         <path
           d="M0,0 L95,0 L95,60 Q100,120 85,180 Q75,230 90,280 L0,280 Z"
-          fill="#0c1520"
-          opacity="0.7"
+          fill="#1a2028"
+          opacity="0.5"
         />
         <path
           d="M270,0 L380,0 L380,160 Q350,140 330,160 Q310,180 290,170 Q275,162 270,140 Z"
-          fill="#0c1520"
-          opacity="0.5"
+          fill="#1a2028"
+          opacity="0.35"
         />
         {/* Lake Washington (east) */}
-        <ellipse cx="300" cy="140" rx="35" ry="90" fill="#0c1520" opacity="0.5" />
+        <ellipse cx="300" cy="140" rx="35" ry="90" fill="#1a2028" opacity="0.35" />
 
         {/* Subtle grid */}
         {[0, 1, 2, 3, 4, 5, 6].map((i) => (
@@ -133,7 +133,7 @@ export default function SeattleVisibilityMap({ scores, labels, onSelectNeighborh
             <rect
               x={hoveredRegion.cx - 45} y={hoveredRegion.cy - hoveredRegion.r - 32}
               width="90" height="24" rx="8"
-              fill="rgba(12,10,7,0.9)"
+              fill="rgba(21,18,16,0.92)"
               stroke="rgba(180,150,100,0.15)" strokeWidth="1"
             />
             <text
