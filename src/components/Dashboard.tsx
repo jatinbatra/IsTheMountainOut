@@ -631,72 +631,73 @@ export default function Dashboard({ initialData }: Props) {
             </motion.div>
 
             {/* ── Card 4: Forecast ── */}
-            <motion.div variants={fadeUp} id="section-forecast" className="space-y-4">
-              <div className="dash-card">
-                <div className="dash-card-header">Forecast for {VIEWPOINTS[selectedVp]?.name}</div>
-                <ForecastHub
-                  hourlyTimeline={data.hourlyTimeline}
-                  currentScore={data.visibility.score}
-                  isVisible={isVisible}
-                  weeklyForecast={data.weeklyForecast}
-                  sunset={data.weather.sunset}
-                />
-                <div className="mt-4 p-3 rounded-2xl" style={{ background: "rgba(212,163,115,0.06)", border: "1px solid rgba(212,163,115,0.1)" }}>
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <Sun className="w-3.5 h-3.5" style={{ color: "var(--accent-gold)" }} />
-                    <span className="text-[8.5px] uppercase tracking-wider font-bold" style={{ color: "var(--accent-gold)" }}>
-                      Best Viewing Window
-                    </span>
-                  </div>
-                  <NextClearWindow hourlyTimeline={data.hourlyTimeline} weeklyForecast={data.weeklyForecast} currentScore={score} />
+            <motion.div variants={fadeUp} id="section-forecast" className="dash-card">
+              <div className="dash-card-header">Forecast for {VIEWPOINTS[selectedVp]?.name}</div>
+              <ForecastHub
+                hourlyTimeline={data.hourlyTimeline}
+                currentScore={data.visibility.score}
+                isVisible={isVisible}
+                weeklyForecast={data.weeklyForecast}
+                sunset={data.weather.sunset}
+              />
+              <div className="mt-4 p-3 rounded-2xl" style={{ background: "rgba(212,163,115,0.06)", border: "1px solid rgba(212,163,115,0.1)" }}>
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Sun className="w-3.5 h-3.5" style={{ color: "var(--accent-gold)" }} />
+                  <span className="text-[8.5px] uppercase tracking-wider font-bold" style={{ color: "var(--accent-gold)" }}>
+                    Best Viewing Window
+                  </span>
                 </div>
-              </div>
-
-              <div className="dash-card">
-                <div className="dash-card-header">Local Tip</div>
-                <div className="flex items-start gap-3">
-                  <TreePine className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: "var(--accent-gold)", opacity: 0.7 }} />
-                  <p className="text-[12px] italic leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                    {topViewpoint
-                      ? `After a front moves through, the mountain often pops out the next morning. ${topViewpoint.name} is ${topViewpoint.distanceMiles} miles ${topViewpoint.direction} — PNW Photographers`
-                      : "After storms pass, the mountain often appears clearest the next morning, with fresh alpenglow on the snowcap."}
-                  </p>
-                </div>
-                {isVisible && topViewpoint && (
-                  <a
-                    href={topViewpoint.mapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 mt-3 text-[9.5px] uppercase tracking-wider font-mono transition-opacity hover:opacity-70"
-                    style={{ color: "var(--accent-gold)" }}
-                  >
-                    <Compass className="w-3 h-3" /> Get directions →
-                  </a>
-                )}
-              </div>
-
-              <div className="dash-card">
-                <div className="dash-card-header">Last Confirmed Sighting</div>
-                <p className="text-[10px] mb-3" style={{ color: "var(--text-tertiary)" }}>
-                  {topViewpoint ? `3 min ago from ${topViewpoint.name}` : "Recent community report"}
-                </p>
-                <div className="flex items-center gap-3">
-                  <div className="flex -space-x-2">
-                    {["#5a9e6a","#d4a373","#60a5fa","#f59e0b"].map((c, i) => (
-                      <div
-                        key={i}
-                        className="w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold"
-                        style={{ background: `${c}20`, border: `1.5px solid ${c}40`, color: c }}
-                      >
-                        {["J","M","S","K"][i]}
-                      </div>
-                    ))}
-                  </div>
-                  <SpotterButton isVisible={isVisible} score={score} />
-                </div>
+                <NextClearWindow hourlyTimeline={data.hourlyTimeline} weeklyForecast={data.weeklyForecast} currentScore={score} />
               </div>
             </motion.div>
           </motion.div>
+
+          {/* ═══ LOCAL TIP + SIGHTING (moved out of grid to avoid height mismatch) ═══ */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
+            <motion.div {...fadeUp} className="dash-card">
+              <div className="dash-card-header">Local Tip</div>
+              <div className="flex items-start gap-3">
+                <TreePine className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: "var(--accent-gold)", opacity: 0.7 }} />
+                <p className="text-[12px] italic leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                  {topViewpoint
+                    ? `After a front moves through, the mountain often pops out the next morning. ${topViewpoint.name} is ${topViewpoint.distanceMiles} miles ${topViewpoint.direction} — PNW Photographers`
+                    : "After storms pass, the mountain often appears clearest the next morning, with fresh alpenglow on the snowcap."}
+                </p>
+              </div>
+              {isVisible && topViewpoint && (
+                <a
+                  href={topViewpoint.mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 mt-3 text-[9.5px] uppercase tracking-wider font-mono transition-opacity hover:opacity-70"
+                  style={{ color: "var(--accent-gold)" }}
+                >
+                  <Compass className="w-3 h-3" /> Get directions →
+                </a>
+              )}
+            </motion.div>
+
+            <motion.div {...fadeUp} className="dash-card">
+              <div className="dash-card-header">Last Confirmed Sighting</div>
+              <p className="text-[10px] mb-3" style={{ color: "var(--text-tertiary)" }}>
+                {topViewpoint ? `3 min ago from ${topViewpoint.name}` : "Recent community report"}
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="flex -space-x-2">
+                  {["#5a9e6a","#d4a373","#60a5fa","#f59e0b"].map((c, i) => (
+                    <div
+                      key={i}
+                      className="w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold"
+                      style={{ background: `${c}20`, border: `1.5px solid ${c}40`, color: c }}
+                    >
+                      {["J","M","S","K"][i]}
+                    </div>
+                  ))}
+                </div>
+                <SpotterButton isVisible={isVisible} score={score} />
+              </div>
+            </motion.div>
+          </div>
 
           {/* ═══ BOTTOM STRIP ═══ */}
           <motion.div
