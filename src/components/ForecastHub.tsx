@@ -4,8 +4,6 @@ import { useState } from "react";
 import ForecastTimeline from "@/components/ForecastTimeline";
 import VisibilityHistory from "@/components/VisibilityHistory";
 import MountainCalendar from "@/components/MountainCalendar";
-import WeekendAtRainier from "@/components/WeekendAtRainier";
-import OutdoorWidget from "@/components/OutdoorWidget";
 import type { WeeklyForecastDay } from "@/components/Dashboard";
 
 const TABS = ["24h", "7-Day", "Calendar"] as const;
@@ -66,11 +64,6 @@ export default function ForecastHub({
           />
         )}
         {tab === "Calendar" && <MountainCalendar />}
-      </div>
-
-      <div className="space-y-1.5">
-        <WeekendAtRainier weeklyForecast={weeklyForecast} />
-        <OutdoorWidget isVisible={isVisible} sunset={sunset} />
       </div>
     </div>
   );

@@ -16,6 +16,8 @@ import WeatherDetails from "@/components/WeatherDetails";
 import LiveWebcams from "@/components/LiveWebcams";
 import NightSky from "@/components/NightSky";
 import FeaturedWebcam from "@/components/FeaturedWebcam";
+import WeekendAtRainier from "@/components/WeekendAtRainier";
+import OutdoorWidget from "@/components/OutdoorWidget";
 import NotifyCard from "@/components/NotifyCard";
 import ForecastHub from "@/components/ForecastHub";
 import CommunityGames from "@/components/CommunityGames";
@@ -696,6 +698,18 @@ export default function Dashboard({ initialData }: Props) {
                 </div>
                 <SpotterButton isVisible={isVisible} score={score} />
               </div>
+            </motion.div>
+          </div>
+
+          {/* ═══ WEEKEND + OUTDOOR ═══ */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
+            <motion.div {...fadeUp} className="dash-card">
+              <div className="dash-card-header">Weekend at Rainier</div>
+              <WeekendAtRainier weeklyForecast={data.weeklyForecast} />
+            </motion.div>
+            <motion.div {...fadeUp} className="dash-card">
+              <div className="dash-card-header">Trail Conditions</div>
+              <OutdoorWidget isVisible={isVisible} sunset={data.weather.sunset} />
             </motion.div>
           </div>
 
