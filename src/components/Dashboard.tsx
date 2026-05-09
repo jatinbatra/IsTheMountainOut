@@ -6,29 +6,15 @@ import useSWR from "swr";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   RefreshCw, Home, MapPin, Map, BarChart3, Clock, Star, Info,
-  Mountain, Compass, Eye, Sun, Wind, Droplets, ChevronLeft,
-  ChevronRight, TrendingUp, TrendingDown, TreePine, Gauge,
-  Thermometer, CloudRain, Camera, Sparkles,
+  Compass, Eye, Sun, Wind, Droplets, ChevronLeft,
+  ChevronRight, TrendingUp, TrendingDown, Sparkles,
 } from "lucide-react";
 import MountainSilhouetteScore from "@/components/MountainSilhouetteScore";
-import MountainMoment from "@/components/MountainMoment";
-import WeatherDetails from "@/components/WeatherDetails";
-import LiveWebcams from "@/components/LiveWebcams";
-import NightSky from "@/components/NightSky";
-import FeaturedWebcam from "@/components/FeaturedWebcam";
-import WeekendAtRainier from "@/components/WeekendAtRainier";
-import OutdoorWidget from "@/components/OutdoorWidget";
-import NotifyCard from "@/components/NotifyCard";
 import ForecastHub from "@/components/ForecastHub";
-import CommunityGames from "@/components/CommunityGames";
-import PhotoDrop from "@/components/PhotoDrop";
 import GlobalStreakBadge from "@/components/GlobalStreakBadge";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import NextClearWindow from "@/components/NextClearWindow";
-import SpotterButton from "@/components/SpotterButton";
-import SmsShareButton from "@/components/SmsShareButton";
 import PrivacyCommitment from "@/components/PrivacyCommitment";
-import { WEBCAM_FEEDS } from "@/lib/webcams";
 import { registerSW } from "@/lib/notifications";
 import {
   getNeighborhoodAdjustedScore,
@@ -654,65 +640,6 @@ export default function Dashboard({ initialData }: Props) {
             </motion.div>
           </motion.div>
 
-          {/* ═══ LOCAL TIP + SIGHTING (moved out of grid to avoid height mismatch) ═══ */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
-            <motion.div {...fadeUp} className="dash-card">
-              <div className="dash-card-header">Local Tip</div>
-              <div className="flex items-start gap-3">
-                <TreePine className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: "var(--accent-gold)", opacity: 0.7 }} />
-                <p className="text-[12px] italic leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  {topViewpoint
-                    ? `After a front moves through, the mountain often pops out the next morning. ${topViewpoint.name} is ${topViewpoint.distanceMiles} miles ${topViewpoint.direction} — PNW Photographers`
-                    : "After storms pass, the mountain often appears clearest the next morning, with fresh alpenglow on the snowcap."}
-                </p>
-              </div>
-              {isVisible && topViewpoint && (
-                <a
-                  href={topViewpoint.mapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 mt-3 text-[9.5px] uppercase tracking-wider font-mono transition-opacity hover:opacity-70"
-                  style={{ color: "var(--accent-gold)" }}
-                >
-                  <Compass className="w-3 h-3" /> Get directions →
-                </a>
-              )}
-            </motion.div>
-
-            <motion.div {...fadeUp} className="dash-card">
-              <div className="dash-card-header">Last Confirmed Sighting</div>
-              <p className="text-[10px] mb-3" style={{ color: "var(--text-tertiary)" }}>
-                {topViewpoint ? `3 min ago from ${topViewpoint.name}` : "Recent community report"}
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="flex -space-x-2">
-                  {["#5a9e6a","#d4a373","#60a5fa","#f59e0b"].map((c, i) => (
-                    <div
-                      key={i}
-                      className="w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold"
-                      style={{ background: `${c}20`, border: `1.5px solid ${c}40`, color: c }}
-                    >
-                      {["J","M","S","K"][i]}
-                    </div>
-                  ))}
-                </div>
-                <SpotterButton isVisible={isVisible} score={score} />
-              </div>
-            </motion.div>
-          </div>
-
-          {/* ═══ WEEKEND + OUTDOOR ═══ */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
-            <motion.div {...fadeUp} className="dash-card">
-              <div className="dash-card-header">Weekend at Rainier</div>
-              <WeekendAtRainier weeklyForecast={data.weeklyForecast} />
-            </motion.div>
-            <motion.div {...fadeUp} className="dash-card">
-              <div className="dash-card-header">Trail Conditions</div>
-              <OutdoorWidget isVisible={isVisible} sunset={data.weather.sunset} />
-            </motion.div>
-          </div>
-
           {/* ═══ BOTTOM STRIP ═══ */}
           <motion.div
             id="section-history"
@@ -836,84 +763,6 @@ export default function Dashboard({ initialData }: Props) {
               </div>
             </motion.div>
           </motion.div>
-
-          {/* ═══ SECONDARY SECTIONS ═══ */}
-          <div id="section-favorites" className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-6">
-            <motion.div {...fadeUp} className="dash-card">
-              <div className="dash-card-header">Weather Details</div>
-              <WeatherDetails weather={data.weather} reasons={data.visibility.reasons} />
-            </motion.div>
-            <motion.div {...fadeUp} className="dash-card">
-              <div className="dash-card-header">Get Notified</div>
-              <NotifyCard />
-            </motion.div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
-            <motion.div {...fadeUp} className="dash-card">
-              <div className="dash-card-header flex items-center gap-2">
-                <Camera className="w-3.5 h-3.5" style={{ color: "var(--accent-gold)" }} />
-                <span>Live Webcam — Mt. Rainier</span>
-              </div>
-              <div className="rounded-xl overflow-hidden" style={{ border: "1px solid rgba(212,163,115,0.08)" }}>
-                <FeaturedWebcam />
-              </div>
-            </motion.div>
-            <motion.div {...fadeUp} className="dash-card">
-              <div className="dash-card-header">Live Webcams</div>
-              <LiveWebcams feeds={WEBCAM_FEEDS} />
-            </motion.div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
-            <motion.div {...fadeUp} className="dash-card">
-              <div className="dash-card-header">Community Photos</div>
-              <PhotoDrop neighborhood={neighborhood} />
-            </motion.div>
-            <motion.div {...fadeUp} className="dash-card">
-              <div className="dash-card-header">Neighborhood Spotters</div>
-              <CommunityGames
-                selectedHood={neighborhood}
-                onSelectHood={setNeighborhood}
-                fallbackScores={allScores}
-                fallbackLabels={NEIGHBORHOOD_LABELS}
-              />
-            </motion.div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
-            <motion.div {...fadeUp} className="dash-card">
-              <div className="dash-card-header">Share the View</div>
-              <div className="flex items-center gap-3">
-                <SmsShareButton score={score} neighborhoodLabel={neighborhoodLabel} />
-                <MountainMoment
-                  isVisible={isVisible}
-                  score={score}
-                  neighborhoodLabel={neighborhoodLabel}
-                  durationMessage={data.visibility.durationMessage}
-                />
-              </div>
-              <span className="text-[9.5px] font-mono mt-3 block uppercase tracking-wider" style={{ color: "var(--accent-gold)" }}>
-                #IsTheMountainOut
-              </span>
-            </motion.div>
-          </div>
-
-          {isNight && (
-            <motion.div {...fadeUp} className="dash-card mt-5">
-              <NightSky sunrise={data.weather.sunrise || ""} isDay={data.weather.isDay} />
-            </motion.div>
-          )}
-
-          {data.alpenglow && data.alpenglow.probability >= 40 && data.alpenglow.minutesToSunset > 0 && data.alpenglow.minutesToSunset <= 60 && (
-            <motion.div {...fadeUp} className="dash-card mt-5" style={{ borderLeft: "2px solid var(--accent-gold)" }}>
-              <p className="text-[9px] uppercase tracking-wider font-bold" style={{ color: "var(--accent-gold)" }}>Alpenglow Alert</p>
-              <p className="font-display text-xl mt-1.5" style={{ color: "var(--text-primary)" }}>
-                Mountain could turn pink in ~{data.alpenglow.minutesToSunset}min
-              </p>
-              <p className="text-[11px] mt-0.5" style={{ color: "var(--text-secondary)" }}>{data.alpenglow.probability}% probability</p>
-            </motion.div>
-          )}
 
           {/* ═══ FOOTER ═══ */}
           <footer id="section-about" className="divider-cedar mt-12 pt-8 pb-10">
