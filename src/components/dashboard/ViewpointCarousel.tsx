@@ -58,15 +58,21 @@ export default function ViewpointCarousel({
               >
                 <div className={`viewpoint-circle ${selectedVp === i ? "selected" : ""}`}>
                   <div
+                    className="absolute inset-0 rounded-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
+                    style={{
+                      backgroundImage: `url(${vp.image})`,
+                    }}
+                  />
+                  <div
                     className="absolute inset-0 rounded-full"
                     style={{
                       background: selectedVp === i
-                        ? `radial-gradient(circle at 35% 35%, ${vpColor}30, ${vpColor}10 60%, rgba(21,18,16,0.8))`
-                        : `radial-gradient(circle at 35% 35%, ${vpColor}18, rgba(21,18,16,0.7) 70%)`,
+                        ? `radial-gradient(circle at 35% 35%, ${vpColor}50, rgba(21,18,16,0.9))`
+                        : `radial-gradient(circle at 35% 35%, rgba(21,18,16,0.4), rgba(21,18,16,0.8))`,
                     }}
                   />
                   <div className="absolute inset-0 rounded-full flex items-center justify-center z-10">
-                    <MapPin className="w-5 h-5" style={{ color: selectedVp === i ? vpColor : "var(--text-tertiary)", opacity: selectedVp === i ? 0.9 : 0.5 }} />
+                    <MapPin className="w-5 h-5" style={{ color: selectedVp === i ? "white" : "var(--text-tertiary)", opacity: selectedVp === i ? 1 : 0.7 }} />
                   </div>
                 </div>
                 <span className="viewpoint-name">{vp.name}</span>

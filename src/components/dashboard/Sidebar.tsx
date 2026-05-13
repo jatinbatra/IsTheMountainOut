@@ -31,7 +31,10 @@ export default function Sidebar({ activeNav, onNavClick }: SidebarProps) {
       </div>
 
       <div className="sidebar-title">
-        <div className="sidebar-title-main">IS THE<br />MOUNTAIN<br />OUT?</div>
+        <div className="relative">
+          <div className="sidebar-title-main">IS THE<br />MOUNTAIN<br />OUT?</div>
+          <span className="absolute -top-1 -right-4 bg-[color:var(--accent)] text-white text-[7px] font-bold px-1 rounded-sm">V2</span>
+        </div>
         <span className="sidebar-title-sub">MT. RAINIER · TRACKER</span>
       </div>
 

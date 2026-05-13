@@ -21,12 +21,20 @@ type Event = {
 };
 
 function formatCountdown(ms: number): string {
-  if (ms <= 0) return "now";
-  const totalMinutes = Math.floor(ms / 60_000);
-  if (totalMinutes < 60) return `${totalMinutes}m`;
-  const h = Math.floor(totalMinutes / 60);
-  const m = totalMinutes % 60;
-  return m === 0 ? `${h}h` : `${h}h ${m}m`;
+  const isPast = ms < 0;
+  const absMs = Math.abs(ms);
+  const totalMinutes = Math.floor(absMs / 60_000);
+  
+  let timeStr = "";
+  if (totalMinutes < 60) {
+    timeStr = `${totalMinutes}m`;
+  } else {
+    const h = Math.floor(totalMinutes / 60);
+    const m = totalMinutes % 60;
+    timeStr = m === 0 ? `${h}h` : `${h}h ${m}m`;
+  }
+  
+  return isPast ? `${timeStr} ago` : timeStr;
 }
 
 function formatTime(d: Date): string {
@@ -50,25 +58,36 @@ export default function CountdownStrip({ sunrise, sunset, alpenglow }: Props) {
     const sunriseDate = sunrise ? new Date(sunrise) : null;
     const sunsetDate = sunset ? new Date(sunset) : null;
 
-    if (sunriseDate && sunriseDate.getTime() > now) {
+    if (sunriseDate) {
       out.push({ key: "sunrise", label: "Sunrise", time: sunriseDate, icon: Sunrise });
     }
     if (sunsetDate) {
       const goldenStart = new Date(sunsetDate.getTime() - 90 * 60_000);
-      if (goldenStart.getTime() > now) {
-        out.push({ key: "golden", label: "Golden hour", time: goldenStart, icon: Sparkles });
-      }
+      out.push({ key: "golden", label: "Golden hour", time: goldenStart, icon: Sparkles });
     }
     if (alpenglow && alpenglow.isLikely && alpenglow.probability >= 40 && sunsetDate) {
       const alpenStart = new Date(sunsetDate.getTime() - 30 * 60_000);
-      if (alpenStart.getTime() > now) {
-        out.push({ key: "alpenglow", label: "Alpenglow", time: alpenStart, icon: Palette });
-      }
+      out.push({ key: "alpenglow", label: "Alpenglow", time: alpenStart, icon: Palette });
     }
-    if (sunsetDate && sunsetDate.getTime() > now) {
+    if (sunsetDate) {
       out.push({ key: "sunset", label: "Sunset", time: sunsetDate, icon: Sunset });
     }
-    return out.sort((a, b) => a.time.getTime() - b.time.getTime()).slice(0, 3);
+
+    // Prefer future events, but show past ones if they just happened
+    return out
+      .sort((a, b) => {
+        const aDiff = a.time.getTime() - now;
+        const bDiff = b.time.getTime() - now;
+        
+        // If one is future and one is past, prefer future
+        if (aDiff > 0 && bDiff < 0) return -1;
+        if (aDiff < 0 && bDiff > 0) return 1;
+        
+        // Otherwise, closest to now first
+        return Math.abs(aDiff) - Math.abs(bDiff);
+      })
+      .slice(0, 3)
+      .sort((a, b) => a.time.getTime() - b.time.getTime());
   }, [sunrise, sunset, alpenglow, now]);
 
   if (events.length === 0) return null;
