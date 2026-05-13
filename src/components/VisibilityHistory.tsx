@@ -4,7 +4,6 @@ import { useState } from "react";
 import type { WeeklyForecastDay } from "@/components/Dashboard";
 
 interface Props {
-  isVisible: boolean;
   weeklyForecast?: WeeklyForecastDay[];
 }
 
@@ -21,7 +20,7 @@ function weatherLabel(code: number): string {
   return "Mixed";
 }
 
-export default function VisibilityHistory({ isVisible, weeklyForecast }: Props) {
+export default function VisibilityHistory({ weeklyForecast }: Props) {
   const [hoveredDay, setHoveredDay] = useState<number | null>(null);
 
   if (!weeklyForecast || weeklyForecast.length === 0) {

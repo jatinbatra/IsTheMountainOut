@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Bell, Check } from "lucide-react";
 import {
   isNotificationsSupported,
@@ -11,13 +11,8 @@ import {
 } from "@/lib/notifications";
 
 export default function NotifyButton() {
-  const [permission, setPermission] = useState<string>("default");
+  const [permission, setPermission] = useState<string>(() => getNotificationPermission());
   const [subscribing, setSubscribing] = useState(false);
-
-  useEffect(() => {
-    const p = getNotificationPermission();
-    setPermission(p);
-  }, []);
 
   if (!isNotificationsSupported()) return null;
   if (permission === "denied") return null;

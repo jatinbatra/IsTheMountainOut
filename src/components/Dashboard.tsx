@@ -232,8 +232,6 @@ export default function Dashboard({ initialData }: Props) {
 
   const isVisible       = score >= 50;
   const isNight         = !data.weather.isDay;
-  const neighborhoodLabel = neighborhood ? NEIGHBORHOOD_LABELS[neighborhood] ?? null : null;
-  const topViewpoint    = data.viewpoints[0];
   const visMiles        = Math.round(data.weather.visibilityMeters / 1609.34);
   const tempF           = Math.round((data.weather.temperature * 9) / 5 + 32);
 
@@ -248,6 +246,13 @@ export default function Dashboard({ initialData }: Props) {
     minute: "2-digit",
     timeZone: "America/Los_Angeles",
   });
+
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const interval = setInterval(() => setNow(Date.now()), 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const season     = getCurrentSeason();
   const palette    = getSeasonalPalette(season);
@@ -518,11 +523,10 @@ export default function Dashboard({ initialData }: Props) {
               </div>
 
               <div className="flex items-center gap-3 mt-4 text-[9px] w-full justify-center" style={{ color: "var(--text-tertiary)" }}>
-                <div className="flex items-center gap-1.5">
-                  <RefreshCw className={`w-[11px] h-[11px] ${isValidating ? "animate-spin" : ""}`} />
-                  <span>Updated {Math.round((Date.now() - lastUpdate.getTime()) / 60000)} min ago</span>
-                </div>
-                <span style={{ color: "rgba(90,79,62,0.4)" }}>·</span>
+              <div className="flex items-center gap-1.5">
+                <RefreshCw className={`w-[11px] h-[11px] ${isValidating ? "animate-spin" : ""}`} />
+                <span>Updated {Math.round((now - lastUpdate.getTime()) / 60000)} min ago</span>
+              </div>                <span style={{ color: "rgba(90,79,62,0.4)" }}>·</span>
                 <div className="flex items-center gap-1">
                   <span>Trend</span>
                   {isVisible

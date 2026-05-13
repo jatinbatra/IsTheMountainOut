@@ -18,7 +18,6 @@ interface HourData {
 
 interface Props {
   hourlyTimeline: HourData[];
-  currentScore: number;
 }
 
 function getWeatherIcon(code: number) {
@@ -35,7 +34,7 @@ function getBarColor(score: number): string {
   return "bg-[#c75a3a]/60";
 }
 
-export default function ForecastTimeline({ hourlyTimeline, currentScore }: Props) {
+export default function ForecastTimeline({ hourlyTimeline }: Props) {
   const [hoveredHour, setHoveredHour] = useState<number | null>(null);
   const [selectedHour, setSelectedHour] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);

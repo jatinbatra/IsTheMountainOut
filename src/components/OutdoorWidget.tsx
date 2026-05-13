@@ -54,10 +54,9 @@ const TRAILS: Trail[] = [
   },
 ];
 
-function getGoldenHourCountdown(sunset?: string): { hours: number; minutes: number; isPast: boolean; goldenStart: string } | null {
+function getGoldenHourCountdown(sunset: string | undefined, now: Date): { hours: number; minutes: number; isPast: boolean; goldenStart: string } | null {
   if (!sunset) return null;
 
-  const now = new Date();
   let sunsetDate: Date;
 
   if (sunset.includes("T")) {
@@ -87,12 +86,20 @@ function getGoldenHourCountdown(sunset?: string): { hours: number; minutes: numb
 }
 
 export default function OutdoorWidget({ isVisible, sunset }: Props) {
-  const [countdown, setCountdown] = useState(getGoldenHourCountdown(sunset));
+  const [prevSunset, setPrevSunset] = useState(sunset);
+  const [now, setNow] = useState(() => new Date());
+  const [countdown, setCountdown] = useState(() => getGoldenHourCountdown(sunset, now));
+
+  if (sunset !== prevSunset) {
+    setPrevSunset(sunset);
+    setCountdown(getGoldenHourCountdown(sunset, now));
+  }
 
   useEffect(() => {
-    setCountdown(getGoldenHourCountdown(sunset));
     const interval = setInterval(() => {
-      setCountdown(getGoldenHourCountdown(sunset));
+      const nextNow = new Date();
+      setNow(nextNow);
+      setCountdown(getGoldenHourCountdown(sunset, nextNow));
     }, 60 * 1000);
     return () => clearInterval(interval);
   }, [sunset]);

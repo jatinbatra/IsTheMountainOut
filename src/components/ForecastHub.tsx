@@ -14,7 +14,6 @@ interface Props {
   currentScore: number;
   isVisible: boolean;
   weeklyForecast?: WeeklyForecastDay[];
-  sunset?: string;
 }
 
 export default function ForecastHub({
@@ -22,7 +21,6 @@ export default function ForecastHub({
   currentScore,
   isVisible,
   weeklyForecast,
-  sunset,
 }: Props) {
   const [tab, setTab] = useState<Tab>("24h");
 

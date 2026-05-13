@@ -154,12 +154,6 @@ function Stat({
   sub: string;
   accent: "amber" | "orange" | "violet";
 }) {
-  const bg =
-    accent === "amber"
-      ? "bg-amber-50"
-      : accent === "orange"
-        ? "bg-orange-50"
-        : "bg-violet-50";
   const fg =
     accent === "amber"
       ? "text-amber-500"

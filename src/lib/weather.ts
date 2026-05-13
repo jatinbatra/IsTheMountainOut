@@ -123,9 +123,6 @@ function getMockWeatherData(): WeatherData {
 }
 
 export async function fetchWeatherData(options?: { noCache?: boolean }): Promise<WeatherData> {
-  const now = new Date();
-  const today = now.toISOString().split("T")[0];
-
   // Fetch weather data from Open-Meteo (midpoint for cloud/visibility)
   const weatherUrl = new URL("https://api.open-meteo.com/v1/forecast");
   weatherUrl.searchParams.set("latitude", MIDPOINT_LAT.toString());
