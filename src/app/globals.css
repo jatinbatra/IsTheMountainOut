@@ -783,7 +783,7 @@ button, [role="button"], [role="tab"] {
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1.12fr;
+  grid-template-columns: 1fr 1fr;
   gap: 18px;
   align-items: start;
 }
@@ -960,7 +960,6 @@ button, [role="button"], [role="tab"] {
 
 /* ─── Responsive ─── */
 @media (max-width: 1200px) {
-  .dashboard-grid { grid-template-columns: 1fr 1fr; }
   .bottom-strip   { grid-template-columns: 1fr 1fr; }
 }
 

@@ -8,7 +8,17 @@ interface CalendarDay {
   isVisible: boolean;
 }
 
-export default function MountainCalendar() {
+interface ForecastDay {
+  date: string;
+  score: number;
+  isVisible: boolean;
+}
+
+interface Props {
+  weeklyForecast?: ForecastDay[];
+}
+
+export default function MountainCalendar({ weeklyForecast }: Props) {
   const [days, setDays] = useState<CalendarDay[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -24,22 +34,38 @@ export default function MountainCalendar() {
 
   if (loading) return null;
 
-  const validDays = days.filter((d) => d.score >= 0);
+  const forecastMap = new Map(
+    (weeklyForecast ?? []).map((d) => [d.date, d])
+  );
+  const merged = days.map((d) => {
+    if (d.score >= 0) return d;
+    const fc = forecastMap.get(d.date);
+    if (fc) return { date: d.date, score: fc.score, isVisible: fc.isVisible };
+    return d;
+  });
+  (weeklyForecast ?? []).forEach((fc) => {
+    if (!merged.find((d) => d.date === fc.date)) {
+      merged.push({ date: fc.date, score: fc.score, isVisible: fc.isVisible });
+    }
+  });
+  merged.sort((a, b) => a.date.localeCompare(b.date));
+
+  const validDays = merged.filter((d) => d.score >= 0);
   const mountainDays = validDays.filter((d) => d.isVisible).length;
 
   if (validDays.length === 0) {
     return (
       <div className="text-center py-3">
-        <p className="text-sm font-medium text-[color:var(--type-1)] mb-0.5">Mountain Calendar</p>
-        <p className="text-xs text-[color:var(--type-3)]">
-          No historical data yet. The calendar fills in as the cron job runs daily.
+        <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>Mountain Calendar</p>
+        <p className="text-xs mt-1" style={{ color: "var(--text-tertiary)" }}>
+          No data yet. Calendar populates as conditions are tracked.
         </p>
       </div>
     );
   }
 
   const todayStr = new Date().toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
-  const firstDate = new Date(days[0].date + "T12:00:00");
+  const firstDate = new Date(merged[0].date + "T12:00:00");
   const startDow = firstDate.getDay();
 
   return (
@@ -62,7 +88,7 @@ export default function MountainCalendar() {
           <div key={`pad-${i}`} />
         ))}
 
-        {days.map((day) => {
+        {merged.map((day) => {
           const date = new Date(day.date + "T12:00:00");
           const isToday = day.date === todayStr;
           const hasData = day.score >= 0;

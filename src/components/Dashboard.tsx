@@ -10,6 +10,7 @@ import {
   ChevronRight, TrendingUp, TrendingDown, Sparkles,
 } from "lucide-react";
 import MountainSilhouetteScore from "@/components/MountainSilhouetteScore";
+import FeaturedWebcam from "@/components/FeaturedWebcam";
 import ForecastHub from "@/components/ForecastHub";
 import GlobalStreakBadge from "@/components/GlobalStreakBadge";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
@@ -152,14 +153,14 @@ const VIEWPOINTS = [
 ];
 
 const FUN_FACTS = [
-  { text: "Mt. Rainier has been featured as inspiration for the original Starbucks logo — the mountain's silhouette framed the siren.", cta: "See the story →" },
-  { text: "Seattle averages 226 cloudy days per year, making a clear Rainier sighting genuinely special — locals celebrate it.", cta: "Weather stats →" },
-  { text: "At 14,411 ft, Rainier is the most glaciated peak in the contiguous US with 25 major glaciers containing over 1 cubic mile of ice.", cta: "Glacier facts →" },
-  { text: "On exceptionally clear days, Mt. Rainier can be seen from as far as Portland, Oregon — 150 miles to the south.", cta: "Viewing range →" },
-  { text: "The mountain's Indigenous name is Tahoma (or Tacoma), meaning 'mother of waters' — it feeds six major rivers.", cta: "Learn more →" },
-  { text: "Rainier has the world's largest volcanic glacier cave system, carved by geothermal heat beneath the ice.", cta: "Explore caves →" },
-  { text: "The 93-mile Wonderland Trail circumnavigates the mountain and takes most hikers 7-10 days to complete.", cta: "Trail guide →" },
-  { text: "Mt. Rainier produces its own weather — lenticular clouds form at the summit and are often mistaken for UFOs.", cta: "Cloud types →" },
+  { text: "Mt. Rainier has been featured as inspiration for the original Starbucks logo — the mountain's silhouette framed the siren.", cta: "See the story →", url: "https://en.wikipedia.org/wiki/Starbucks#History" },
+  { text: "Seattle averages 226 cloudy days per year, making a clear Rainier sighting genuinely special — locals celebrate it.", cta: "Weather stats →", url: "https://en.wikipedia.org/wiki/Climate_of_Seattle" },
+  { text: "At 14,411 ft, Rainier is the most glaciated peak in the contiguous US with 25 major glaciers containing over 1 cubic mile of ice.", cta: "Glacier facts →", url: "https://www.nps.gov/mora/learn/nature/glaciers.htm" },
+  { text: "On exceptionally clear days, Mt. Rainier can be seen from as far as Portland, Oregon — 150 miles to the south.", cta: "Viewing range →", url: "https://en.wikipedia.org/wiki/Mount_Rainier" },
+  { text: "The mountain's Indigenous name is Tahoma (or Tacoma), meaning 'mother of waters' — it feeds six major rivers.", cta: "Learn more →", url: "https://www.nps.gov/mora/learn/historyculture/index.htm" },
+  { text: "Rainier has the world's largest volcanic glacier cave system, carved by geothermal heat beneath the ice.", cta: "Explore caves →", url: "https://en.wikipedia.org/wiki/Mount_Rainier#Geology" },
+  { text: "The 93-mile Wonderland Trail circumnavigates the mountain and takes most hikers 7-10 days to complete.", cta: "Trail guide →", url: "https://www.nps.gov/mora/planyourvisit/the-wonderland-trail.htm" },
+  { text: "Mt. Rainier produces its own weather — lenticular clouds form at the summit and are often mistaken for UFOs.", cta: "Cloud types →", url: "https://en.wikipedia.org/wiki/Lenticular_cloud" },
 ];
 
 const fadeUp = {
@@ -326,7 +327,7 @@ export default function Dashboard({ initialData }: Props) {
           <div
             className="absolute inset-0 z-[0]"
             style={{
-              backgroundImage: "url(/images/hero/rainier-waterfront.jpg)",
+              backgroundImage: `url(${VIEWPOINTS[selectedVp]?.image ?? "/images/hero/rainier-waterfront.jpg"})`,
               backgroundSize: "cover",
               backgroundPosition: "center 30%",
             }}
@@ -579,47 +580,51 @@ export default function Dashboard({ initialData }: Props) {
             </motion.div>
 
             {/* ── Card 3: Visibility by Neighborhood (REAL MAP) ── */}
-            <motion.div variants={fadeUp} id="section-map" className="dash-card">
+            <motion.div variants={fadeUp} id="section-map" className="dash-card col-span-2">
               <div className="dash-card-header">Visibility by Neighborhood</div>
 
-              <SeattleVisibilityMap scores={allScores} labels={NEIGHBORHOOD_LABELS} baseScore={score} onSelectNeighborhood={setNeighborhood} />
+              <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr] gap-6 items-start">
+                <SeattleVisibilityMap scores={allScores} labels={NEIGHBORHOOD_LABELS} baseScore={score} onSelectNeighborhood={setNeighborhood} />
 
-              <div className="mt-4 space-y-2">
-                {allScores.slice(0, 6).map((ns) => (
-                  <div key={ns.id} className="flex items-center justify-between">
-                    <span className="text-[10px] uppercase tracking-wider font-medium" style={{ color: "var(--text-secondary)" }}>
-                      {NEIGHBORHOOD_LABELS[ns.id] ?? ns.id}
-                    </span>
-                    <span
-                      className="text-[10px] font-mono tabular font-semibold"
-                      style={{
-                        color: ns.score >= 70 ? "var(--accent)" : ns.score >= 50 ? "var(--accent-gold)" : "var(--accent-pink)",
-                      }}
-                    >
-                      {ns.score}%
-                    </span>
+                <div>
+                  <div className="space-y-2.5">
+                    {allScores.slice(0, 8).map((ns) => (
+                      <div key={ns.id} className="flex items-center justify-between">
+                        <span className="text-[10px] uppercase tracking-wider font-medium" style={{ color: "var(--text-secondary)" }}>
+                          {NEIGHBORHOOD_LABELS[ns.id] ?? ns.id}
+                        </span>
+                        <span
+                          className="text-[10px] font-mono tabular font-semibold"
+                          style={{
+                            color: ns.score >= 70 ? "var(--accent)" : ns.score >= 50 ? "var(--accent-gold)" : "var(--accent-pink)",
+                          }}
+                        >
+                          {ns.score}%
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
 
-              <div className="flex flex-wrap gap-3 mt-4 pt-3" style={{ borderTop: "1px solid rgba(180,165,130,0.04)" }}>
-                {[
-                  { label: "90–100%", c: "#5a9e6a" },
-                  { label: "70–89%",  c: "#4a8858" },
-                  { label: "50–69%",  c: "#d4a373" },
-                  { label: "30–49%",  c: "#b07848" },
-                  { label: "0–29%",   c: "#c47d8a" },
-                ].map((l) => (
-                  <div key={l.label} className="flex items-center gap-1.5 text-[8px]" style={{ color: "var(--text-tertiary)" }}>
-                    <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: l.c }} />
-                    {l.label}
+                  <div className="flex flex-wrap gap-3 mt-5 pt-3" style={{ borderTop: "1px solid rgba(180,165,130,0.04)" }}>
+                    {[
+                      { label: "90–100%", c: "#5a9e6a" },
+                      { label: "70–89%",  c: "#4a8858" },
+                      { label: "50–69%",  c: "#d4a373" },
+                      { label: "30–49%",  c: "#b07848" },
+                      { label: "0–29%",   c: "#c47d8a" },
+                    ].map((l) => (
+                      <div key={l.label} className="flex items-center gap-1.5 text-[8px]" style={{ color: "var(--text-tertiary)" }}>
+                        <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: l.c }} />
+                        {l.label}
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </div>
               </div>
             </motion.div>
 
             {/* ── Card 4: Forecast ── */}
-            <motion.div variants={fadeUp} id="section-forecast" className="dash-card">
+            <motion.div variants={fadeUp} id="section-forecast" className="dash-card col-span-2">
               <div className="dash-card-header">Forecast for {VIEWPOINTS[selectedVp]?.name}</div>
               <ForecastHub
                 hourlyTimeline={data.hourlyTimeline}
@@ -638,6 +643,12 @@ export default function Dashboard({ initialData }: Props) {
                 <NextClearWindow hourlyTimeline={data.hourlyTimeline} weeklyForecast={data.weeklyForecast} currentScore={score} />
               </div>
             </motion.div>
+          </motion.div>
+
+          {/* ═══ LIVE WEBCAM ═══ */}
+          <motion.div {...fadeUp} className="dash-card mt-5 overflow-hidden">
+            <div className="dash-card-header">Live Webcam · Mt. Rainier</div>
+            <FeaturedWebcam />
           </motion.div>
 
           {/* ═══ BOTTOM STRIP ═══ */}
@@ -676,12 +687,15 @@ export default function Dashboard({ initialData }: Props) {
                       {FUN_FACTS[factIdx].text}
                     </motion.p>
                   </AnimatePresence>
-                  <button
-                    className="text-[9px] uppercase tracking-wider font-mono mt-2 transition-opacity hover:opacity-70"
+                  <a
+                    href={FUN_FACTS[factIdx].url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[9px] uppercase tracking-wider font-mono mt-2 transition-opacity hover:opacity-70 inline-block"
                     style={{ color: "var(--accent-gold)" }}
                   >
                     {FUN_FACTS[factIdx].cta}
-                  </button>
+                  </a>
                 </div>
               </div>
             </motion.div>
