@@ -41,8 +41,6 @@ export default function ForecastCard({
       <div className="dash-card-header">Forecast for {viewpointName}</div>
       <ForecastHub
         hourlyTimeline={hourlyTimeline}
-        currentScore={visibilityScore}
-        isVisible={isVisible}
         weeklyForecast={weeklyForecast}
       />
       <div className="mt-4 p-3 rounded-2xl" style={{ background: "rgba(212,163,115,0.06)", border: "1px solid rgba(212,163,115,0.1)" }}>
