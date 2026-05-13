@@ -63,7 +63,7 @@ export default function ForecastHub({
             weeklyForecast={weeklyForecast}
           />
         )}
-        {tab === "Calendar" && <MountainCalendar />}
+        {tab === "Calendar" && <MountainCalendar weeklyForecast={weeklyForecast} />}
       </div>
     </div>
   );
