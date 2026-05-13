@@ -1,20 +1,14 @@
 "use client";
 
-import { useState, useCallback, useMemo, useEffect, useRef } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  RefreshCw, Home, MapPin, Map, BarChart3, Clock, Star, Info,
-  Compass, Eye, Sun, Wind, Droplets, ChevronLeft,
-  ChevronRight, TrendingUp, TrendingDown, Sparkles,
-} from "lucide-react";
-import MountainSilhouetteScore from "@/components/MountainSilhouetteScore";
+import { Compass } from "lucide-react";
+
 import FeaturedWebcam from "@/components/FeaturedWebcam";
-import ForecastHub from "@/components/ForecastHub";
 import GlobalStreakBadge from "@/components/GlobalStreakBadge";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
-import NextClearWindow from "@/components/NextClearWindow";
 import PrivacyCommitment from "@/components/PrivacyCommitment";
 import { registerSW } from "@/lib/notifications";
 import {
@@ -30,7 +24,13 @@ import {
   getCSSVariables,
 } from "@/lib/seasonal";
 
-import SeattleVisibilityMap from "@/components/SeattleVisibilityMap";
+import Sidebar from "@/components/dashboard/Sidebar";
+import HeroSection from "@/components/dashboard/HeroSection";
+import ViewpointCarousel from "@/components/dashboard/ViewpointCarousel";
+import VisibilityCard from "@/components/dashboard/VisibilityCard";
+import FactorsCard from "@/components/dashboard/FactorsCard";
+import NeighborhoodCard from "@/components/dashboard/NeighborhoodCard";
+import ForecastCard from "@/components/dashboard/ForecastCard";
 
 interface ViewpointData {
   id: string;
@@ -131,16 +131,6 @@ interface Props {
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
-const SIDEBAR_ITEMS = [
-  { icon: Home,      label: "Home",      id: "home" },
-  { icon: Eye,       label: "Views",     id: "viewpoints" },
-  { icon: Map,       label: "Map",       id: "map" },
-  { icon: BarChart3, label: "Forecast",  id: "forecast" },
-  { icon: Clock,     label: "History",   id: "history" },
-  { icon: Star,      label: "Favorites", id: "favorites" },
-  { icon: Info,      label: "About",     id: "about" },
-] as const;
-
 const VIEWPOINTS = [
   { id: "kerry-park",      name: "Kerry Park",      sub: "Queen Anne",        image: "/images/viewpoints/kerry-park.jpg" },
   { id: "space-needle",    name: "Space Needle",    sub: "Downtown",          image: "/images/viewpoints/space-needle.jpg" },
@@ -176,7 +166,6 @@ const staggerParent = {
 export default function Dashboard({ initialData }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const carouselRef = useRef<HTMLDivElement>(null);
 
   const { data: swrData, isValidating } = useSWR<MountainData>(
     "/api/mountain-status",
@@ -214,7 +203,6 @@ export default function Dashboard({ initialData }: Props) {
     }).catch(() => {});
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Rotate fun facts every 12 seconds
   useEffect(() => {
     const t = setInterval(() => setFactIdx((i) => (i + 1) % FUN_FACTS.length), 12000);
     return () => clearInterval(t);
@@ -259,10 +247,6 @@ export default function Dashboard({ initialData }: Props) {
   const statusWord = getSeasonalStatusWord(season, isVisible, isNight);
   const seasonVars = getCSSVariables(palette);
 
-  const gaugeR   = 72;
-  const gaugeC   = 2 * Math.PI * gaugeR;
-  const gaugeOff = gaugeC - (score / 100) * gaugeC;
-
   const cloudScore    = Math.round(100 - data.weather.cloudLow);
   const aqScore       = data.weather.pm25 != null ? Math.round(Math.max(0, 100 - (data.weather.pm25 / 50) * 100)) : 85;
   const humidityScore = Math.round(Math.max(0, 100 - (data.weather.humidity - 40)));
@@ -289,195 +273,32 @@ export default function Dashboard({ initialData }: Props) {
     <div className="flex min-h-screen" style={seasonVars as React.CSSProperties}>
       <PWAInstallPrompt />
 
-      {/* ═══ SIDEBAR ═══ */}
-      <nav className="sidebar" aria-label="Main navigation">
-        <div className="sidebar-logo">
-          <svg viewBox="0 0 36 36" className="w-8 h-8" aria-hidden="true">
-            <polygon points="18,4 6,30 12,30 18,17 24,30 30,30" fill="#d4a373" opacity="0.75" />
-            <polygon points="14,19 18,10 22,19 20,15 16,15" fill="white" opacity="0.4" />
-            <line x1="4" y1="31" x2="32" y2="31" stroke="#d4a373" strokeWidth="0.8" opacity="0.25" />
-            <polygon points="8,31 10,26 12,31" fill="#5a9e6a" opacity="0.18" />
-            <polygon points="26,31 28,27 30,31" fill="#5a9e6a" opacity="0.18" />
-          </svg>
-        </div>
+      <Sidebar activeNav={activeNav} onNavClick={navTo} />
 
-        <div className="sidebar-title">
-          <div className="sidebar-title-main">IS THE<br />MOUNTAIN<br />OUT?</div>
-          <span className="sidebar-title-sub">MT. RAINIER · TRACKER</span>
-        </div>
-
-        <div className="sidebar-divider" />
-
-        {SIDEBAR_ITEMS.map((item) => (
-          <button
-            key={item.id}
-            className={`sidebar-item ${activeNav === item.id ? "active" : ""}`}
-            onClick={() => navTo(item.id)}
-          >
-            <item.icon className="w-[15px] h-[15px]" strokeWidth={1.6} />
-            <span>{item.label}</span>
-          </button>
-        ))}
-
-        <div className="sidebar-bottom">
-          <span className="sidebar-calling">THE MOUNTAIN IS CALLING</span>
-        </div>
-      </nav>
-
-      {/* ═══ MAIN ═══ */}
       <main className="main-with-sidebar flex-1 ml-[78px] min-h-screen">
+        <HeroSection 
+          backgroundImage={VIEWPOINTS[selectedVp]?.image ?? "/images/hero/rainier-waterfront.jpg"}
+          viewpointName={VIEWPOINTS[selectedVp]?.name}
+          viewpointSub={VIEWPOINTS[selectedVp]?.sub}
+          timeStr={timeStr}
+          tempF={tempF}
+          weatherLabel={weatherLabel}
+          windSpeed={data.weather.windSpeed}
+          humidity={data.weather.humidity}
+          visMiles={visMiles}
+          isVisible={isVisible}
+          statusWord={statusWord}
+          durationMessage={data.visibility.durationMessage}
+        />
 
-        {/* ═══ HERO — Real PNW Photography ═══ */}
-        <section id="section-home" className="hero-section" style={{ height: "62vh", minHeight: "500px" }}>
-          <div
-            className="absolute inset-0 z-[0]"
-            style={{
-              backgroundImage: `url(${VIEWPOINTS[selectedVp]?.image ?? "/images/hero/rainier-waterfront.jpg"})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center 30%",
-            }}
-          />
+        <ViewpointCarousel 
+          viewpoints={VIEWPOINTS}
+          selectedVp={selectedVp}
+          onSelectVp={setSelectedVp}
+          dataViewpoints={data.viewpoints}
+          baseScore={score}
+        />
 
-          <div className="hero-top" />
-          <div className="hero-bottom" />
-          <div className="hero-sides" />
-          <div className="hero-fog" />
-
-          {/* ── Floating header ── */}
-          <div className="hero-header">
-            <div className="hero-header-pill">
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <div className="hero-live-dot" />
-                <span className="text-[10px] text-white/50 font-mono uppercase tracking-wider whitespace-nowrap">
-                  IS THE MOUNTAIN OUT?
-                </span>
-              </div>
-
-              <div className="flex items-center gap-1.5 flex-1 justify-center">
-                <MapPin className="w-3 h-3 text-white/35 flex-shrink-0" />
-                <span className="text-[11.5px] text-white/55 tracking-wide whitespace-nowrap">
-                  {VIEWPOINTS[selectedVp]?.name}, {VIEWPOINTS[selectedVp]?.sub} · {timeStr} PDT
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2 flex-shrink-0" />
-            </div>
-
-            {/* ── Weather Widget (warm card, top-right) ── */}
-            <div className="weather-widget">
-              <div className="weather-widget-main">
-                <Sun className="w-5 h-5" style={{ color: "#f59e0b" }} />
-                <span className="weather-widget-temp">{tempF}°F</span>
-              </div>
-              <span className="weather-widget-label">{weatherLabel}</span>
-              <div className="weather-widget-details">
-                <div className="weather-widget-detail">
-                  <Wind className="w-3 h-3" />
-                  <span>{Math.round(data.weather.windSpeed)} mph</span>
-                </div>
-                <div className="weather-widget-detail">
-                  <Droplets className="w-3 h-3" />
-                  <span>{data.weather.humidity}%</span>
-                </div>
-                <div className="weather-widget-detail">
-                  <Eye className="w-3 h-3" />
-                  <span>{visMiles} mi</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ── Hero headline ── */}
-          <div className="hero-text">
-            <div
-              className="absolute pointer-events-none"
-              style={{
-                background: "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(12,10,7,0.22) 0%, transparent 75%)",
-                inset: "-10% -20%",
-              }}
-            />
-
-            <motion.p
-              className="hero-location-label"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.35, duration: 0.7 }}
-            >
-              SEATTLE, WA
-            </motion.p>
-
-            <motion.h1
-              className="hero-headline"
-              style={{ fontSize: "clamp(3.2rem, 8.5vw, 7.5rem)" }}
-              initial={{ opacity: 0, y: 28 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.45, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-            >
-              {isVisible ? "YES." : "NOT TODAY."}{" "}
-              <span className={isVisible ? "hero-headline-positive" : "hero-headline-negative"}>
-                {statusWord}.
-              </span>
-            </motion.h1>
-
-            <motion.p
-              className="hero-subtitle"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.8, duration: 0.7 }}
-            >
-              {isVisible
-                ? `Beautiful visibility right now from ${VIEWPOINTS[selectedVp]?.name}`
-                : data.visibility.durationMessage}
-            </motion.p>
-          </div>
-        </section>
-
-        {/* ═══ VIEWPOINT CAROUSEL ═══ */}
-        <div id="section-viewpoints" className="viewpoint-section">
-          <div className="viewpoint-glass">
-            <button className="carousel-btn" onClick={() => carouselRef.current?.scrollBy({ left: -220, behavior: "smooth" })} aria-label="Previous">
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-
-            <div ref={carouselRef} className="viewpoint-carousel">
-              {VIEWPOINTS.map((vp, i) => {
-                const vpScore = data.viewpoints.find(v => v.id === vp.id)?.locationScore ?? score;
-                const vpColor = vpScore >= 70 ? "#5a9e6a" : vpScore >= 50 ? "#d4a373" : "#c47d8a";
-                return (
-                  <motion.button
-                    key={vp.id}
-                    whileHover={{ y: -3 }}
-                    transition={{ duration: 0.2 }}
-                    className={`viewpoint-item ${selectedVp === i ? "selected" : ""}`}
-                    onClick={() => setSelectedVp(i)}
-                  >
-                    <div className={`viewpoint-circle ${selectedVp === i ? "selected" : ""}`}>
-                      <div
-                        className="absolute inset-0 rounded-full"
-                        style={{
-                          background: selectedVp === i
-                            ? `radial-gradient(circle at 35% 35%, ${vpColor}30, ${vpColor}10 60%, rgba(21,18,16,0.8))`
-                            : `radial-gradient(circle at 35% 35%, ${vpColor}18, rgba(21,18,16,0.7) 70%)`,
-                        }}
-                      />
-                      <div className="absolute inset-0 rounded-full flex items-center justify-center z-10">
-                        <MapPin className="w-5 h-5" style={{ color: selectedVp === i ? vpColor : "var(--text-tertiary)", opacity: selectedVp === i ? 0.9 : 0.5 }} />
-                      </div>
-                    </div>
-                    <span className="viewpoint-name">{vp.name}</span>
-                    <span className="viewpoint-sub">{vp.sub}</span>
-                  </motion.button>
-                );
-              })}
-            </div>
-
-            <button className="carousel-btn" onClick={() => carouselRef.current?.scrollBy({ left: 220, behavior: "smooth" })} aria-label="Next">
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* ═══ DASHBOARD GRID ═══ */}
         <div className="dashboard-content">
           <motion.div
             className="dashboard-grid"
@@ -486,176 +307,48 @@ export default function Dashboard({ initialData }: Props) {
             viewport={{ once: true, margin: "-40px" }}
             variants={staggerParent}
           >
-            {/* ── Card 1: Visibility Score ── */}
-            <motion.div variants={fadeUp} className="dash-card flex flex-col items-center">
-              <div className="dash-card-header w-full flex items-center justify-between">
-                <span>Mountain Visibility Score</span>
-                <span className="ai-badge"><Sparkles className="w-3 h-3" /><span className="ai-badge-dot" /> AI Prediction</span>
-              </div>
+            <VisibilityCard 
+              score={score}
+              isVisible={isVisible}
+              isNight={isNight}
+              isValidating={isValidating}
+              lastUpdate={lastUpdate}
+              now={now}
+              accentColor={accentColor}
+              accentGlow={accentGlow}
+              fadeUp={fadeUp}
+            />
 
-              <div className="relative my-2">
-                <div className="score-gauge-wrap">
-                  <svg width="168" height="168" viewBox="0 0 168 168">
-                    <circle cx="84" cy="84" r={gaugeR} className="gauge-track" />
-                    <circle
-                      cx="84" cy="84" r={gaugeR}
-                      className={isVisible ? "gauge-fill-positive" : "gauge-fill-negative"}
-                      strokeDasharray={gaugeC}
-                      strokeDashoffset={gaugeOff}
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span
-                      className="font-display tabular"
-                      style={{ fontSize: "2.9rem", color: accentColor, filter: `drop-shadow(${accentGlow})` }}
-                    >
-                      {score}<span style={{ fontSize: "1.1rem", opacity: 0.6 }}>%</span>
-                    </span>
-                    <span className="text-[9px] uppercase tracking-[0.12em] font-semibold mt-0.5" style={{ color: "var(--text-tertiary)" }}>
-                      {score >= 76 ? "Great Visibility" : score >= 50 ? "Moderate" : "Poor Visibility"}
-                    </span>
-                  </div>
-                </div>
-              </div>
+            <FactorsCard 
+              isVisible={isVisible}
+              factors={factors}
+              fadeUp={fadeUp}
+            />
 
-              <div className="w-full px-2 mt-1">
-                <MountainSilhouetteScore score={score} isVisible={isVisible} isNight={isNight} seasonLabel="" />
-              </div>
+            <NeighborhoodCard 
+              allScores={allScores}
+              neighborhoodLabels={NEIGHBORHOOD_LABELS}
+              baseScore={score}
+              onSelectNeighborhood={setNeighborhood}
+              fadeUp={fadeUp}
+            />
 
-              <div className="flex items-center gap-3 mt-4 text-[9px] w-full justify-center" style={{ color: "var(--text-tertiary)" }}>
-              <div className="flex items-center gap-1.5">
-                <RefreshCw className={`w-[11px] h-[11px] ${isValidating ? "animate-spin" : ""}`} />
-                <span>Updated {Math.round((now - lastUpdate.getTime()) / 60000)} min ago</span>
-              </div>                <span style={{ color: "rgba(90,79,62,0.4)" }}>·</span>
-                <div className="flex items-center gap-1">
-                  <span>Trend</span>
-                  {isVisible
-                    ? <TrendingUp className="w-[11px] h-[11px]" style={{ color: "var(--accent)" }} />
-                    : <TrendingDown className="w-[11px] h-[11px]" style={{ color: "var(--accent-pink)" }} />
-                  }
-                  <span style={{ color: isVisible ? "var(--accent)" : "var(--accent-pink)" }}>
-                    {isVisible ? "Improving" : "Declining"}
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* ── Card 2: Why the Mountain is Out / Hidden ── */}
-            <motion.div variants={fadeUp} className="dash-card">
-              <div className="dash-card-header">
-                Why the Mountain is {isVisible ? "Out" : "Hidden"}
-              </div>
-
-              <div>
-                {factors.map((f) => (
-                  <div key={f.label} className="factor-row">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[12px] font-medium" style={{ color: "var(--text-primary)" }}>{f.label}</p>
-                        <p className="text-[9.5px] mt-0.5" style={{ color: "var(--text-tertiary)" }}>{f.desc}</p>
-                      </div>
-                      <span
-                        className="text-[9.5px] font-bold tracking-wider flex-shrink-0"
-                        style={{
-                          color: f.status === "EXCELLENT" || f.status === "GOOD" ? "var(--accent)"
-                            : f.status === "FAIR" ? "var(--accent-gold)"
-                            : "var(--accent-pink)",
-                        }}
-                      >
-                        {f.status}
-                      </span>
-                    </div>
-                    <div className="factor-bar">
-                      <div
-                        className={`factor-bar-fill ${f.value >= 70 ? "good" : f.value >= 40 ? "warning" : "critical"}`}
-                        style={{ width: `${f.value}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <button
-                className="mt-4 text-[9.5px] uppercase tracking-wider font-mono flex items-center gap-1 transition-colors hover:opacity-80"
-                style={{ color: "var(--accent-gold)" }}
-              >
-                How it works →
-              </button>
-            </motion.div>
-
-            {/* ── Card 3: Visibility by Neighborhood (REAL MAP) ── */}
-            <motion.div variants={fadeUp} id="section-map" className="dash-card col-span-2">
-              <div className="dash-card-header">Visibility by Neighborhood</div>
-
-              <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr] gap-6 items-start">
-                <SeattleVisibilityMap scores={allScores} labels={NEIGHBORHOOD_LABELS} baseScore={score} onSelectNeighborhood={setNeighborhood} />
-
-                <div>
-                  <div className="space-y-2.5">
-                    {allScores.slice(0, 8).map((ns) => (
-                      <div key={ns.id} className="flex items-center justify-between">
-                        <span className="text-[10px] uppercase tracking-wider font-medium" style={{ color: "var(--text-secondary)" }}>
-                          {NEIGHBORHOOD_LABELS[ns.id] ?? ns.id}
-                        </span>
-                        <span
-                          className="text-[10px] font-mono tabular font-semibold"
-                          style={{
-                            color: ns.score >= 70 ? "var(--accent)" : ns.score >= 50 ? "var(--accent-gold)" : "var(--accent-pink)",
-                          }}
-                        >
-                          {ns.score}%
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="flex flex-wrap gap-3 mt-5 pt-3" style={{ borderTop: "1px solid rgba(180,165,130,0.04)" }}>
-                    {[
-                      { label: "90–100%", c: "#5a9e6a" },
-                      { label: "70–89%",  c: "#4a8858" },
-                      { label: "50–69%",  c: "#d4a373" },
-                      { label: "30–49%",  c: "#b07848" },
-                      { label: "0–29%",   c: "#c47d8a" },
-                    ].map((l) => (
-                      <div key={l.label} className="flex items-center gap-1.5 text-[8px]" style={{ color: "var(--text-tertiary)" }}>
-                        <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: l.c }} />
-                        {l.label}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* ── Card 4: Forecast ── */}
-            <motion.div variants={fadeUp} id="section-forecast" className="dash-card col-span-2">
-              <div className="dash-card-header">Forecast for {VIEWPOINTS[selectedVp]?.name}</div>
-              <ForecastHub
-                hourlyTimeline={data.hourlyTimeline}
-                currentScore={data.visibility.score}
-                isVisible={isVisible}
-                weeklyForecast={data.weeklyForecast}
-                sunset={data.weather.sunset}
-              />
-              <div className="mt-4 p-3 rounded-2xl" style={{ background: "rgba(212,163,115,0.06)", border: "1px solid rgba(212,163,115,0.1)" }}>
-                <div className="flex items-center gap-2 mb-1.5">
-                  <Sun className="w-3.5 h-3.5" style={{ color: "var(--accent-gold)" }} />
-                  <span className="text-[8.5px] uppercase tracking-wider font-bold" style={{ color: "var(--accent-gold)" }}>
-                    Best Viewing Window
-                  </span>
-                </div>
-                <NextClearWindow hourlyTimeline={data.hourlyTimeline} weeklyForecast={data.weeklyForecast} currentScore={score} />
-              </div>
-            </motion.div>
+            <ForecastCard 
+              viewpointName={VIEWPOINTS[selectedVp]?.name}
+              hourlyTimeline={data.hourlyTimeline}
+              visibilityScore={data.visibility.score}
+              isVisible={isVisible}
+              weeklyForecast={data.weeklyForecast}
+              currentScore={score}
+              fadeUp={fadeUp}
+            />
           </motion.div>
 
-          {/* ═══ LIVE WEBCAM ═══ */}
           <motion.div {...fadeUp} className="dash-card mt-5 overflow-hidden">
             <div className="dash-card-header">Live Webcam · Mt. Rainier</div>
             <FeaturedWebcam />
           </motion.div>
 
-          {/* ═══ BOTTOM STRIP ═══ */}
           <motion.div
             id="section-history"
             className="bottom-strip"
@@ -664,7 +357,6 @@ export default function Dashboard({ initialData }: Props) {
             viewport={{ once: true, margin: "-30px" }}
             variants={staggerParent}
           >
-            {/* Did You Know? — rotating fun facts */}
             <motion.div variants={fadeUp} className="dash-card dash-card-warm">
               <div className="dash-card-header" style={{ color: "var(--accent-gold)" }}>Did You Know?</div>
               <div className="flex items-start gap-4">
@@ -704,7 +396,6 @@ export default function Dashboard({ initialData }: Props) {
               </div>
             </motion.div>
 
-            {/* Streak */}
             <motion.div variants={fadeUp} className="dash-card">
               <div className="dash-card-header">Streak</div>
               <div className="flex items-start gap-3 mb-3">
@@ -734,7 +425,6 @@ export default function Dashboard({ initialData }: Props) {
               </div>
             </motion.div>
 
-            {/* Elevation */}
             <motion.div variants={fadeUp} className="dash-card">
               <div className="dash-card-header">Elevation Advantage</div>
               <div className="flex items-start justify-between gap-3">
@@ -756,7 +446,6 @@ export default function Dashboard({ initialData }: Props) {
               </div>
             </motion.div>
 
-            {/* Direction */}
             <motion.div variants={fadeUp} className="dash-card">
               <div className="dash-card-header">Direction to Rainier</div>
               <div className="flex items-center gap-4 mt-1">
@@ -782,7 +471,6 @@ export default function Dashboard({ initialData }: Props) {
             </motion.div>
           </motion.div>
 
-          {/* ═══ FOOTER ═══ */}
           <footer id="section-about" className="divider-cedar mt-12 pt-8 pb-10">
             <PrivacyCommitment />
             <p className="text-[11px] mt-4 leading-relaxed max-w-2xl" style={{ color: "var(--text-tertiary)" }}>

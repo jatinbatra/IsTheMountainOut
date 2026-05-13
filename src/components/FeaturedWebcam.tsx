@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useSyncExternalStore } from "react";
 import { RefreshCw, ExternalLink, AlertCircle } from "lucide-react";
 
 const WEBCAM_URL = "https://volcview.wr.usgs.gov/ashcam-api/images/webcams/rainier-longmire/current.jpeg";
 const WEBCAM_SOURCE = "https://www.usgs.gov/volcanoes/mount-rainier/webcams";
+
+const subscribe = () => () => {};
 
 export default function FeaturedWebcam() {
   const [imgSrc, setImgSrc] = useState(WEBCAM_URL);
@@ -21,18 +23,24 @@ export default function FeaturedWebcam() {
     setTimeout(() => setRefreshing(false), 1000);
   }, []);
 
+  const mounted = useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false
+  );
+
   useEffect(() => {
     const interval = setInterval(refresh, 3 * 60 * 1000);
     return () => clearInterval(interval);
   }, [refresh]);
 
-  const timestamp = lastRefresh.toLocaleTimeString("en-US", {
+  const timestamp = mounted ? lastRefresh.toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
     hour12: false,
     timeZone: "America/Los_Angeles",
-  });
+  }) : "--:--:--";
 
   return (
     <div className="overflow-hidden border border-[var(--rule)]">
