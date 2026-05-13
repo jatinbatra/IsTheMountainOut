@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 import { MapPin, Sun, Wind, Droplets, Eye } from "lucide-react";
 
+import CountdownStrip from "@/components/CountdownStrip";
+
 interface HeroSectionProps {
   backgroundImage: string;
   viewpointName: string;
@@ -16,6 +18,13 @@ interface HeroSectionProps {
   isVisible: boolean;
   statusWord: string;
   durationMessage: string;
+  sunrise?: string;
+  sunset?: string;
+  alpenglow?: {
+    probability: number;
+    isLikely: boolean;
+    minutesToSunset: number;
+  };
 }
 
 export default function HeroSection({
@@ -31,6 +40,9 @@ export default function HeroSection({
   isVisible,
   statusWord,
   durationMessage,
+  sunrise,
+  sunset,
+  alpenglow,
 }: HeroSectionProps) {
   return (
     <section id="section-home" className="hero-section" style={{ height: "62vh", minHeight: "500px" }}>
@@ -50,22 +62,28 @@ export default function HeroSection({
 
       {/* ── Floating header ── */}
       <div className="hero-header">
-        <div className="hero-header-pill">
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <div className="hero-live-dot" />
-            <span className="text-[10px] text-white/50 font-mono uppercase tracking-wider whitespace-nowrap">
-              IS THE MOUNTAIN OUT?
-            </span>
+        <div className="flex flex-col items-start gap-3">
+          <div className="hero-header-pill">
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="hero-live-dot" />
+              <span className="text-[10px] text-white/50 font-mono uppercase tracking-wider whitespace-nowrap">
+                IS THE MOUNTAIN OUT?
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1.5 flex-1 justify-center">
+              <MapPin className="w-3 h-3 text-white/35 flex-shrink-0" />
+              <span className="text-[11.5px] text-white/55 tracking-wide whitespace-nowrap">
+                {viewpointName}, {viewpointSub} · {timeStr} PDT
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 flex-shrink-0" />
           </div>
 
-          <div className="flex items-center gap-1.5 flex-1 justify-center">
-            <MapPin className="w-3 h-3 text-white/35 flex-shrink-0" />
-            <span className="text-[11.5px] text-white/55 tracking-wide whitespace-nowrap">
-              {viewpointName}, {viewpointSub} · {timeStr} PDT
-            </span>
+          <div className="ml-1">
+            <CountdownStrip sunrise={sunrise} sunset={sunset} alpenglow={alpenglow} />
           </div>
-
-          <div className="flex items-center gap-2 flex-shrink-0" />
         </div>
 
         {/* ── Weather Widget (warm card, top-right) ── */}

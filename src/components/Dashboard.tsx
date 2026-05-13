@@ -167,8 +167,12 @@ export default function Dashboard({ initialData }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  const [neighborhood, setNeighborhoodState] = useState<string | null>(
+    searchParams.get("hood") || null
+  );
+
   const { data: swrData, isValidating } = useSWR<MountainData>(
-    "/api/mountain-status",
+    neighborhood ? `/api/mountain-status?hood=${neighborhood}` : "/api/mountain-status",
     fetcher,
     {
       fallbackData: initialData,
@@ -178,10 +182,6 @@ export default function Dashboard({ initialData }: Props) {
     }
   );
   const data = swrData!;
-
-  const [neighborhood, setNeighborhoodState] = useState<string | null>(
-    searchParams.get("hood") || null
-  );
   const [selectedVp, setSelectedVp] = useState(0);
   const [activeNav, setActiveNav] = useState("home");
   const [factIdx, setFactIdx] = useState(0);
@@ -289,6 +289,9 @@ export default function Dashboard({ initialData }: Props) {
           isVisible={isVisible}
           statusWord={statusWord}
           durationMessage={data.visibility.durationMessage}
+          sunrise={data.weather.sunrise}
+          sunset={data.weather.sunset}
+          alpenglow={data.alpenglow}
         />
 
         <ViewpointCarousel 
@@ -336,8 +339,6 @@ export default function Dashboard({ initialData }: Props) {
             <ForecastCard 
               viewpointName={VIEWPOINTS[selectedVp]?.name}
               hourlyTimeline={data.hourlyTimeline}
-              visibilityScore={data.visibility.score}
-              isVisible={isVisible}
               weeklyForecast={data.weeklyForecast}
               currentScore={score}
               fadeUp={fadeUp}

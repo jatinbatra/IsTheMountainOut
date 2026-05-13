@@ -28,7 +28,19 @@ async function getMountainData(): Promise<MountainData> {
     weather.visibility / 1609.34,
     weather.pm25
   );
-  const skyTheme = getSkyTheme(weather);
+
+  // Alpenglow prediction
+  const alpenglowData = weather.sunset
+    ? predictAlpenglow(
+        weather.currentCloudLow,
+        weather.currentCloudMid,
+        weather.currentCloudHigh,
+        weather.sunset,
+        visibility.score
+      )
+    : null;
+
+  const skyTheme = getSkyTheme(weather, alpenglowData?.probability ?? 0);
 
   const hourlyTimeline = weather.hourlyForecast.map((h) => {
     const hourScore = scoreHourForTimeline(h);
@@ -63,17 +75,6 @@ async function getMountainData(): Promise<MountainData> {
       humidity: d.humidity,
     };
   });
-
-  // Alpenglow prediction
-  const alpenglowData = weather.sunset
-    ? predictAlpenglow(
-        weather.currentCloudLow,
-        weather.currentCloudMid,
-        weather.currentCloudHigh,
-        weather.sunset,
-        visibility.score
-      )
-    : null;
 
   return {
     visibility,

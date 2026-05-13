@@ -20,8 +20,6 @@ interface ForecastCardProps {
     visibility: number;
     weatherCode: number;
   }[];
-  visibilityScore: number;
-  isVisible: boolean;
   weeklyForecast?: WeeklyForecastDay[];
   currentScore: number;
   fadeUp: Variants;
@@ -30,8 +28,6 @@ interface ForecastCardProps {
 export default function ForecastCard({
   viewpointName,
   hourlyTimeline,
-  visibilityScore,
-  isVisible,
   weeklyForecast,
   currentScore,
   fadeUp,
