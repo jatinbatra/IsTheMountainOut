@@ -23,6 +23,7 @@ interface ForecastCardProps {
   weeklyForecast?: WeeklyForecastDay[];
   currentScore: number;
   fadeUp: Variants;
+  className?: string;
 }
 
 export default function ForecastCard({
@@ -31,16 +32,17 @@ export default function ForecastCard({
   weeklyForecast,
   currentScore,
   fadeUp,
+  className = "",
 }: ForecastCardProps) {
   return (
-    <motion.div variants={fadeUp} id="section-forecast" className="dash-card col-span-2">
+    <motion.div variants={fadeUp} id="section-forecast" className={`dash-card ${className}`}>
       <div className="dash-card-header">Forecast for {viewpointName}</div>
       <ForecastHub
         hourlyTimeline={hourlyTimeline}
         weeklyForecast={weeklyForecast}
       />
-      <div className="mt-4 p-3 rounded-2xl" style={{ background: "rgba(212,163,115,0.06)", border: "1px solid rgba(212,163,115,0.1)" }}>
-        <div className="flex items-center gap-2 mb-1.5">
+      <div className="mt-3 p-3 rounded-2xl" style={{ background: "rgba(212,163,115,0.06)", border: "1px solid rgba(212,163,115,0.1)" }}>
+        <div className="flex items-center gap-2 mb-1">
           <Sun className="w-3.5 h-3.5" style={{ color: "var(--accent-gold)" }} />
           <span className="text-[8.5px] uppercase tracking-wider font-bold" style={{ color: "var(--accent-gold)" }}>
             Best Viewing Window

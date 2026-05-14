@@ -132,14 +132,14 @@ interface Props {
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 const VIEWPOINTS = [
-  { id: "kerry-park",      name: "Kerry Park",      sub: "Queen Anne",        image: "https://images.unsplash.com/photo-1502175353174-a7a70e73b362?auto=format&fit=crop&w=1200&q=80" },
-  { id: "space-needle",    name: "Space Needle",    sub: "Downtown",          image: "https://images.unsplash.com/photo-1466388480397-6a4a4086d4e2?auto=format&fit=crop&w=1200&q=80" },
-  { id: "uw-campus",       name: "UW Campus",       sub: "University District", image: "https://images.unsplash.com/photo-1541339907198-e0875638114a?auto=format&fit=crop&w=1200&q=80" },
-  { id: "i90-bridge",      name: "I-90 Bridge",     sub: "Lake Washington",   image: "https://images.unsplash.com/photo-1621213032540-02552834f3b7?auto=format&fit=crop&w=1200&q=80" },
-  { id: "sculpture-park",  name: "Sculpture Park",  sub: "Waterfront",        image: "https://images.unsplash.com/photo-1498429089284-41f8cf3ffd39?auto=format&fit=crop&w=1200&q=80" },
-  { id: "harbor-view",     name: "Harbor View",     sub: "Port of Seattle",   image: "https://images.unsplash.com/photo-1518330756237-7a87d656091e?auto=format&fit=crop&w=1200&q=80" },
-  { id: "alki-beach",      name: "Alki Beach",      sub: "West Seattle",      image: "https://images.unsplash.com/photo-1518330756237-7a87d656091e?auto=format&fit=crop&w=1200&q=80" },
-  { id: "sodo",            name: "SODO",            sub: "South Seattle",     image: "https://images.unsplash.com/photo-1552554529-679901777d54?auto=format&fit=crop&w=1200&q=80" },
+  { id: "kerry-park",      name: "Kerry Park",      sub: "Queen Anne",        image: "https://images.unsplash.com/photo-1502175353174-a7a70e73b362?auto=format&fit=crop&w=1600&q=80" },
+  { id: "space-needle",    name: "Space Needle",    sub: "Downtown",          image: "https://images.unsplash.com/photo-1466388480397-6a4a4086d4e2?auto=format&fit=crop&w=1600&q=80" },
+  { id: "uw-campus",       name: "UW Campus",       sub: "University District", image: "https://images.unsplash.com/photo-1541339907198-e0875638114a?auto=format&fit=crop&w=1600&q=80" },
+  { id: "i90-bridge",      name: "I-90 Bridge",     sub: "Lake Washington",   image: "https://images.unsplash.com/photo-1621213032540-02552834f3b7?auto=format&fit=crop&w=1600&q=80" },
+  { id: "sculpture-park",  name: "Sculpture Park",  sub: "Waterfront",        image: "https://images.unsplash.com/photo-1498429089284-41f8cf3ffd39?auto=format&fit=crop&w=1600&q=80" },
+  { id: "harbor-view",     name: "Harbor View",     sub: "Port of Seattle",   image: "https://images.unsplash.com/photo-1518330756237-7a87d656091e?auto=format&fit=crop&w=1600&q=80" },
+  { id: "alki-beach",      name: "Alki Beach",      sub: "West Seattle",      image: "https://images.unsplash.com/photo-1518330756237-7a87d656091e?auto=format&fit=crop&w=1600&q=80" },
+  { id: "sodo",            name: "SODO",            sub: "South Seattle",     image: "https://images.unsplash.com/photo-1552554529-679901777d54?auto=format&fit=crop&w=1600&q=80" },
 ];
 
 const FUN_FACTS = [
@@ -320,13 +320,17 @@ export default function Dashboard({ initialData }: Props) {
               accentColor={accentColor}
               accentGlow={accentGlow}
               fadeUp={fadeUp}
+              className="card-score"
             />
 
             <FactorsCard 
               isVisible={isVisible}
               factors={factors}
               fadeUp={fadeUp}
+              className="card-factors"
             />
+
+            <FeaturedWebcam className="card-webcam" />
 
             <NeighborhoodCard 
               allScores={allScores}
@@ -334,6 +338,7 @@ export default function Dashboard({ initialData }: Props) {
               baseScore={score}
               onSelectNeighborhood={setNeighborhood}
               fadeUp={fadeUp}
+              className="card-map"
             />
 
             <ForecastCard 
@@ -342,31 +347,16 @@ export default function Dashboard({ initialData }: Props) {
               weeklyForecast={data.weeklyForecast}
               currentScore={score}
               fadeUp={fadeUp}
+              className="card-forecast"
             />
-          </motion.div>
 
-          <motion.div {...fadeUp} className="dash-card mt-5 overflow-hidden">
-            <div className="dash-card-header">Live Webcam · Mt. Rainier</div>
-            <FeaturedWebcam />
-          </motion.div>
-
-          <motion.div
-            id="section-history"
-            className="bottom-strip"
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true, margin: "-30px" }}
-            variants={staggerParent}
-          >
-            <motion.div variants={fadeUp} className="dash-card dash-card-warm">
+            <motion.div variants={fadeUp} className="dash-card dash-card-warm card-fact">
               <div className="dash-card-header" style={{ color: "var(--accent-gold)" }}>Did You Know?</div>
               <div className="flex items-start gap-4">
                 <div className="fun-fact-badge">
-                  <svg viewBox="0 0 48 48" className="w-12 h-12 flex-shrink-0">
+                  <svg viewBox="0 0 48 48" className="w-10 h-10 flex-shrink-0">
                     <circle cx="24" cy="24" r="22" fill="none" stroke="rgba(212,163,115,0.25)" strokeWidth="1.5" />
-                    <circle cx="24" cy="24" r="18" fill="none" stroke="rgba(212,163,115,0.15)" strokeWidth="1" />
                     <polygon points="24,8 16,28 20,28 24,18 28,28 32,28" fill="#d4a373" opacity="0.6" />
-                    <polygon points="20,28 24,18 28,28 26,23 22,23" fill="white" opacity="0.3" />
                     <text x="24" y="38" textAnchor="middle" fill="#d4a373" fontSize="5" opacity="0.6" fontWeight="700">RAINIER</text>
                   </svg>
                 </div>
@@ -374,7 +364,7 @@ export default function Dashboard({ initialData }: Props) {
                   <AnimatePresence mode="wait">
                     <motion.p
                       key={factIdx}
-                      className="text-[11.5px] leading-relaxed"
+                      className="text-[11px] leading-relaxed"
                       style={{ color: "var(--text-secondary)" }}
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -384,89 +374,42 @@ export default function Dashboard({ initialData }: Props) {
                       {FUN_FACTS[factIdx].text}
                     </motion.p>
                   </AnimatePresence>
-                  <a
-                    href={FUN_FACTS[factIdx].url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[9px] uppercase tracking-wider font-mono mt-2 transition-opacity hover:opacity-70 inline-block"
-                    style={{ color: "var(--accent-gold)" }}
-                  >
-                    {FUN_FACTS[factIdx].cta}
-                  </a>
                 </div>
               </div>
             </motion.div>
 
-            <motion.div variants={fadeUp} className="dash-card">
+            <motion.div variants={fadeUp} className="dash-card card-streak">
               <div className="dash-card-header">Streak</div>
-              <div className="flex items-start gap-3 mb-3">
-                <span className="font-display" style={{ fontSize: "2.2rem", color: accentColor, lineHeight: 1, filter: `drop-shadow(${accentGlow})` }}>3</span>
-                <div className="mt-1">
-                  <p className="text-[11px] font-semibold" style={{ color: "var(--text-primary)" }}>DAYS</p>
-                  <p className="text-[9.5px] leading-snug mt-0.5" style={{ color: "var(--text-tertiary)" }}>
-                    in a row the mountain<br />has been visible
-                  </p>
-                </div>
+              <div className="flex items-baseline gap-2">
+                <span className="font-display" style={{ fontSize: "2rem", color: accentColor, filter: `drop-shadow(${accentGlow})` }}>3</span>
+                <span className="text-[10px] font-semibold" style={{ color: "var(--text-primary)" }}>DAYS</span>
               </div>
               <GlobalStreakBadge />
-              <div className="flex gap-1 mt-3">
-                {["M","T","W","T","F","S","S"].map((d, i) => (
-                  <div
-                    key={i}
-                    className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[7px] font-bold"
-                    style={{
-                      background: i < 3 ? `${accentColor}18` : "rgba(180,165,130,0.04)",
-                      border: `1px solid ${i < 3 ? `${accentColor}30` : "rgba(180,165,130,0.06)"}`,
-                      color: i < 3 ? accentColor : "var(--text-tertiary)",
-                    }}
-                  >
-                    {d}
-                  </div>
-                ))}
-              </div>
             </motion.div>
 
-            <motion.div variants={fadeUp} className="dash-card">
-              <div className="dash-card-header">Elevation Advantage</div>
+            <motion.div variants={fadeUp} className="dash-card card-elevation">
+              <div className="dash-card-header">Elevation</div>
               <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-[13px] font-semibold" style={{ color: "var(--text-primary)" }}>You&apos;re at 275 ft</p>
-                  <p className="text-[9.5px] mt-1 leading-relaxed" style={{ color: "var(--text-tertiary)" }}>
-                    Rainier summit is 14,411 ft<br />Every 1,000ft of elevation<br />improves your odds.
+                <div className="flex-1">
+                  <p className="text-[12px] font-semibold" style={{ color: "var(--text-primary)" }}>275 ft</p>
+                  <p className="text-[9px] mt-0.5 leading-relaxed" style={{ color: "var(--text-tertiary)" }}>
+                    Every 1k ft helps.
                   </p>
                 </div>
-                <svg viewBox="0 0 56 80" className="w-12 h-16 flex-shrink-0" aria-hidden="true">
-                  <line x1="52" y1="4" x2="52" y2="76" stroke="rgba(180,165,130,0.06)" strokeWidth="1" />
-                  <path d="M8 76 L24 38 L32 22 L40 38 L56 76 Z" fill="var(--season-mountain-base)" opacity="0.3" />
-                  <path d="M24 38 L32 22 L40 38 L36 30 L28 30 Z" fill="var(--season-mountain-snow)" opacity="0.4" />
-                  <text x="54" y="7" fill="var(--text-tertiary)" fontSize="4.5" opacity="0.5">14,411</text>
-                  <text x="54" y="75" fill="var(--text-tertiary)" fontSize="4.5" opacity="0.5">275 ft</text>
-                  <line x1="50" y1="73" x2="52" y2="73" stroke="rgba(180,165,130,0.2)" strokeWidth="0.8" />
-                  <line x1="50" y1="5" x2="52" y2="5" stroke="rgba(180,165,130,0.2)" strokeWidth="0.8" />
+                <svg viewBox="0 0 56 60" className="w-10 h-10 flex-shrink-0" aria-hidden="true">
+                  <path d="M8 56 L24 22 L32 6 L40 22 L56 56 Z" fill="var(--season-mountain-base)" opacity="0.3" />
+                  <path d="M24 22 L32 6 L40 22 L36 14 L28 14 Z" fill="var(--season-mountain-snow)" opacity="0.4" />
                 </svg>
               </div>
             </motion.div>
 
-            <motion.div variants={fadeUp} className="dash-card">
-              <div className="dash-card-header">Direction to Rainier</div>
-              <div className="flex items-center gap-4 mt-1">
-                <div className="relative flex-shrink-0">
-                  <Compass className="w-12 h-12" style={{ color: "var(--accent-gold)", opacity: 0.55 }} />
-                  {["N","S","E","W"].map((d, i) => {
-                    const pos = [
-                      { top: "-2px", left: "50%", transform: "translateX(-50%)" },
-                      { bottom: "-2px", left: "50%", transform: "translateX(-50%)" },
-                      { top: "50%", right: "-2px", transform: "translateY(-50%)" },
-                      { top: "50%", left: "-2px", transform: "translateY(-50%)" },
-                    ][i];
-                    return <span key={d} className="absolute text-[6.5px] font-bold" style={{ color: "var(--text-tertiary)", ...pos }}>{d}</span>;
-                  })}
-                </div>
+            <motion.div variants={fadeUp} className="dash-card card-direction">
+              <div className="dash-card-header">Direction</div>
+              <div className="flex items-center gap-3">
+                <Compass className="w-8 h-8" style={{ color: "var(--accent-gold)", opacity: 0.55 }} />
                 <div>
-                  <p className="font-display" style={{ fontSize: "1.4rem", color: "var(--text-primary)", lineHeight: 1.1 }}>SSE (158°)</p>
-                  <p className="text-[10px] mt-1.5" style={{ color: "var(--text-tertiary)" }}>
-                    Distance: <span style={{ color: "var(--accent-gold)" }}>54 miles</span>
-                  </p>
+                  <p className="font-display" style={{ fontSize: "1.2rem", color: "var(--text-primary)" }}>SSE</p>
+                  <p className="text-[9px]" style={{ color: "var(--text-tertiary)" }}>54 mi away</p>
                 </div>
               </div>
             </motion.div>

@@ -8,7 +8,11 @@ const WEBCAM_SOURCE = "https://www.usgs.gov/volcanoes/mount-rainier/webcams";
 
 const subscribe = () => () => {};
 
-export default function FeaturedWebcam() {
+interface Props {
+  className?: string;
+}
+
+export default function FeaturedWebcam({ className = "" }: Props) {
   const [imgSrc, setImgSrc] = useState(WEBCAM_URL);
   const [error, setError] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -43,7 +47,7 @@ export default function FeaturedWebcam() {
   }) : "--:--:--";
 
   return (
-    <div className="overflow-hidden border border-[var(--rule)]">
+    <div className={`overflow-hidden border border-[var(--rule)] ${className}`}>
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--rule)]">
         <div className="flex items-center gap-2">

@@ -9,6 +9,7 @@ interface NeighborhoodCardProps {
   baseScore: number;
   onSelectNeighborhood: (id: string | null) => void;
   fadeUp: Variants;
+  className?: string;
 }
 
 export default function NeighborhoodCard({
@@ -17,12 +18,13 @@ export default function NeighborhoodCard({
   baseScore,
   onSelectNeighborhood,
   fadeUp,
+  className = "",
 }: NeighborhoodCardProps) {
   return (
-    <motion.div variants={fadeUp} id="section-map" className="dash-card col-span-2">
-      <div className="dash-card-header">Visibility by Neighborhood</div>
+    <motion.div variants={fadeUp} id="section-map" className={`dash-card ${className}`}>
+      <div className="dash-card-header">By Neighborhood</div>
 
-      <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr] gap-6 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-4 items-start">
         <SeattleVisibilityMap 
           scores={allScores} 
           labels={neighborhoodLabels} 
@@ -30,9 +32,9 @@ export default function NeighborhoodCard({
           onSelectNeighborhood={onSelectNeighborhood} 
         />
 
-        <div>
-          <div className="space-y-2.5">
-            {allScores.slice(0, 8).map((ns) => (
+        <div className="h-full flex flex-col justify-between">
+          <div className="space-y-1.5">
+            {allScores.slice(0, 6).map((ns) => (
               <div key={ns.id} className="flex items-center justify-between">
                 <span className="text-[10px] uppercase tracking-wider font-medium" style={{ color: "var(--text-secondary)" }}>
                   {neighborhoodLabels[ns.id] ?? ns.id}

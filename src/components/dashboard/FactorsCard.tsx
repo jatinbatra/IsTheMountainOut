@@ -13,15 +13,17 @@ interface FactorsCardProps {
   isVisible: boolean;
   factors: Factor[];
   fadeUp: Variants;
+  className?: string;
 }
 
 export default function FactorsCard({
   isVisible,
   factors,
   fadeUp,
+  className = "",
 }: FactorsCardProps) {
   return (
-    <motion.div variants={fadeUp} className="dash-card">
+    <motion.div variants={fadeUp} className={`dash-card ${className}`}>
       <div className="dash-card-header">
         Why the Mountain is {isVisible ? "Out" : "Hidden"}
       </div>

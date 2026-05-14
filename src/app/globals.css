@@ -778,22 +778,37 @@ button, [role="button"], [role="tab"] {
 /* ─── Dashboard Layout ─── */
 
 .dashboard-content {
-  padding: 30px 28px 48px;
+  padding: 24px 28px 48px;
+  max-width: 1440px;
+  margin: 0 auto;
 }
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px;
-  align-items: start;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: minmax(auto, auto);
+  gap: 16px;
+  align-items: stretch;
 }
+
+/* Bento Grid Spans */
+.card-score     { grid-column: span 3; }
+.card-factors   { grid-column: span 4; }
+.card-map       { grid-column: span 5; }
+.card-forecast  { grid-column: span 7; }
+.card-webcam    { grid-column: span 5; }
+
+.card-fact      { grid-column: span 4; }
+.card-streak    { grid-column: span 2; }
+.card-elevation { grid-column: span 3; }
+.card-direction { grid-column: span 3; }
 
 /* ─── Score Gauge ─── */
 
 .score-gauge-wrap {
   position: relative;
-  width: 168px;
-  height: 168px;
+  width: 140px; /* Slightly smaller for bento */
+  height: 140px;
   margin: 0 auto;
 }
 .score-gauge-wrap svg { transform: rotate(-90deg); }
@@ -960,7 +975,9 @@ button, [role="button"], [role="tab"] {
 
 /* ─── Responsive ─── */
 @media (max-width: 1200px) {
-  .bottom-strip   { grid-template-columns: 1fr 1fr; }
+  .card-score, .card-factors, .card-webcam, .card-fact { grid-column: span 6; }
+  .card-map, .card-forecast { grid-column: span 12; }
+  .card-streak, .card-elevation, .card-direction { grid-column: span 4; }
 }
 
 @media (max-width: 768px) {
@@ -968,7 +985,7 @@ button, [role="button"], [role="tab"] {
   .main-with-sidebar     { margin-left: 0 !important; }
   .dashboard-content     { padding: 16px 16px 40px; }
   .dashboard-grid        { grid-template-columns: 1fr; gap: 14px; }
-  .bottom-strip          { grid-template-columns: 1fr; gap: 14px; }
+  .dashboard-grid > *    { grid-column: span 1 !important; }
   .viewpoint-section     { padding: 0 12px; margin-top: -28px; }
   .hero-header-pill      { flex-direction: column; gap: 8px; align-items: flex-start; }
   .hero-headline         { font-size: 2.8rem !important; }

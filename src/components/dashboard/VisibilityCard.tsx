@@ -14,6 +14,7 @@ interface VisibilityCardProps {
   accentColor: string;
   accentGlow: string;
   fadeUp: Variants;
+  className?: string;
 }
 
 export default function VisibilityCard({
@@ -26,24 +27,25 @@ export default function VisibilityCard({
   accentColor,
   accentGlow,
   fadeUp,
+  className = "",
 }: VisibilityCardProps) {
-  const gaugeR = 72;
+  const gaugeR = 64; // Adjusted for smaller bento layout
   const gaugeC = 2 * Math.PI * gaugeR;
   const gaugeOff = gaugeC - (score / 100) * gaugeC;
 
   return (
-    <motion.div variants={fadeUp} className="dash-card flex flex-col items-center">
+    <motion.div variants={fadeUp} className={`dash-card flex flex-col items-center ${className}`}>
       <div className="dash-card-header w-full flex items-center justify-between">
-        <span>Mountain Visibility Score</span>
-        <span className="ai-badge"><Sparkles className="w-3 h-3" /><span className="ai-badge-dot" /> AI Prediction</span>
+        <span>Visibility Score</span>
+        <span className="ai-badge"><Sparkles className="w-2.5 h-2.5" /><span className="ai-badge-dot" /> AI</span>
       </div>
 
-      <div className="relative my-2">
+      <div className="relative my-1">
         <div className="score-gauge-wrap">
-          <svg width="168" height="168" viewBox="0 0 168 168">
-            <circle cx="84" cy="84" r={gaugeR} className="gauge-track" />
+          <svg width="150" height="150" viewBox="0 0 150 150">
+            <circle cx="75" cy="75" r={gaugeR} className="gauge-track" />
             <circle
-              cx="84" cy="84" r={gaugeR}
+              cx="75" cy="75" r={gaugeR}
               className={isVisible ? "gauge-fill-positive" : "gauge-fill-negative"}
               strokeDasharray={gaugeC}
               strokeDashoffset={gaugeOff}
@@ -52,12 +54,12 @@ export default function VisibilityCard({
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span
               className="font-display tabular"
-              style={{ fontSize: "2.9rem", color: accentColor, filter: `drop-shadow(${accentGlow})` }}
+              style={{ fontSize: "2.4rem", color: accentColor, filter: `drop-shadow(${accentGlow})` }}
             >
-              {score}<span style={{ fontSize: "1.1rem", opacity: 0.6 }}>%</span>
+              {score}<span style={{ fontSize: "1rem", opacity: 0.6 }}>%</span>
             </span>
-            <span className="text-[9px] uppercase tracking-[0.12em] font-semibold mt-0.5" style={{ color: "var(--text-tertiary)" }}>
-              {score >= 76 ? "Great Visibility" : score >= 50 ? "Moderate" : "Poor Visibility"}
+            <span className="text-[8px] uppercase tracking-[0.12em] font-semibold mt-0.5" style={{ color: "var(--text-tertiary)" }}>
+              {score >= 76 ? "Great" : score >= 50 ? "Moderate" : "Poor"}
             </span>
           </div>
         </div>

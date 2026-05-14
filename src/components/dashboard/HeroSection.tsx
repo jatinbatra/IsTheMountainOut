@@ -45,13 +45,13 @@ export default function HeroSection({
   alpenglow,
 }: HeroSectionProps) {
   return (
-    <section id="section-home" className="hero-section" style={{ height: "62vh", minHeight: "500px" }}>
+    <section id="section-home" className="hero-section" style={{ height: "48vh", minHeight: "400px" }}>
       <div
         className="absolute inset-0 z-[0]"
         style={{
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: "cover",
-          backgroundPosition: "center 30%",
+          backgroundPosition: "center 40%",
         }}
       />
 
@@ -61,27 +61,27 @@ export default function HeroSection({
       <div className="hero-fog" />
 
       {/* ── Floating header ── */}
-      <div className="hero-header">
-        <div className="flex flex-col items-start gap-3">
-          <div className="hero-header-pill">
+      <div className="hero-header" style={{ padding: "12px 24px" }}>
+        <div className="flex flex-col items-start gap-2.5">
+          <div className="hero-header-pill" style={{ padding: "8px 16px" }}>
             <div className="flex items-center gap-2 flex-shrink-0">
               <div className="hero-live-dot" />
               <span className="text-[10px] text-white/50 font-mono uppercase tracking-wider whitespace-nowrap">
-                IS THE MOUNTAIN OUT?
+                LIVE
               </span>
             </div>
 
-            <div className="flex items-center gap-1.5 flex-1 justify-center">
+            <div className="flex items-center gap-1.5 flex-1 justify-center px-4 border-x border-white/5">
               <MapPin className="w-3 h-3 text-white/35 flex-shrink-0" />
-              <span className="text-[11.5px] text-white/55 tracking-wide whitespace-nowrap">
-                {viewpointName}, {viewpointSub} · {timeStr} PDT
+              <span className="text-[11px] text-white/55 tracking-wide whitespace-nowrap">
+                {viewpointName} · {timeStr}
               </span>
             </div>
 
             <div className="flex items-center gap-2 flex-shrink-0" />
           </div>
 
-          <div className="ml-1">
+          <div className="ml-0.5">
             <CountdownStrip sunrise={sunrise} sunset={sunset} alpenglow={alpenglow} />
           </div>
         </div>
