@@ -6,58 +6,56 @@
    ═══════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Page — deep twilight charcoal ── */
-  --bg-primary: #0a0c12;
-  --bg-secondary: rgba(12, 16, 28, 0.96);
-  --bg-card: rgba(18, 24, 40, 0.45);
-  --bg-card-hover: rgba(22, 30, 50, 0.55);
-  --bg-tertiary: rgba(14, 18, 30, 0.6);
+  /* ── Page — deep organic cedar ── */
+  --bg-primary: #121411;
+  --bg-secondary: #1a1c18;
+  --bg-card: rgba(35, 38, 32, 0.7);
+  --bg-card-hover: rgba(45, 48, 40, 0.8);
+  --bg-tertiary: rgba(28, 30, 25, 0.6);
 
-  /* ── Text — crisp and clean ── */
+  /* ── Text — bone white and soft sage ── */
   --text-hero: #ffffff;
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-tertiary: #64748b;
-  --text-warm: #fbbf24;
+  --text-primary: #f1f5f1;
+  --text-secondary: #a7aea1;
+  --text-tertiary: #6d7568;
+  --text-warm: #eab308;
 
-  /* ── Accents — vibrant tech-forward tones ── */
-  --accent: #2dd4bf;      /* Cyan-teal */
-  --accent-dim: rgba(45, 212, 191, 0.1);
-  --accent-glow: rgba(45, 212, 191, 0.2);
-  --accent-pink: #f472b6; /* Soft pink */
-  --accent-pink-dim: rgba(244, 114, 182, 0.1);
-  --accent-pink-glow: rgba(244, 114, 182, 0.2);
-  --accent-gold: #fbbf24;
+  /* ── Accents — PNW botanical tones ── */
+  --accent: #bef264;      /* Bright Moss */
+  --accent-dim: rgba(190, 242, 100, 0.1);
+  --accent-glow: rgba(190, 242, 100, 0.2);
+  --accent-pink: #fb7185; /* Wild Rose (rarely used) */
+  --accent-pink-dim: rgba(251, 113, 133, 0.1);
+  --accent-pink-glow: rgba(251, 113, 133, 0.2);
+  --accent-gold: #fde047;
   --accent-amber: #f59e0b;
-  --accent-blue: #38bdf8;
+  --accent-blue: #7dd3fc;
   --accent-warm: #fb923c;
 
-  /* ── Glass — colder, sharper ── */
-  --glass: rgba(15, 23, 42, 0.5);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-highlight: rgba(255, 255, 255, 0.03);
+  /* ── Editorial — strong borders, no slop ── */
+  --glass: rgba(26, 28, 24, 0.85);
+  --glass-border: rgba(190, 242, 100, 0.08);
+  --glass-highlight: rgba(255, 255, 255, 0.02);
 
   /* ── Shadows ── */
-  --shadow-card: 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
-  --shadow-deep: 0 20px 50px rgba(0,0,0,0.6);
-  --shadow-glow: 0 0 40px rgba(45, 212, 191, 0.05);
+  --shadow-card: 0 20px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+  --shadow-deep: 0 40px 80px rgba(0,0,0,0.7);
+  --shadow-glow: 0 0 50px rgba(190, 242, 100, 0.04);
 
   /* ── Radii ── */
-  --radius: 14px;
-  --radius-lg: 20px;
-  --radius-xl: 26px;
+  --radius: 8px; /* Sharper, more editorial */
+  --radius-lg: 12px;
+  --radius-xl: 16px;
   --radius-pill: 999px;
 
-  /* ── Motion ── */
-  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  /* ── Typography ── */
+  --font-display: "Times New Roman", Georgia, serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-display: var(--font-display);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
 }
 
 /* ─── Base ─── */
@@ -68,85 +66,81 @@ html {
 }
 
 body {
-  background: radial-gradient(circle at 50% -10%, #1e293b 0%, var(--bg-primary) 70%);
+  background: 
+    linear-gradient(180deg, #1a1c18 0%, #121411 100%);
   color: var(--text-primary);
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  line-height: 1.5;
-  overflow-x: hidden;
-  min-height: 100dvh;
+  line-height: 1.6;
 }
 
-/* ── Ken Burns Effect ── */
-@keyframes ken-burns {
-  0% { transform: scale(1) translate(0, 0); }
-  50% { transform: scale(1.12) translate(-1%, -1%); }
-  100% { transform: scale(1) translate(0, 0); }
-}
-
-.ken-burns {
-  animation: ken-burns 45s ease-in-out infinite;
-}
-
-/* ... keep other styles but update card background ... */
+/* ── Editorial Overrides ── */
 
 .dash-card {
-  background: linear-gradient(168deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-xl);
-  padding: 22px;
-  box-shadow: var(--shadow-card);
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(190, 242, 100, 0.06);
+  border-radius: var(--radius-lg);
+  padding: 24px;
 }
 
 .dash-card:hover {
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+  border-color: rgba(190, 242, 100, 0.15);
+  background: var(--bg-card-hover);
 }
 
-.viewpoint-glass {
-  background: linear-gradient(168deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-  border: 1px solid var(--glass-border);
-  border-radius: 26px;
-  padding: 14px 16px;
+.dash-card-header {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-tertiary);
+  border-bottom: 1px solid rgba(190, 242, 100, 0.05);
+  padding-bottom: 12px;
+}
+
+.hero-headline {
+  font-family: var(--font-display);
+  font-weight: 400; /* Editorial serif look */
+  font-style: italic;
+  letter-spacing: -0.02em;
+  line-height: 0.85;
 }
 
 .sidebar {
-  background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
-  border-right: 1px solid rgba(255, 255, 255, 0.03);
+  background: #0d0f0c;
+  border-right: 1px solid rgba(190, 242, 100, 0.03);
 }
 
 .sidebar-item.active {
   color: var(--accent);
-  background: rgba(45, 212, 191, 0.08);
-  box-shadow: 0 0 16px rgba(45, 212, 191, 0.04);
-}
-
-.hero-header-pill {
-  background: rgba(15, 23, 42, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(190, 242, 100, 0.05);
 }
 
 .weather-widget {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(18, 20, 17, 0.8);
+  border: 1px solid rgba(190, 242, 100, 0.1);
+  border-radius: var(--radius-lg);
 }
 
 .gauge-track {
-  stroke: rgba(255, 255, 255, 0.04);
+  stroke: rgba(255, 255, 255, 0.02);
 }
 
 .factor-bar {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.03);
+  height: 2px; /* Thinner, more elegant */
 }
 
-.dash-card-warm {
-  border-color: rgba(251, 191, 36, 0.15);
-  background: linear-gradient(165deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%);
+/* ── Ken Burns Effect ── */
+@keyframes ken-burns {
+  0% { transform: scale(1.05); }
+  50% { transform: scale(1.15) translate(-1%, 0.5%); }
+  100% { transform: scale(1.05); }
+}
+
+.ken-burns {
+  animation: ken-burns 60s ease-in-out infinite;
 }
 
 /* ── Global film grain ── */

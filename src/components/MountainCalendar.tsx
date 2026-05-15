@@ -37,7 +37,18 @@ export default function MountainCalendar({ weeklyForecast }: Props) {
   const forecastMap = new Map(
     (weeklyForecast ?? []).map((d) => [d.date, d])
   );
-  const merged = days.map((d) => {
+  
+  // If KV data is empty, use the current week from forecast to ensure UI is never empty
+  let displayDays = days.length > 0 ? days : [];
+  if (displayDays.length === 0 && weeklyForecast && weeklyForecast.length > 0) {
+    displayDays = weeklyForecast.map(f => ({
+      date: f.date,
+      score: f.score,
+      isVisible: f.isVisible
+    }));
+  }
+
+  const merged = displayDays.map((d) => {
     if (d.score >= 0) return d;
     const fc = forecastMap.get(d.date);
     if (fc) return { date: d.date, score: fc.score, isVisible: fc.isVisible };
