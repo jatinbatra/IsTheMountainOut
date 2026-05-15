@@ -6,79 +6,50 @@
    ═══════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Page — warm walnut, not pitch black ── */
-  --bg-primary: #151210;
-  --bg-secondary: rgba(22, 19, 15, 0.96);
-  --bg-card: rgba(28, 24, 18, 0.65);
-  --bg-card-hover: rgba(36, 30, 22, 0.72);
-  --bg-tertiary: rgba(26, 22, 16, 0.6);
+  /* ── Page — deep twilight charcoal ── */
+  --bg-primary: #0a0c12;
+  --bg-secondary: rgba(12, 16, 28, 0.96);
+  --bg-card: rgba(18, 24, 40, 0.45);
+  --bg-card-hover: rgba(22, 30, 50, 0.55);
+  --bg-tertiary: rgba(14, 18, 30, 0.6);
 
-  /* ── Text — bright cream, readable ── */
-  --text-hero: #f5f0e6;
-  --text-primary: #e4ddd0;
-  --text-secondary: #b0a490;
-  --text-tertiary: #7a6e5c;
-  --text-warm: #d4a373;
+  /* ── Text — crisp and clean ── */
+  --text-hero: #ffffff;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
+  --text-warm: #fbbf24;
 
-  /* ── Accents — natural PNW tones, no neon ── */
-  --accent: #5a9e6a;
-  --accent-dim: rgba(90, 158, 106, 0.12);
-  --accent-glow: rgba(90, 158, 106, 0.22);
-  --accent-pink: #c47d8a;
-  --accent-pink-dim: rgba(196, 125, 138, 0.12);
-  --accent-pink-glow: rgba(196, 125, 138, 0.22);
-  --accent-gold: #d4a373;
-  --accent-amber: #e8a849;
-  --accent-blue: #7baed4;
-  --accent-warm: #c8956a;
+  /* ── Accents — vibrant tech-forward tones ── */
+  --accent: #2dd4bf;      /* Cyan-teal */
+  --accent-dim: rgba(45, 212, 191, 0.1);
+  --accent-glow: rgba(45, 212, 191, 0.2);
+  --accent-pink: #f472b6; /* Soft pink */
+  --accent-pink-dim: rgba(244, 114, 182, 0.1);
+  --accent-pink-glow: rgba(244, 114, 182, 0.2);
+  --accent-gold: #fbbf24;
+  --accent-amber: #f59e0b;
+  --accent-blue: #38bdf8;
+  --accent-warm: #fb923c;
 
-  /* ── Glass — warm, visible ── */
-  --glass: rgba(26, 22, 16, 0.62);
-  --glass-border: rgba(180, 150, 100, 0.12);
-  --glass-highlight: rgba(212, 180, 120, 0.04);
+  /* ── Glass — colder, sharper ── */
+  --glass: rgba(15, 23, 42, 0.5);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-highlight: rgba(255, 255, 255, 0.03);
 
   /* ── Shadows ── */
-  --shadow-card: 0 12px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(212,180,120,0.04);
-  --shadow-deep: 0 24px 64px rgba(0,0,0,0.55);
-  --shadow-glow: 0 0 48px rgba(212, 163, 115, 0.06);
-  --shadow-glow-green: 0 0 48px rgba(90, 158, 106, 0.08);
-  --shadow-glow-pink: 0 0 48px rgba(196, 125, 138, 0.08);
+  --shadow-card: 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
+  --shadow-deep: 0 20px 50px rgba(0,0,0,0.6);
+  --shadow-glow: 0 0 40px rgba(45, 212, 191, 0.05);
 
   /* ── Radii ── */
-  --radius: 16px;
-  --radius-lg: 22px;
-  --radius-xl: 28px;
+  --radius: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 26px;
   --radius-pill: 999px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
 
   /* ── Motion ── */
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
-
-  /* ── Status ── */
-  --status-good: #5a9e6a;
-  --status-warning: #d4a373;
-  --status-critical: #c47d8a;
-
-  /* ── Seasonal runtime overrides ── */
-  --season-accent: var(--accent);
-  --season-accent-secondary: var(--accent-warm);
-  --season-mountain-base: #4a4238;
-  --season-mountain-snow: #d4ccc0;
-  --season-sky: #5a7a9a;
-  --season-water: #4a7090;
-
-  /* ── Compat aliases ── */
-  --background: var(--bg-primary);
-  --foreground: var(--text-primary);
-  --hud-green: var(--accent);
-  --hud-amber: var(--accent-gold);
-  --border-light: rgba(180, 150, 100, 0.1);
-  --border-medium: rgba(180, 150, 100, 0.14);
-  --border-hover: rgba(212, 163, 115, 0.18);
-  --border: rgba(180, 150, 100, 0.1);
-  --shadow-sm: var(--shadow-card);
-  --shadow-md: var(--shadow-deep);
 }
 
 @theme inline {
@@ -97,7 +68,7 @@ html {
 }
 
 body {
-  background: radial-gradient(ellipse 110% 55% at 50% -8%, #221a10 0%, var(--bg-primary) 55%);
+  background: radial-gradient(circle at 50% -10%, #1e293b 0%, var(--bg-primary) 70%);
   color: var(--text-primary);
   font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -105,6 +76,77 @@ body {
   line-height: 1.5;
   overflow-x: hidden;
   min-height: 100dvh;
+}
+
+/* ── Ken Burns Effect ── */
+@keyframes ken-burns {
+  0% { transform: scale(1) translate(0, 0); }
+  50% { transform: scale(1.12) translate(-1%, -1%); }
+  100% { transform: scale(1) translate(0, 0); }
+}
+
+.ken-burns {
+  animation: ken-burns 45s ease-in-out infinite;
+}
+
+/* ... keep other styles but update card background ... */
+
+.dash-card {
+  background: linear-gradient(168deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: 22px;
+  box-shadow: var(--shadow-card);
+}
+
+.dash-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.viewpoint-glass {
+  background: linear-gradient(168deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid var(--glass-border);
+  border-radius: 26px;
+  padding: 14px 16px;
+}
+
+.sidebar {
+  background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.sidebar-item.active {
+  color: var(--accent);
+  background: rgba(45, 212, 191, 0.08);
+  box-shadow: 0 0 16px rgba(45, 212, 191, 0.04);
+}
+
+.hero-header-pill {
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.weather-widget {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.gauge-track {
+  stroke: rgba(255, 255, 255, 0.04);
+}
+
+.factor-bar {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dash-card-warm {
+  border-color: rgba(251, 191, 36, 0.15);
+  background: linear-gradient(165deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%);
 }
 
 /* ── Global film grain ── */

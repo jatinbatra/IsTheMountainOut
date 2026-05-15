@@ -47,7 +47,7 @@ export default function HeroSection({
   return (
     <section id="section-home" className="hero-section" style={{ height: "48vh", minHeight: "400px" }}>
       <div
-        className="absolute inset-0 z-[0]"
+        className="absolute inset-0 z-[0] ken-burns"
         style={{
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: "cover",
@@ -61,19 +61,19 @@ export default function HeroSection({
       <div className="hero-fog" />
 
       {/* ── Floating header ── */}
-      <div className="hero-header" style={{ padding: "12px 24px" }}>
-        <div className="flex flex-col items-start gap-2.5">
-          <div className="hero-header-pill" style={{ padding: "8px 16px" }}>
-            <div className="flex items-center gap-2 flex-shrink-0">
+      <div className="hero-header" style={{ padding: "16px 32px" }}>
+        <div className="flex flex-col items-start gap-3">
+          <div className="hero-header-pill" style={{ padding: "10px 20px" }}>
+            <div className="flex items-center gap-2.5 flex-shrink-0">
               <div className="hero-live-dot" />
-              <span className="text-[10px] text-white/50 font-mono uppercase tracking-wider whitespace-nowrap">
-                LIVE
+              <span className="text-[10px] text-white/60 font-mono uppercase tracking-widest whitespace-nowrap">
+                LIVE STATUS
               </span>
             </div>
 
-            <div className="flex items-center gap-1.5 flex-1 justify-center px-4 border-x border-white/5">
-              <MapPin className="w-3 h-3 text-white/35 flex-shrink-0" />
-              <span className="text-[11px] text-white/55 tracking-wide whitespace-nowrap">
+            <div className="flex items-center gap-2 flex-1 justify-center px-6 border-x border-white/10">
+              <MapPin className="w-3.5 h-3.5 text-[color:var(--accent)] flex-shrink-0" />
+              <span className="text-[11.5px] text-white/80 font-medium tracking-wide whitespace-nowrap">
                 {viewpointName} · {timeStr}
               </span>
             </div>
@@ -81,7 +81,7 @@ export default function HeroSection({
             <div className="flex items-center gap-2 flex-shrink-0" />
           </div>
 
-          <div className="ml-0.5">
+          <div className="ml-1">
             <CountdownStrip sunrise={sunrise} sunset={sunset} alpenglow={alpenglow} />
           </div>
         </div>

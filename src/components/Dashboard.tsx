@@ -160,7 +160,7 @@ const fadeUp = {
 };
 
 const staggerParent = {
-  animate: { transition: { staggerChildren: 0.09 } },
+  animate: { transition: { staggerChildren: 0.06 } },
 };
 
 export default function Dashboard({ initialData }: Props) {
@@ -260,7 +260,7 @@ export default function Dashboard({ initialData }: Props) {
   ];
 
   const accentColor = isVisible ? "var(--accent)" : "var(--accent-pink)";
-  const accentGlow  = isVisible ? "0 0 14px rgba(90,158,106,0.3)" : "0 0 14px rgba(196,125,138,0.3)";
+  const accentGlow  = isVisible ? "0 0 16px rgba(45, 212, 191, 0.25)" : "0 0 16px rgba(244, 114, 182, 0.25)";
 
   const weatherLabel = data.weather.cloudLow < 20 ? "Sunny" : data.weather.cloudLow < 50 ? "Partly Cloudy" : data.weather.cloudLow < 80 ? "Mostly Cloudy" : "Overcast";
 
@@ -355,9 +355,9 @@ export default function Dashboard({ initialData }: Props) {
               <div className="flex items-start gap-4">
                 <div className="fun-fact-badge">
                   <svg viewBox="0 0 48 48" className="w-10 h-10 flex-shrink-0">
-                    <circle cx="24" cy="24" r="22" fill="none" stroke="rgba(212,163,115,0.25)" strokeWidth="1.5" />
-                    <polygon points="24,8 16,28 20,28 24,18 28,28 32,28" fill="#d4a373" opacity="0.6" />
-                    <text x="24" y="38" textAnchor="middle" fill="#d4a373" fontSize="5" opacity="0.6" fontWeight="700">RAINIER</text>
+                    <circle cx="24" cy="24" r="22" fill="none" stroke="rgba(251, 191, 36, 0.2)" strokeWidth="1.5" />
+                    <polygon points="24,8 16,28 20,28 24,18 28,28 32,28" fill="var(--accent-gold)" opacity="0.6" />
+                    <text x="24" y="38" textAnchor="middle" fill="var(--accent-gold)" fontSize="5" opacity="0.6" fontWeight="700">RAINIER</text>
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
@@ -391,14 +391,14 @@ export default function Dashboard({ initialData }: Props) {
               <div className="dash-card-header">Elevation</div>
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1">
-                  <p className="text-[12px] font-semibold" style={{ color: "var(--text-primary)" }}>275 ft</p>
+                  <p className="text-[12px] font-semibold" style={{ color: "var(--text-primary)" }}>You&apos;re at 275 ft</p>
                   <p className="text-[9px] mt-0.5 leading-relaxed" style={{ color: "var(--text-tertiary)" }}>
                     Every 1k ft helps.
                   </p>
                 </div>
                 <svg viewBox="0 0 56 60" className="w-10 h-10 flex-shrink-0" aria-hidden="true">
-                  <path d="M8 56 L24 22 L32 6 L40 22 L56 56 Z" fill="var(--season-mountain-base)" opacity="0.3" />
-                  <path d="M24 22 L32 6 L40 22 L36 14 L28 14 Z" fill="var(--season-mountain-snow)" opacity="0.4" />
+                  <path d="M8 56 L24 22 L32 6 L40 22 L56 56 Z" fill="var(--accent-gold)" opacity="0.15" />
+                  <path d="M24 22 L32 6 L40 22 L36 14 L28 14 Z" fill="var(--accent-gold)" opacity="0.3" />
                 </svg>
               </div>
             </motion.div>

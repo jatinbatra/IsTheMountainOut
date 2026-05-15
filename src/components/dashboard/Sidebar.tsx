@@ -22,11 +22,11 @@ export default function Sidebar({ activeNav, onNavClick }: SidebarProps) {
     <nav className="sidebar" aria-label="Main navigation">
       <div className="sidebar-logo">
         <svg viewBox="0 0 36 36" className="w-8 h-8" aria-hidden="true">
-          <polygon points="18,4 6,30 12,30 18,17 24,30 30,30" fill="#d4a373" opacity="0.75" />
+          <polygon points="18,4 6,30 12,30 18,17 24,30 30,30" fill="var(--accent-gold)" opacity="0.75" />
           <polygon points="14,19 18,10 22,19 20,15 16,15" fill="white" opacity="0.4" />
-          <line x1="4" y1="31" x2="32" y2="31" stroke="#d4a373" strokeWidth="0.8" opacity="0.25" />
-          <polygon points="8,31 10,26 12,31" fill="#5a9e6a" opacity="0.18" />
-          <polygon points="26,31 28,27 30,31" fill="#5a9e6a" opacity="0.18" />
+          <line x1="4" y1="31" x2="32" y2="31" stroke="var(--accent-gold)" strokeWidth="0.8" opacity="0.25" />
+          <polygon points="8,31 10,26 12,31" fill="var(--accent)" opacity="0.18" />
+          <polygon points="26,31 28,27 30,31" fill="var(--accent)" opacity="0.18" />
         </svg>
       </div>
 
