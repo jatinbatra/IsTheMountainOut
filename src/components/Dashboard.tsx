@@ -132,14 +132,14 @@ interface Props {
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 const VIEWPOINTS = [
-  { id: "kerry-park",      name: "Kerry Park",      sub: "Queen Anne",        image: "https://images.unsplash.com/photo-1541339907198-e0875638114a?auto=format&fit=crop&w=1600&q=80" },
-  { id: "space-needle",    name: "Space Needle",    sub: "Downtown",          image: "https://images.unsplash.com/photo-1502175353174-a7a70e73b362?auto=format&fit=crop&w=1600&q=80" },
-  { id: "uw-campus",       name: "UW Campus",       sub: "University District", image: "https://images.unsplash.com/photo-1621213032540-02552834f3b7?auto=format&fit=crop&w=1600&q=80" },
-  { id: "i90-bridge",      name: "I-90 Bridge",     sub: "Lake Washington",   image: "https://images.unsplash.com/photo-1498429089284-41f8cf3ffd39?auto=format&fit=crop&w=1600&q=80" },
-  { id: "sculpture-park",  name: "Sculpture Park",  sub: "Waterfront",        image: "https://images.unsplash.com/photo-1518330756237-7a87d656091e?auto=format&fit=crop&w=1600&q=80" },
-  { id: "harbor-view",     name: "Harbor View",     sub: "Port of Seattle",   image: "https://images.unsplash.com/photo-1466388480397-6a4a4086d4e2?auto=format&fit=crop&w=1600&q=80" },
-  { id: "alki-beach",      name: "Alki Beach",      sub: "West Seattle",      image: "https://images.unsplash.com/photo-1552554529-679901777d54?auto=format&fit=crop&w=1600&q=80" },
-  { id: "sodo",            name: "SODO",            sub: "South Seattle",     image: "https://images.unsplash.com/photo-1502175353174-a7a70e73b362?auto=format&fit=crop&w=1600&q=80" },
+  { id: "kerry-park",      name: "Kerry Park",      sub: "Queen Anne",        image: "https://images.unsplash.com/photo-1502175353174-a7a70e73b362?auto=format&fit=crop&w=1600&q=80" },
+  { id: "space-needle",    name: "Space Needle",    sub: "Downtown",          image: "https://images.unsplash.com/photo-1466388480397-6a4a4086d4e2?auto=format&fit=crop&w=1600&q=80" },
+  { id: "uw-campus",       name: "UW Campus",       sub: "University District", image: "https://images.unsplash.com/photo-1541339907198-e0875638114a?auto=format&fit=crop&w=1600&q=80" },
+  { id: "i90-bridge",      name: "I-90 Bridge",     sub: "Lake Washington",   image: "https://images.unsplash.com/photo-1552554529-679901777d54?auto=format&fit=crop&w=1600&q=80" },
+  { id: "sculpture-park",  name: "Sculpture Park",  sub: "Waterfront",        image: "https://images.unsplash.com/photo-1498429089284-41f8cf3ffd39?auto=format&fit=crop&w=1600&q=80" },
+  { id: "harbor-view",     name: "Harbor View",     sub: "Port of Seattle",   image: "https://images.unsplash.com/photo-1518330756237-7a87d656091e?auto=format&fit=crop&w=1600&q=80" },
+  { id: "alki-beach",      name: "Alki Beach",      sub: "West Seattle",      image: "https://images.unsplash.com/photo-1621213032540-02552834f3b7?auto=format&fit=crop&w=1600&q=80" },
+  { id: "sodo",            name: "SODO",            sub: "South Seattle",     image: "https://images.unsplash.com/photo-1540316327310-85f524c6e3b0?auto=format&fit=crop&w=1600&q=80" },
 ];
 
 const FUN_FACTS = [
@@ -259,8 +259,8 @@ export default function Dashboard({ initialData }: Props) {
     { label: "Lighting",           desc: isNight ? "Night — reduced visibility" : "Golden hour boost", value: lightScore, status: lightScore >= 70 ? "EXCELLENT" : lightScore >= 40 ? "FAIR" : "POOR" },
   ];
 
-  const accentColor = isVisible ? "var(--accent)" : "var(--accent-pink)";
-  const accentGlow  = isVisible ? "0 0 16px rgba(45, 212, 191, 0.25)" : "0 0 16px rgba(244, 114, 182, 0.25)";
+  const accentColor = isVisible ? "var(--accent)" : "var(--accent-warm)";
+  const accentGlow  = isVisible ? "0 0 28px rgba(190, 242, 100, 0.45)" : "0 0 28px rgba(251, 146, 60, 0.45)";
 
   const weatherLabel = data.weather.cloudLow < 20 ? "Sunny" : data.weather.cloudLow < 50 ? "Partly Cloudy" : data.weather.cloudLow < 80 ? "Mostly Cloudy" : "Overcast";
 

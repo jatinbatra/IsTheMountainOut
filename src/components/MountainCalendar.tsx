@@ -34,6 +34,13 @@ export default function MountainCalendar({ weeklyForecast }: Props) {
 
   if (loading) return null;
 
+  const todayStr = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Los_Angeles",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+
   const forecastMap = new Map(
     (weeklyForecast ?? []).map((d) => [d.date, d])
   );
@@ -49,33 +56,31 @@ export default function MountainCalendar({ weeklyForecast }: Props) {
   }
 
   const merged = displayDays.map((d) => {
+    // If we have real historical data (score >= 0), use it.
+    // Otherwise, check if we have forecast data for this date.
     if (d.score >= 0) return d;
     const fc = forecastMap.get(d.date);
     if (fc) return { date: d.date, score: fc.score, isVisible: fc.isVisible };
     return d;
   });
-  (weeklyForecast ?? []).forEach((fc) => {
-    if (!merged.find((d) => d.date === fc.date)) {
-      merged.push({ date: fc.date, score: fc.score, isVisible: fc.isVisible });
+
+  // Ensure current day is always updated with forecast if no historical record exists
+  const todayEntry = merged.find(d => d.date === todayStr);
+  if ((!todayEntry || todayEntry.score < 0) && forecastMap.has(todayStr)) {
+    const fc = forecastMap.get(todayStr)!;
+    if (todayEntry) {
+      todayEntry.score = fc.score;
+      todayEntry.isVisible = fc.isVisible;
+    } else {
+      merged.push({ date: todayStr, score: fc.score, isVisible: fc.isVisible });
     }
-  });
+  }
+
   merged.sort((a, b) => a.date.localeCompare(b.date));
 
   const validDays = merged.filter((d) => d.score >= 0);
   const mountainDays = validDays.filter((d) => d.isVisible).length;
 
-  if (validDays.length === 0) {
-    return (
-      <div className="text-center py-3">
-        <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>Mountain Calendar</p>
-        <p className="text-xs mt-1" style={{ color: "var(--text-tertiary)" }}>
-          No data yet. Calendar populates as conditions are tracked.
-        </p>
-      </div>
-    );
-  }
-
-  const todayStr = new Date().toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
   const firstDate = new Date(merged[0].date + "T12:00:00");
   const startDow = firstDate.getDay();
 

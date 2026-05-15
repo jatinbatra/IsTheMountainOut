@@ -10,13 +10,25 @@ export interface CalendarDay {
 type CalendarData = Record<string, { score: number; isVisible: boolean }>;
 
 function todayPT(): string {
-  return new Date().toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
+  // Use Intl to get consistent YYYY-MM-DD in PT
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Los_Angeles",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
 }
 
 function addDaysPT(base: string, offset: number): string {
-  const d = new Date(`${base}T12:00:00-07:00`);
-  d.setDate(d.getDate() + offset);
-  return d.toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
+  const [y, m, d] = base.split("-").map(Number);
+  const date = new Date(y, m - 1, d, 12, 0, 0); // Noon to avoid DST issues
+  date.setDate(date.getDate() + offset);
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Los_Angeles",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
 }
 
 export async function GET() {
