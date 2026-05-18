@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Eye, EyeOff, Users } from "lucide-react";
 
 interface Props {
-  currentScore: number;
   isVisible: boolean;
 }
 
@@ -45,21 +44,36 @@ function generateMockCommunityVotes(isVisible: boolean): { yes: number; no: numb
   return { yes, no };
 }
 
-export default function CommunityVote({ currentScore, isVisible }: Props) {
-  const [votes, setVotes] = useState<VoteState>({ yesVotes: 0, noVotes: 0, userVote: null, lastVoteTime: 0 });
-  const [canVote, setCanVote] = useState(true);
+export default function CommunityVote({ isVisible }: Props) {
+  const [votes, setVotes] = useState<VoteState>(() => {
+    const stored = getStoredVotes();
+    const mock = generateMockCommunityVotes(isVisible);
+    return {
+      ...stored,
+      yesVotes: stored.yesVotes + mock.yes,
+      noVotes: stored.noVotes + mock.no,
+    };
+  });
+  const [canVote, setCanVote] = useState(() => {
+    const stored = getStoredVotes();
+    return !stored.userVote || Date.now() - stored.lastVoteTime > VOTE_COOLDOWN;
+  });
   const [justVoted, setJustVoted] = useState(false);
 
-  useEffect(() => {
+  // Sync state with isVisible prop (React 19 pattern: adjusting state during render)
+  const [prevIsVisible, setPrevIsVisible] = useState(isVisible);
+  if (isVisible !== prevIsVisible) {
+    setPrevIsVisible(isVisible);
     const stored = getStoredVotes();
     const mock = generateMockCommunityVotes(isVisible);
     setVotes({
       ...stored,
       yesVotes: stored.yesVotes + mock.yes,
       noVotes: stored.noVotes + mock.no,
+      userVote: votes.userVote,
+      lastVoteTime: votes.lastVoteTime
     });
-    setCanVote(!stored.userVote || Date.now() - stored.lastVoteTime > VOTE_COOLDOWN);
-  }, [isVisible]);
+  }
 
   const handleVote = (vote: "yes" | "no") => {
     if (!canVote) return;

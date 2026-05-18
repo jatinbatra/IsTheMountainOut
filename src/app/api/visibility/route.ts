@@ -2,11 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { fetchWeatherData } from "@/lib/weather";
 import { calculateVisibility } from "@/lib/visibility";
 
-interface VisibilityQuery {
-  lat?: number;
-  lon?: number;
-}
-
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;

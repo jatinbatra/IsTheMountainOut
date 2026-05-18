@@ -259,6 +259,63 @@ export function calculateVisibility(weather: WeatherData): VisibilityResult {
   };
 }
 
+/**
+ * Calculate visibility considering both the observer's location and the mountain's location.
+ * This is the "Line of Sight" accuracy improvement.
+ */
+export function calculateLineOfSightVisibility(
+  localWeather: WeatherData,
+  mountainWeather: WeatherData
+): VisibilityResult {
+  // Use the worst cloud cover from either location
+  const combinedCloudLow = Math.max(localWeather.currentCloudLow, mountainWeather.currentCloudLow);
+  const combinedCloudMid = Math.max(localWeather.currentCloudMid, mountainWeather.currentCloudMid);
+  const combinedCloudHigh = Math.max(localWeather.currentCloudHigh, mountainWeather.currentCloudHigh);
+  
+  // Use the worst visibility and PM2.5
+  const combinedVisibility = Math.min(localWeather.visibility, mountainWeather.visibility);
+  const combinedPm25 = (localWeather.pm25 !== undefined && mountainWeather.pm25 !== undefined)
+    ? Math.max(localWeather.pm25, mountainWeather.pm25)
+    : (localWeather.pm25 ?? mountainWeather.pm25);
+
+  // Use the "worst" weather code (higher generally means worse conditions in WMO)
+  const combinedWeatherCode = Math.max(localWeather.weatherCode, mountainWeather.weatherCode);
+
+  const { score, flags } = scoreRawWeather(
+    combinedCloudLow,
+    combinedCloudMid,
+    combinedCloudHigh,
+    combinedVisibility,
+    combinedWeatherCode,
+    combinedPm25
+  );
+
+  const reasons = flags.map((f) => FLAG_LABELS[f]);
+  const isVisible = score >= 50;
+
+  // For duration, we'll stick to the local forecast for simplicity, 
+  // as predicting combined line-of-sight for 24h is expensive API-wise.
+  const { durationHours, nextChangeHour } = estimateDuration(
+    localWeather.hourlyForecast,
+    isVisible
+  );
+  const durationMessage = buildDurationMessage(isVisible, durationHours, nextChangeHour);
+
+  const confidence =
+    score >= 80 ? "high" : score >= 60 ? "moderate" : score >= 40 ? "low" : "very low";
+
+  return {
+    isVisible,
+    score,
+    confidence,
+    flags,
+    reasons,
+    durationHours,
+    durationMessage,
+    nextChangeHour,
+  };
+}
+
 // ── Hourly / Daily Scoring (reuses core logic) ─────────────────────
 function scoreHour(h: HourlyForecast): number {
   return scoreRawWeather(

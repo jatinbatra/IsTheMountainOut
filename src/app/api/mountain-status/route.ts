@@ -1,26 +1,46 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { fetchWeatherData } from "@/lib/weather";
-import { calculateVisibility, scoreHourForTimeline, scoreDailyForecast } from "@/lib/visibility";
-import { rankViewpoints } from "@/lib/viewpoints";
+import { 
+  calculateVisibility, 
+  calculateLineOfSightVisibility,
+  scoreHourForTimeline, 
+  scoreDailyForecast 
+} from "@/lib/visibility";
+import { rankViewpoints, VIEWPOINTS } from "@/lib/viewpoints";
 import { getSkyTheme } from "@/lib/sky";
 import { predictAlpenglow } from "@/lib/alpenglow";
 
-// Cache the result for 15 minutes
-let cachedResult: { data: ReturnType<typeof buildResponse>; timestamp: number } | null =
-  null;
+// Cache for standard (midpoint) weather
+let cachedMidpointResult: { data: ReturnType<typeof buildResponse>; timestamp: number } | null = null;
 const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
 
+const RAINIER_LAT = 46.8523;
+const RAINIER_LON = -121.7603;
+
 function buildResponse(
-  weather: Awaited<ReturnType<typeof fetchWeatherData>>
+  weather: Awaited<ReturnType<typeof fetchWeatherData>>,
+  visibilityOverride?: ReturnType<typeof calculateVisibility>
 ) {
-  const visibility = calculateVisibility(weather);
+  const visibility = visibilityOverride ?? calculateVisibility(weather);
   const viewpoints = rankViewpoints(
     visibility.score,
     visibility.isVisible,
     weather.visibility / 1609.34,
     weather.pm25
   );
-  const skyTheme = getSkyTheme(weather);
+
+  // Alpenglow prediction
+  const alpenglowData = weather.sunset
+    ? predictAlpenglow(
+        weather.currentCloudLow,
+        weather.currentCloudMid,
+        weather.currentCloudHigh,
+        weather.sunset,
+        visibility.score
+      )
+    : null;
+
+  const skyTheme = getSkyTheme(weather, alpenglowData?.probability ?? 0);
 
   // Build hourly timeline data for the forecast scrubber
   const hourlyTimeline = weather.hourlyForecast.map((h) => {
@@ -58,17 +78,6 @@ function buildResponse(
     };
   });
 
-  // Alpenglow prediction
-  const alpenglowData = weather.sunset
-    ? predictAlpenglow(
-        weather.currentCloudLow,
-        weather.currentCloudMid,
-        weather.currentCloudHigh,
-        weather.sunset,
-        visibility.score
-      )
-    : null;
-
   return {
     visibility,
     weather: {
@@ -101,18 +110,39 @@ function buildResponse(
   };
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const searchParams = request.nextUrl.searchParams;
+    const hood = searchParams.get("hood");
     const now = Date.now();
 
-    if (cachedResult && now - cachedResult.timestamp < CACHE_TTL) {
-      return NextResponse.json(cachedResult.data);
+    // Standard midpoint request (can be cached)
+    if (!hood) {
+      if (cachedMidpointResult && now - cachedMidpointResult.timestamp < CACHE_TTL) {
+        return NextResponse.json(cachedMidpointResult.data);
+      }
+      const weather = await fetchWeatherData();
+      const data = buildResponse(weather);
+      cachedMidpointResult = { data, timestamp: now };
+      return NextResponse.json(data);
     }
 
-    const weather = await fetchWeatherData();
-    const data = buildResponse(weather);
+    // Hyper-local line-of-sight request
+    const viewpoint = VIEWPOINTS.find(v => v.id === hood);
+    if (!viewpoint) {
+      // Fallback to standard if hood not found
+      const weather = await fetchWeatherData();
+      return NextResponse.json(buildResponse(weather));
+    }
 
-    cachedResult = { data, timestamp: now };
+    // Fetch weather at neighborhood AND Rainier
+    const [localWeather, mountainWeather] = await Promise.all([
+      fetchWeatherData({ lat: viewpoint.lat, lon: viewpoint.lon }),
+      fetchWeatherData({ lat: RAINIER_LAT, lon: RAINIER_LON })
+    ]);
+
+    const visibility = calculateLineOfSightVisibility(localWeather, mountainWeather);
+    const data = buildResponse(localWeather, visibility);
 
     return NextResponse.json(data);
   } catch (error) {

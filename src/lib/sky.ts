@@ -18,10 +18,27 @@ export interface SkyTheme {
  * Determine the sky visual theme based on real weather data.
  * Creates gradients and colors that simulate current conditions.
  */
-export function getSkyTheme(weather: WeatherData): SkyTheme {
+export function getSkyTheme(weather: WeatherData, alpenglowProb: number = 0): SkyTheme {
   const now = new Date();
   const hour = now.getHours();
   const isDay = weather.isDay;
+
+  // Alpenglow theme (special override during sunset)
+  if (alpenglowProb >= 50 && (hour >= 16 && hour <= 21)) {
+    return {
+      skyGradient: "linear-gradient(180deg, #4b1d3f 0%, #c35b5a 30%, #f3a683 60%, #f7d794 100%)",
+      mountainFill: "#2d132c",
+      snowFill: "#ff9ff3",
+      cloudOpacity: 0.3,
+      sunMoonColor: "#f3a683",
+      showSun: false,
+      showMoon: false,
+      showStars: false,
+      glowColor: "rgba(243, 166, 131, 0.4)",
+      fogOpacity: 0,
+      label: "Alpenglow Watch",
+    };
+  }
 
   // Parse sunrise/sunset times
   const sunriseHour = weather.sunrise

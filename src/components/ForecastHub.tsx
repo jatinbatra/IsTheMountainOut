@@ -11,18 +11,12 @@ type Tab = (typeof TABS)[number];
 
 interface Props {
   hourlyTimeline: { time: string; score: number; isVisible: boolean; cloudLow: number; cloudMid: number; cloudHigh: number; temperature: number; humidity: number; visibility: number; weatherCode: number }[];
-  currentScore: number;
-  isVisible: boolean;
   weeklyForecast?: WeeklyForecastDay[];
-  sunset?: string;
 }
 
 export default function ForecastHub({
   hourlyTimeline,
-  currentScore,
-  isVisible,
   weeklyForecast,
-  sunset,
 }: Props) {
   const [tab, setTab] = useState<Tab>("24h");
 
@@ -54,12 +48,10 @@ export default function ForecastHub({
         {tab === "24h" && hourlyTimeline?.length > 0 && (
           <ForecastTimeline
             hourlyTimeline={hourlyTimeline}
-            currentScore={currentScore}
           />
         )}
         {tab === "7-Day" && (
           <VisibilityHistory
-            isVisible={isVisible}
             weeklyForecast={weeklyForecast}
           />
         )}

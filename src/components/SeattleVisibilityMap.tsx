@@ -110,40 +110,37 @@ export default function SeattleVisibilityMap({ scores, labels, onSelectNeighborh
   const scoreMap = new Map(scores.map((s) => [s.id, s.score]));
 
   return (
-    <div className="seattle-map-svg">
+    <div className="seattle-map-svg group">
       <svg viewBox="0 0 320 290" className="w-full">
         <defs>
-          <filter id="map-glow">
+          <filter id="map-glow" x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="3" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
         </defs>
 
         {/* Background */}
-        <rect width="320" height="290" fill="#1e1b16" rx="12" />
+        <rect width="320" height="290" fill="rgba(15,23,42,0.4)" rx="12" />
 
         {/* Water bodies */}
         <path
           d="M0,0 L28,0 L30,40 Q35,90 25,140 Q18,190 28,250 L20,290 L0,290 Z"
-          fill="#1a2530" opacity="0.7"
+          fill="#1e293b" opacity="0.8"
         />
         {/* Lake Union */}
-        <ellipse cx="170" cy="80" rx="18" ry="12" fill="#1a2530" opacity="0.6" />
+        <ellipse cx="170" cy="80" rx="18" ry="12" fill="#1e293b" opacity="0.7" />
         {/* Lake Washington */}
         <path
           d="M280,10 L320,10 L320,280 L280,280 Q275,200 285,140 Q290,80 280,10 Z"
-          fill="#1a2530" opacity="0.6"
+          fill="#1e293b" opacity="0.7"
         />
 
         {/* Subtle grid */}
         {[0, 1, 2, 3, 4, 5, 6].map((i) => (
-          <line key={`h${i}`} x1="0" y1={i * 42 + 15} x2="320" y2={i * 42 + 15} stroke="rgba(180,150,100,0.025)" strokeWidth="0.5" />
+          <line key={`h${i}`} x1="0" y1={i * 42 + 15} x2="320" y2={i * 42 + 15} stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" />
         ))}
         {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
-          <line key={`v${i}`} x1={i * 42 + 20} y1="0" x2={i * 42 + 20} y2="290" stroke="rgba(180,150,100,0.025)" strokeWidth="0.5" />
+          <line key={`v${i}`} x1={i * 42 + 20} y1="0" x2={i * 42 + 20} y2="290" stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" />
         ))}
 
         {/* Neighborhood polygons */}
@@ -156,41 +153,30 @@ export default function SeattleVisibilityMap({ scores, labels, onSelectNeighborh
           return (
             <g
               key={hood.id}
-              className="map-region"
+              className="map-region transition-all duration-300"
               onMouseEnter={() => setHovered(hood.id)}
               onMouseLeave={() => setHovered(null)}
               onClick={() => onSelectNeighborhood?.(hood.id)}
+              style={{ filter: isHovered ? "url(#map-glow)" : "none" }}
             >
               <path
                 d={hood.path}
                 fill={color}
-                fillOpacity={isHovered ? 0.55 : 0.3}
+                fillOpacity={isHovered ? 0.6 : 0.25}
                 stroke={color}
-                strokeWidth={isHovered ? 1.8 : 1}
-                strokeOpacity={isHovered ? 0.9 : 0.5}
-                strokeLinejoin="round"
+                strokeWidth={isHovered ? 2 : 1}
+                strokeOpacity={isHovered ? 1 : 0.4}
+                className="transition-all duration-300"
               />
               <text
                 x={hood.labelX}
-                y={hood.labelY - 4}
+                y={hood.labelY}
                 textAnchor="middle"
-                className="map-label"
-                fill={isHovered ? "#f5f0e6" : "rgba(228,221,208,0.5)"}
-                fontSize="6"
-                fontWeight="600"
-                letterSpacing="0.04em"
-              >
-                {name.toUpperCase()}
-              </text>
-              <text
-                x={hood.labelX}
-                y={hood.labelY + 7}
-                textAnchor="middle"
-                className="map-label"
-                fill={isHovered ? "#f5f0e6" : color}
-                fontSize={isHovered ? "11" : "9"}
+                className="map-label transition-all duration-300"
+                fill={isHovered ? "#ffffff" : "rgba(148,163,184,0.6)"}
+                fontSize={isHovered ? "10" : "7"}
                 fontWeight="700"
-                opacity={isHovered ? 1 : 0.85}
+                dominantBaseline="middle"
               >
                 {s}%
               </text>
@@ -199,19 +185,16 @@ export default function SeattleVisibilityMap({ scores, labels, onSelectNeighborh
         })}
 
         {/* Water labels */}
-        <text x="14" y="145" textAnchor="middle" fill="rgba(122,174,212,0.2)" fontSize="6" fontWeight="600" letterSpacing="0.1em" transform="rotate(-90, 14, 145)">
+        <text x="14" y="145" textAnchor="middle" fill="rgba(56,189,248,0.15)" fontSize="6" fontWeight="600" letterSpacing="0.1em" transform="rotate(-90, 14, 145)">
           PUGET SOUND
         </text>
-        <text x="300" y="145" textAnchor="middle" fill="rgba(122,174,212,0.15)" fontSize="5.5" fontWeight="600" letterSpacing="0.08em" transform="rotate(90, 300, 145)">
+        <text x="300" y="145" textAnchor="middle" fill="rgba(56,189,248,0.12)" fontSize="5.5" fontWeight="600" letterSpacing="0.08em" transform="rotate(90, 300, 145)">
           LAKE WASHINGTON
-        </text>
-        <text x="170" y="83" textAnchor="middle" fill="rgba(122,174,212,0.15)" fontSize="4.5" fontWeight="600">
-          LAKE UNION
         </text>
 
         {/* Rainier direction */}
-        <line x1="240" y1="268" x2="295" y2="280" stroke="rgba(212,163,115,0.15)" strokeWidth="0.8" strokeDasharray="3 3" />
-        <text x="298" y="283" fill="rgba(212,163,115,0.25)" fontSize="5.5" fontWeight="600">
+        <line x1="240" y1="268" x2="295" y2="280" stroke="rgba(251,191,36,0.1)" strokeWidth="0.8" strokeDasharray="3 3" />
+        <text x="298" y="283" fill="rgba(251,191,36,0.2)" fontSize="5.5" fontWeight="600">
           MT. RAINIER →
         </text>
 
@@ -221,21 +204,25 @@ export default function SeattleVisibilityMap({ scores, labels, onSelectNeighborh
           if (!hood) return null;
           const s = scoreMap.get(hood.id) ?? 0;
           const name = labels[hood.id] ?? hood.id;
+          
+          const tx = Math.max(60, Math.min(260, hood.labelX));
+          const ty = Math.max(30, hood.labelY - 35);
+
           return (
-            <g filter="url(#map-glow)">
+            <g className="pointer-events-none">
               <rect
-                x={hood.labelX - 48} y={hood.labelY - 30}
-                width="96" height="22" rx="6"
-                fill="rgba(21,18,16,0.94)"
-                stroke="rgba(180,150,100,0.2)" strokeWidth="0.8"
+                x={tx - 55} y={ty - 12}
+                width="110" height="24" rx="12"
+                fill="rgba(15,23,42,0.95)"
+                stroke="rgba(255,255,255,0.15)" strokeWidth="1"
               />
               <text
-                x={hood.labelX} y={hood.labelY - 16}
+                x={tx} y={ty}
                 textAnchor="middle" dominantBaseline="middle"
-                fill="#f5f0e6" fontSize="7.5" fontWeight="600"
+                fill="#ffffff" fontSize="8.5" fontWeight="700"
                 className="map-label"
               >
-                {name} · {s}%
+                {name.toUpperCase()} · {s}%
               </text>
             </g>
           );

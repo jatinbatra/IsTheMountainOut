@@ -35,6 +35,7 @@ export default function LiveWebcams({ feeds }: Props) {
   const [loadErrors, setLoadErrors] = useState<Record<string, boolean>>({});
   const [refreshing, setRefreshing] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [initialTs] = useState(() => Date.now());
 
   const currentFeed = feeds[selectedCam];
 
@@ -64,7 +65,7 @@ export default function LiveWebcams({ feeds }: Props) {
   }, []);
 
   const getImageSrc = (feed: WebcamFeed) => {
-    const ts = imageTimestamps[feed.id] || Date.now();
+    const ts = imageTimestamps[feed.id] || initialTs;
     return `${feed.imageUrl}?t=${ts}`;
   };
 

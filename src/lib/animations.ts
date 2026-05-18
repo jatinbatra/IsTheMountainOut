@@ -66,8 +66,7 @@ export function createStaggerVariables(count: number, baseDelay = 80): Record<st
  * Intersection Observer callback for scroll reveal animations
  */
 export function createScrollRevealCallback(
-  onIntersect: (isIntersecting: boolean) => void,
-  threshold = 0.1
+  onIntersect: (isIntersecting: boolean) => void
 ): IntersectionObserverCallback {
   return (entries) => {
     entries.forEach((entry) => {

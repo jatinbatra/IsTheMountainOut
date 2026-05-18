@@ -59,9 +59,22 @@ export default function MountainScene({
   const [birds, setBirds] = useState<Bird[]>(() => createBirds(8));
   const [ripples, setRipples] = useState<Ripple[]>([]);
   const [clickFlash, setClickFlash] = useState(false);
+  const [containerWidth, setContainerWidth] = useState(400);
   const containerRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<number>(0);
   const timeRef = useRef(0);
+
+  // Measure container width
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
+    });
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   // Animate birds
   useEffect(() => {
@@ -559,7 +572,7 @@ export default function MountainScene({
         <div
           className="absolute pointer-events-none z-30 animate-fade-up"
           style={{
-            left: Math.min(tooltip.x, (containerRef.current?.clientWidth || 400) - 220),
+            left: Math.min(tooltip.x, containerWidth - 220),
             top: Math.max(0, tooltip.y - 80),
           }}
         >

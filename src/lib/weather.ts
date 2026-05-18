@@ -122,14 +122,18 @@ function getMockWeatherData(): WeatherData {
   };
 }
 
-export async function fetchWeatherData(options?: { noCache?: boolean }): Promise<WeatherData> {
-  const now = new Date();
-  const today = now.toISOString().split("T")[0];
+export async function fetchWeatherData(options?: { 
+  lat?: number; 
+  lon?: number; 
+  noCache?: boolean; 
+}): Promise<WeatherData> {
+  const targetLat = options?.lat ?? MIDPOINT_LAT;
+  const targetLon = options?.lon ?? MIDPOINT_LON;
 
-  // Fetch weather data from Open-Meteo (midpoint for cloud/visibility)
+  // Fetch weather data from Open-Meteo (midpoint or specific location)
   const weatherUrl = new URL("https://api.open-meteo.com/v1/forecast");
-  weatherUrl.searchParams.set("latitude", MIDPOINT_LAT.toString());
-  weatherUrl.searchParams.set("longitude", MIDPOINT_LON.toString());
+  weatherUrl.searchParams.set("latitude", targetLat.toString());
+  weatherUrl.searchParams.set("longitude", targetLon.toString());
   weatherUrl.searchParams.set(
     "current",
     "cloud_cover_low,cloud_cover_mid,cloud_cover_high,visibility,temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code,is_day"
