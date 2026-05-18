@@ -296,13 +296,14 @@ button, [role="button"], [role="tab"] {
 .hero-bottom {
   position: absolute;
   left: 0; right: 0; bottom: 0;
-  height: 55%;
+  height: 65%;
   background: linear-gradient(
     0deg,
     var(--bg-primary) 0%,
-    rgba(21, 18, 16, 0.9) 20%,
-    rgba(21, 18, 16, 0.55) 42%,
-    transparent 70%
+    rgba(21, 18, 16, 0.92) 18%,
+    rgba(21, 18, 16, 0.6) 40%,
+    rgba(21, 18, 16, 0.15) 65%,
+    transparent 80%
   );
   pointer-events: none;
   z-index: 2;
@@ -411,30 +412,60 @@ button, [role="button"], [role="tab"] {
   margin-bottom: 16px;
 }
 
-.hero-headline {
+/* ─── Hero Answer — the giant YES/NO ─── */
+
+.hero-answer {
   font-family: var(--font-display), Georgia, 'Times New Roman', serif;
   font-weight: 800;
-  color: var(--text-hero);
   text-align: center;
-  line-height: 0.88;
-  letter-spacing: -0.04em;
+  line-height: 0.82;
+  letter-spacing: -0.06em;
+  font-size: clamp(6rem, 18vw, 14rem);
   text-shadow:
-    0 0 120px rgba(21, 18, 16, 0.3),
-    0 2px 12px rgba(0, 0, 0, 0.35);
+    0 0 160px rgba(21, 18, 16, 0.5),
+    0 4px 24px rgba(0, 0, 0, 0.5);
+  position: relative;
+  z-index: 2;
 }
 
-.hero-headline-positive {
+.hero-answer-yes {
   color: var(--accent);
   text-shadow:
-    0 0 60px rgba(90, 158, 106, 0.2),
-    0 2px 12px rgba(0, 0, 0, 0.3);
+    0 0 80px rgba(90, 158, 106, 0.35),
+    0 0 200px rgba(90, 158, 106, 0.15),
+    0 4px 24px rgba(0, 0, 0, 0.5);
 }
 
-.hero-headline-negative {
+.hero-answer-no {
   color: var(--accent-pink);
   text-shadow:
-    0 0 60px rgba(196, 125, 138, 0.2),
-    0 2px 12px rgba(0, 0, 0, 0.3);
+    0 0 80px rgba(196, 125, 138, 0.35),
+    0 0 200px rgba(196, 125, 138, 0.15),
+    0 4px 24px rgba(0, 0, 0, 0.5);
+}
+
+.hero-status-word {
+  font-family: var(--font-mono), monospace;
+  font-size: clamp(0.9rem, 2.5vw, 1.4rem);
+  text-transform: uppercase;
+  letter-spacing: 0.35em;
+  color: rgba(237, 230, 216, 0.45);
+  margin-top: 12px;
+  text-align: center;
+}
+
+/* ─── Seattle Skyline Silhouette ─── */
+
+.hero-skyline-silhouette {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 55%;
+  height: 80px;
+  color: rgba(180, 165, 130, 0.06);
+  pointer-events: none;
+  z-index: 1;
 }
 
 .hero-subtitle {
@@ -659,6 +690,18 @@ button, [role="button"], [role="tab"] {
   border-color: var(--accent-gold);
   box-shadow: 0 0 0 3px rgba(212, 163, 115, 0.2), 0 4px 20px rgba(0,0,0,0.5);
 }
+.viewpoint-circle img {
+  transition: transform 0.5s var(--ease), filter 0.4s ease;
+  filter: saturate(0.7) brightness(0.85);
+}
+.viewpoint-circle.selected img {
+  transform: scale(1.08);
+  filter: saturate(1) brightness(1);
+}
+.viewpoint-item:hover .viewpoint-circle img {
+  transform: scale(1.05);
+  filter: saturate(0.9) brightness(0.95);
+}
 
 .viewpoint-name {
   font-size: 9.5px;
@@ -690,9 +733,14 @@ button, [role="button"], [role="tab"] {
   border-radius: var(--radius-xl);
   padding: 22px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04);
-  transition: border-color 0.3s ease, box-shadow 0.4s ease;
+  transition: border-color 0.3s ease, box-shadow 0.4s ease, transform 0.35s var(--ease);
   position: relative;
   overflow: hidden;
+}
+.dash-card:hover {
+  border-color: rgba(212, 163, 115, 0.22);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04), 0 0 40px rgba(212, 163, 115, 0.05);
+  transform: translateY(-2px);
 }
 
 .dash-card::before {
@@ -797,6 +845,20 @@ button, [role="button"], [role="tab"] {
   margin: 0 auto;
 }
 .score-gauge-wrap svg { transform: rotate(-90deg); }
+.score-gauge-wrap::after {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+  opacity: 0.08;
+  pointer-events: none;
+  animation: breathe 6s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%, 100% { opacity: 0.08; }
+  50% { opacity: 0.16; }
+}
 
 .gauge-track {
   fill: none;
@@ -952,6 +1014,15 @@ button, [role="button"], [role="tab"] {
   }
 }
 
+/* ─── Mountain Divider ─── */
+.mountain-divider {
+  width: 100%;
+  height: 40px;
+  margin: -8px 0 0;
+  padding: 0 28px;
+  opacity: 0.8;
+}
+
 /* ─── Scrollbar ─── */
 .scrollbar-thin { scrollbar-width: thin; scrollbar-color: var(--text-tertiary) transparent; }
 .scrollbar-thin::-webkit-scrollbar { width: 5px; }
@@ -970,6 +1041,7 @@ button, [role="button"], [role="tab"] {
   .dashboard-grid        { grid-template-columns: 1fr; gap: 14px; }
   .bottom-strip          { grid-template-columns: 1fr; gap: 14px; }
   .viewpoint-section     { padding: 0 12px; margin-top: -28px; }
-  .hero-header-pill      { flex-direction: column; gap: 8px; align-items: flex-start; }
-  .hero-headline         { font-size: 2.8rem !important; }
+  .hero-answer           { font-size: clamp(4.5rem, 22vw, 7rem); }
+  .hero-skyline-silhouette { width: 80%; height: 50px; bottom: 5%; }
+  .mountain-divider      { padding: 0 12px; height: 28px; }
 }

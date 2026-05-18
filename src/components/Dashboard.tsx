@@ -323,7 +323,7 @@ export default function Dashboard({ initialData }: Props) {
       <main className="main-with-sidebar flex-1 ml-[78px] min-h-screen">
 
         {/* ═══ HERO — Real PNW Photography ═══ */}
-        <section id="section-home" className="hero-section" style={{ height: "62vh", minHeight: "500px" }}>
+        <section id="section-home" className="hero-section" style={{ height: "72vh", minHeight: "560px" }}>
           <div
             className="absolute inset-0 z-[0]"
             style={{
@@ -382,15 +382,43 @@ export default function Dashboard({ initialData }: Props) {
             </div>
           </div>
 
-          {/* ── Hero headline ── */}
+          {/* ── Hero headline — THE ANSWER ── */}
           <div className="hero-text">
             <div
               className="absolute pointer-events-none"
               style={{
-                background: "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(12,10,7,0.22) 0%, transparent 75%)",
+                background: "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(12,10,7,0.35) 0%, transparent 75%)",
                 inset: "-10% -20%",
               }}
             />
+
+            {/* Seattle skyline silhouette — decorative, behind text */}
+            <div className="hero-skyline-silhouette" aria-hidden="true">
+              <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-full">
+                {/* Space Needle */}
+                <rect x="280" y="20" width="3" height="100" fill="currentColor" />
+                <ellipse cx="281" cy="40" rx="14" ry="4" fill="currentColor" />
+                <rect x="275" y="36" width="12" height="3" fill="currentColor" />
+                <line x1="281" y1="20" x2="281" y2="0" stroke="currentColor" strokeWidth="1" />
+                {/* Columbia Center */}
+                <rect x="340" y="30" width="18" height="90" fill="currentColor" />
+                <rect x="344" y="25" width="10" height="5" fill="currentColor" />
+                {/* Smith Tower */}
+                <rect x="310" y="50" width="10" height="70" fill="currentColor" />
+                <polygon points="310,50 315,38 320,50" fill="currentColor" />
+                {/* Generic skyline buildings */}
+                <rect x="370" y="55" width="14" height="65" fill="currentColor" />
+                <rect x="390" y="65" width="10" height="55" fill="currentColor" />
+                <rect x="240" y="60" width="12" height="60" fill="currentColor" />
+                <rect x="220" y="70" width="8" height="50" fill="currentColor" />
+                <rect x="410" y="72" width="9" height="48" fill="currentColor" />
+                <rect x="180" y="75" width="15" height="45" fill="currentColor" />
+                <rect x="430" y="68" width="11" height="52" fill="currentColor" />
+                <rect x="450" y="78" width="7" height="42" fill="currentColor" />
+                {/* Waterline */}
+                <line x1="0" y1="120" x2="1200" y2="120" stroke="currentColor" strokeWidth="0.5" opacity="0.3" />
+              </svg>
+            </div>
 
             <motion.p
               className="hero-location-label"
@@ -398,30 +426,37 @@ export default function Dashboard({ initialData }: Props) {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.35, duration: 0.7 }}
             >
-              SEATTLE, WA
+              MT. RAINIER FROM SEATTLE
             </motion.p>
 
+            {/* THE ANSWER — single word, enormous */}
             <motion.h1
-              className="hero-headline"
-              style={{ fontSize: "clamp(3.2rem, 8.5vw, 7.5rem)" }}
-              initial={{ opacity: 0, y: 28 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.45, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+              className={`hero-answer ${isVisible ? "hero-answer-yes" : "hero-answer-no"}`}
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3, duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
             >
-              {isVisible ? "YES." : "NOT TODAY."}{" "}
-              <span className={isVisible ? "hero-headline-positive" : "hero-headline-negative"}>
-                {statusWord}.
-              </span>
+              {isVisible ? "YES" : "NO"}
             </motion.h1>
+
+            {/* Context line below */}
+            <motion.p
+              className="hero-status-word"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7, duration: 0.8 }}
+            >
+              {statusWord}
+            </motion.p>
 
             <motion.p
               className="hero-subtitle"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.8, duration: 0.7 }}
+              transition={{ delay: 1.0, duration: 0.7 }}
             >
               {isVisible
-                ? `Beautiful visibility right now from ${VIEWPOINTS[selectedVp]?.name}`
+                ? `The mountain is out. Enjoy the view from ${VIEWPOINTS[selectedVp]?.name}.`
                 : data.visibility.durationMessage}
             </motion.p>
           </div>
@@ -447,17 +482,28 @@ export default function Dashboard({ initialData }: Props) {
                     onClick={() => setSelectedVp(i)}
                   >
                     <div className={`viewpoint-circle ${selectedVp === i ? "selected" : ""}`}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={vp.image}
+                        alt={vp.name}
+                        loading="lazy"
+                        decoding="async"
+                        className="absolute inset-0 w-full h-full object-cover rounded-full"
+                      />
+                      <div
+                        className="absolute inset-0 rounded-full transition-opacity duration-300"
+                        style={{
+                          background: "radial-gradient(circle at 50% 50%, transparent 30%, rgba(21,18,16,0.55) 100%)",
+                          opacity: selectedVp === i ? 0.3 : 0.6,
+                        }}
+                      />
                       <div
                         className="absolute inset-0 rounded-full"
                         style={{
-                          background: selectedVp === i
-                            ? `radial-gradient(circle at 35% 35%, ${vpColor}30, ${vpColor}10 60%, rgba(21,18,16,0.8))`
-                            : `radial-gradient(circle at 35% 35%, ${vpColor}18, rgba(21,18,16,0.7) 70%)`,
+                          background: `linear-gradient(180deg, transparent 50%, ${vpColor}40 100%)`,
+                          opacity: selectedVp === i ? 0.7 : 0.35,
                         }}
                       />
-                      <div className="absolute inset-0 rounded-full flex items-center justify-center z-10">
-                        <MapPin className="w-5 h-5" style={{ color: selectedVp === i ? vpColor : "var(--text-tertiary)", opacity: selectedVp === i ? 0.9 : 0.5 }} />
-                      </div>
                     </div>
                     <span className="viewpoint-name">{vp.name}</span>
                     <span className="viewpoint-sub">{vp.sub}</span>
@@ -470,6 +516,25 @@ export default function Dashboard({ initialData }: Props) {
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
+        </div>
+
+        {/* ═══ MOUNTAIN RANGE DIVIDER ═══ */}
+        <div className="mountain-divider" aria-hidden="true">
+          <svg viewBox="0 0 1200 60" preserveAspectRatio="none" className="w-full h-full">
+            <path
+              d="M0,60 L80,45 L150,52 L220,35 L280,42 L350,25 L400,38 L460,20 L500,30 L540,15 L570,22 L600,10 L630,22 L660,15 L700,30 L740,20 L800,38 L850,25 L920,42 L980,35 L1050,52 L1120,45 L1200,60 Z"
+              fill="rgba(180,165,130,0.04)"
+            />
+            <path
+              d="M0,60 L80,45 L150,52 L220,35 L280,42 L350,25 L400,38 L460,20 L500,30 L540,15 L570,22 L600,10 L630,22 L660,15 L700,30 L740,20 L800,38 L850,25 L920,42 L980,35 L1050,52 L1120,45 L1200,60"
+              fill="none"
+              stroke="rgba(180,165,130,0.08)"
+              strokeWidth="1"
+            />
+            <circle cx="600" cy="12" r="3" fill="rgba(212,204,192,0.12)" />
+            <circle cx="540" cy="17" r="2.5" fill="rgba(212,204,192,0.08)" />
+            <circle cx="660" cy="17" r="2.5" fill="rgba(212,204,192,0.08)" />
+          </svg>
         </div>
 
         {/* ═══ DASHBOARD GRID ═══ */}
@@ -538,8 +603,26 @@ export default function Dashboard({ initialData }: Props) {
 
             {/* ── Card 2: Why the Mountain is Out / Hidden ── */}
             <motion.div variants={fadeUp} className="dash-card">
-              <div className="dash-card-header">
-                Why the Mountain is {isVisible ? "Out" : "Hidden"}
+              <div className="dash-card-header flex items-center gap-2">
+                {isVisible ? (
+                  <svg viewBox="0 0 20 20" className="w-4 h-4 flex-shrink-0" aria-hidden="true">
+                    <circle cx="10" cy="10" r="4" fill="var(--accent)" opacity="0.5" />
+                    {[0,45,90,135,180,225,270,315].map((angle) => {
+                      const rad = (angle * Math.PI) / 180;
+                      return (
+                        <line key={angle} x1={10 + Math.cos(rad)*6} y1={10 + Math.sin(rad)*6} x2={10 + Math.cos(rad)*8} y2={10 + Math.sin(rad)*8} stroke="var(--accent)" strokeWidth="1.2" strokeLinecap="round" opacity="0.4" />
+                      );
+                    })}
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 24 20" className="w-5 h-4 flex-shrink-0" aria-hidden="true">
+                    <path d="M6,14 Q2,14 2,11 Q2,8 5,8 Q5.5,5 9,5 Q12,5 13,7 Q14,6 16,6 Q19,6 19,9 Q22,9 22,12 Q22,14 19,14 Z" fill="var(--accent-pink)" opacity="0.3" />
+                    <line x1="8" y1="16" x2="7" y2="19" stroke="var(--accent-pink)" strokeWidth="1" strokeLinecap="round" opacity="0.4" />
+                    <line x1="12" y1="16" x2="11" y2="19" stroke="var(--accent-pink)" strokeWidth="1" strokeLinecap="round" opacity="0.3" />
+                    <line x1="16" y1="16" x2="15" y2="19" stroke="var(--accent-pink)" strokeWidth="1" strokeLinecap="round" opacity="0.4" />
+                  </svg>
+                )}
+                <span>Why the Mountain is {isVisible ? "Out" : "Hidden"}</span>
               </div>
 
               <div>
@@ -781,7 +864,26 @@ export default function Dashboard({ initialData }: Props) {
           {/* ═══ FOOTER ═══ */}
           <footer id="section-about" className="divider-cedar mt-12 pt-8 pb-10">
             <PrivacyCommitment />
-            <p className="text-[11px] mt-4 leading-relaxed max-w-2xl" style={{ color: "var(--text-tertiary)" }}>
+
+            {/* Seattle ferry silhouette */}
+            <div className="flex items-center gap-3 mb-3 mt-4" aria-hidden="true">
+              <svg viewBox="0 0 80 32" className="w-16 h-6" style={{ color: "rgba(180,165,130,0.15)" }}>
+                <path d="M5,22 Q8,28 40,28 Q72,28 75,22 L70,22 Q68,26 40,26 Q12,26 10,22 Z" fill="currentColor" />
+                <rect x="15" y="16" width="50" height="6" rx="1" fill="currentColor" />
+                <rect x="22" y="9" width="36" height="7" rx="1" fill="currentColor" />
+                <rect x="48" y="4" width="6" height="5" fill="currentColor" />
+                <g fill="rgba(212,163,115,0.2)">
+                  <rect x="26" y="11" width="3" height="3" rx="0.5" />
+                  <rect x="32" y="11" width="3" height="3" rx="0.5" />
+                  <rect x="38" y="11" width="3" height="3" rx="0.5" />
+                  <rect x="44" y="11" width="3" height="3" rx="0.5" />
+                </g>
+                <path d="M0,30 Q10,28 20,30 Q30,32 40,30 Q50,28 60,30 Q70,32 80,30" fill="none" stroke="currentColor" strokeWidth="0.8" opacity="0.5" />
+              </svg>
+              <div className="h-px flex-1" style={{ background: "linear-gradient(90deg, rgba(180,165,130,0.08), transparent)" }} />
+            </div>
+
+            <p className="text-[11px] leading-relaxed max-w-2xl" style={{ color: "var(--text-tertiary)" }}>
               A Pacific Northwest field report. Mt. Rainier visibility scored from real-time cloud layers,
               atmospheric clarity, and particulate matter across the Puget Sound region.
             </p>
