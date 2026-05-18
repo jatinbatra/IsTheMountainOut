@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Viewpoint {
   id: string;
@@ -57,24 +57,28 @@ export default function ViewpointCarousel({
                 onClick={() => onSelectVp(i)}
               >
                 <div className={`viewpoint-circle ${selectedVp === i ? "selected" : ""}`}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={vp.image}
+                    alt={vp.name}
+                    loading="lazy"
+                    decoding="async"
+                    className="absolute inset-0 w-full h-full object-cover rounded-full"
+                  />
                   <div
-                    className="absolute inset-0 rounded-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                    className="absolute inset-0 rounded-full transition-opacity duration-300"
                     style={{
-                      backgroundImage: `url(${vp.image})`,
-                      filter: selectedVp === i ? "none" : "grayscale(0.6) brightness(0.6)",
+                      background: "radial-gradient(circle at 50% 50%, transparent 30%, rgba(0,0,0,0.55) 100%)",
+                      opacity: selectedVp === i ? 0.2 : 0.5,
                     }}
                   />
                   <div
                     className="absolute inset-0 rounded-full"
                     style={{
-                      background: selectedVp === i
-                        ? `radial-gradient(circle at 35% 35%, transparent, rgba(15,23,42,0.6))`
-                        : `rgba(15,23,42,0.4)`,
+                      background: `linear-gradient(180deg, transparent 50%, ${vpColor}40 100%)`,
+                      opacity: selectedVp === i ? 0.7 : 0.35,
                     }}
                   />
-                  <div className="absolute inset-0 rounded-full flex items-center justify-center z-10">
-                    <MapPin className="w-5 h-5" style={{ color: selectedVp === i ? "var(--accent)" : "white", opacity: selectedVp === i ? 1 : 0.4 }} />
-                  </div>
                 </div>
                 <span className="viewpoint-name">{vp.name}</span>
                 <span className="viewpoint-sub">{vp.sub}</span>
