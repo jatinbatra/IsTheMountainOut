@@ -132,14 +132,14 @@ interface Props {
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 const VIEWPOINTS = [
-  { id: "kerry-park",      name: "Kerry Park",      sub: "Queen Anne",        image: "https://images.unsplash.com/photo-1502175353174-a7a70e73b362?auto=format&fit=crop&w=1600&q=80" },
-  { id: "space-needle",    name: "Space Needle",    sub: "Downtown",          image: "https://images.unsplash.com/photo-1466388480397-6a4a4086d4e2?auto=format&fit=crop&w=1600&q=80" },
-  { id: "uw-campus",       name: "UW Campus",       sub: "University District", image: "https://images.unsplash.com/photo-1541339907198-e0875638114a?auto=format&fit=crop&w=1600&q=80" },
-  { id: "i90-bridge",      name: "I-90 Bridge",     sub: "Lake Washington",   image: "https://images.unsplash.com/photo-1552554529-679901777d54?auto=format&fit=crop&w=1600&q=80" },
-  { id: "sculpture-park",  name: "Sculpture Park",  sub: "Waterfront",        image: "https://images.unsplash.com/photo-1498429089284-41f8cf3ffd39?auto=format&fit=crop&w=1600&q=80" },
-  { id: "harbor-view",     name: "Harbor View",     sub: "Port of Seattle",   image: "https://images.unsplash.com/photo-1518330756237-7a87d656091e?auto=format&fit=crop&w=1600&q=80" },
-  { id: "alki-beach",      name: "Alki Beach",      sub: "West Seattle",      image: "https://images.unsplash.com/photo-1621213032540-02552834f3b7?auto=format&fit=crop&w=1600&q=80" },
-  { id: "sodo",            name: "SODO",            sub: "South Seattle",     image: "https://images.unsplash.com/photo-1540316327310-85f524c6e3b0?auto=format&fit=crop&w=1600&q=80" },
+  { id: "kerry-park",      name: "Kerry Park",      sub: "Queen Anne",          image: "/images/viewpoints/kerry-park.jpg" },
+  { id: "space-needle",    name: "Space Needle",    sub: "Downtown",            image: "/images/viewpoints/space-needle.jpg" },
+  { id: "uw-campus",       name: "UW Campus",       sub: "University District", image: "/images/viewpoints/uw-campus.jpg" },
+  { id: "i90-bridge",      name: "I-90 Bridge",     sub: "Lake Washington",     image: "/images/viewpoints/i90-bridge.jpg" },
+  { id: "sculpture-park",  name: "Sculpture Park",  sub: "Waterfront",          image: "/images/viewpoints/sculpture-park.jpg" },
+  { id: "harbor-view",     name: "Harbor View",     sub: "Port of Seattle",     image: "/images/viewpoints/harbor-view.jpg" },
+  { id: "alki-beach",      name: "Alki Beach",      sub: "West Seattle",        image: "/images/viewpoints/alki-beach.jpg" },
+  { id: "sodo",            name: "SODO",            sub: "South Seattle",       image: "/images/viewpoints/sodo.jpg" },
 ];
 
 const FUN_FACTS = [
@@ -302,6 +302,17 @@ export default function Dashboard({ initialData }: Props) {
           baseScore={score}
         />
 
+        {/* ═══ MOUNTAIN RANGE DIVIDER ═══ */}
+        <div className="mountain-divider" aria-hidden="true">
+          <svg viewBox="0 0 1200 60" preserveAspectRatio="none" className="w-full h-full">
+            <path d="M0,60 L80,45 L150,52 L220,35 L280,42 L350,25 L400,38 L460,20 L500,30 L540,15 L570,22 L600,10 L630,22 L660,15 L700,30 L740,20 L800,38 L850,25 L920,42 L980,35 L1050,52 L1120,45 L1200,60 Z" fill="rgba(255,255,255,0.02)" />
+            <path d="M0,60 L80,45 L150,52 L220,35 L280,42 L350,25 L400,38 L460,20 L500,30 L540,15 L570,22 L600,10 L630,22 L660,15 L700,30 L740,20 L800,38 L850,25 L920,42 L980,35 L1050,52 L1120,45 L1200,60" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+            <circle cx="600" cy="12" r="3" fill="rgba(255,255,255,0.08)" />
+            <circle cx="540" cy="17" r="2.5" fill="rgba(255,255,255,0.05)" />
+            <circle cx="660" cy="17" r="2.5" fill="rgba(255,255,255,0.05)" />
+          </svg>
+        </div>
+
         <div className="dashboard-content">
           <motion.div
             className="dashboard-grid"
@@ -417,7 +428,23 @@ export default function Dashboard({ initialData }: Props) {
 
           <footer id="section-about" className="divider-cedar mt-12 pt-8 pb-10">
             <PrivacyCommitment />
-            <p className="text-[11px] mt-4 leading-relaxed max-w-2xl" style={{ color: "var(--text-tertiary)" }}>
+            <div className="flex items-center gap-3 mb-3 mt-4" aria-hidden="true">
+              <svg viewBox="0 0 80 32" className="w-16 h-6" style={{ color: "rgba(255,255,255,0.08)" }}>
+                <path d="M5,22 Q8,28 40,28 Q72,28 75,22 L70,22 Q68,26 40,26 Q12,26 10,22 Z" fill="currentColor" />
+                <rect x="15" y="16" width="50" height="6" rx="1" fill="currentColor" />
+                <rect x="22" y="9" width="36" height="7" rx="1" fill="currentColor" />
+                <rect x="48" y="4" width="6" height="5" fill="currentColor" />
+                <g fill="rgba(255,255,255,0.06)">
+                  <rect x="26" y="11" width="3" height="3" rx="0.5" />
+                  <rect x="32" y="11" width="3" height="3" rx="0.5" />
+                  <rect x="38" y="11" width="3" height="3" rx="0.5" />
+                  <rect x="44" y="11" width="3" height="3" rx="0.5" />
+                </g>
+                <path d="M0,30 Q10,28 20,30 Q30,32 40,30 Q50,28 60,30 Q70,32 80,30" fill="none" stroke="currentColor" strokeWidth="0.8" opacity="0.5" />
+              </svg>
+              <div className="h-px flex-1" style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.05), transparent)" }} />
+            </div>
+            <p className="text-[11px] leading-relaxed max-w-2xl" style={{ color: "var(--text-tertiary)" }}>
               A Pacific Northwest field report. Mt. Rainier visibility scored from real-time cloud layers,
               atmospheric clarity, and particulate matter across the Puget Sound region.
             </p>

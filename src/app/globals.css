@@ -101,6 +101,9 @@ body {
 .dash-card:hover {
   border-color: rgba(255, 255, 255, 0.15);
   background: var(--bg-card-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card), var(--shadow-glow);
+  transition: all 0.35s ease;
 }
 
 .dash-card-header {
@@ -121,6 +124,87 @@ body {
   letter-spacing: -0.01em;
   line-height: 0.82;
   text-shadow: 0 0 40px rgba(0,0,0,0.5);
+}
+
+/* ─── Hero Answer — the giant YES/NO ─── */
+
+.hero-answer {
+  font-family: var(--font-display), Georgia, 'Times New Roman', serif;
+  font-weight: 800;
+  text-align: center;
+  line-height: 0.82;
+  letter-spacing: -0.06em;
+  font-size: clamp(6rem, 18vw, 14rem);
+  text-shadow: 0 0 160px rgba(0,0,0,0.5), 0 4px 24px rgba(0,0,0,0.5);
+  position: relative;
+  z-index: 2;
+}
+
+.hero-answer-yes {
+  color: var(--accent);
+  text-shadow: 0 0 80px var(--accent-glow), 0 0 200px rgba(45,212,191,0.15), 0 4px 24px rgba(0,0,0,0.5);
+}
+
+.hero-answer-no {
+  color: var(--accent-pink);
+  text-shadow: 0 0 80px var(--accent-pink-glow), 0 0 200px rgba(244,63,94,0.15), 0 4px 24px rgba(0,0,0,0.5);
+}
+
+.hero-status-word {
+  font-family: var(--font-mono), monospace;
+  font-size: clamp(0.9rem, 2.5vw, 1.4rem);
+  text-transform: uppercase;
+  letter-spacing: 0.35em;
+  color: rgba(255,255,255,0.4);
+  margin-top: 12px;
+  text-align: center;
+}
+
+.hero-skyline-silhouette {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 55%;
+  height: 80px;
+  color: rgba(255,255,255,0.04);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero-location-label {
+  font-family: var(--font-mono), monospace;
+  font-size: 10.5px;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  margin-bottom: 16px;
+}
+
+.hero-text {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-subtitle {
+  font-size: clamp(0.8rem, 1.5vw, 1rem);
+  color: rgba(255,255,255,0.5);
+  margin-top: 16px;
+  text-align: center;
+}
+
+/* ─── Mountain Divider ─── */
+.mountain-divider {
+  width: 100%;
+  height: 40px;
+  margin: -8px 0 0;
+  padding: 0 28px;
+  opacity: 0.8;
 }
 
 /* ─── Sidebar ─── */
@@ -301,6 +385,18 @@ body {
   border-color: var(--accent);
   box-shadow: 0 0 20px var(--accent-glow);
 }
+.viewpoint-circle img {
+  transition: transform 0.5s ease, filter 0.4s ease;
+  filter: saturate(0.6) brightness(0.7);
+}
+.viewpoint-circle.selected img {
+  transform: scale(1.08);
+  filter: saturate(1) brightness(1);
+}
+.viewpoint-item:hover .viewpoint-circle img {
+  transform: scale(1.05);
+  filter: saturate(0.85) brightness(0.9);
+}
 
 .viewpoint-name {
   font-size: 9px;
@@ -381,4 +477,7 @@ body::after {
   .dashboard-grid > * { grid-column: span 1 !important; }
   .sidebar { display: none; }
   .main-with-sidebar { margin-left: 0 !important; }
+  .hero-answer { font-size: clamp(4.5rem, 22vw, 7rem); }
+  .hero-skyline-silhouette { width: 80%; height: 50px; bottom: 5%; }
+  .mountain-divider { padding: 0 12px; height: 28px; }
 }

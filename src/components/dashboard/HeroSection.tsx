@@ -45,7 +45,7 @@ export default function HeroSection({
   alpenglow,
 }: HeroSectionProps) {
   return (
-    <section id="section-home" className="hero-section" style={{ height: "48vh", minHeight: "400px" }}>
+    <section id="section-home" className="hero-section" style={{ height: "72vh", minHeight: "560px" }}>
       <div
         className="absolute inset-0 z-[0] ken-burns"
         style={{
@@ -110,15 +110,38 @@ export default function HeroSection({
         </div>
       </div>
 
-      {/* ── Hero headline ── */}
+      {/* ── Hero headline — THE ANSWER ── */}
       <div className="hero-text">
         <div
           className="absolute pointer-events-none"
           style={{
-            background: "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(12,10,7,0.22) 0%, transparent 75%)",
+            background: "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(0,0,0,0.35) 0%, transparent 75%)",
             inset: "-10% -20%",
           }}
         />
+
+        {/* Seattle skyline silhouette */}
+        <div className="hero-skyline-silhouette" aria-hidden="true">
+          <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-full">
+            <rect x="280" y="20" width="3" height="100" fill="currentColor" />
+            <ellipse cx="281" cy="40" rx="14" ry="4" fill="currentColor" />
+            <rect x="275" y="36" width="12" height="3" fill="currentColor" />
+            <line x1="281" y1="20" x2="281" y2="0" stroke="currentColor" strokeWidth="1" />
+            <rect x="340" y="30" width="18" height="90" fill="currentColor" />
+            <rect x="344" y="25" width="10" height="5" fill="currentColor" />
+            <rect x="310" y="50" width="10" height="70" fill="currentColor" />
+            <polygon points="310,50 315,38 320,50" fill="currentColor" />
+            <rect x="370" y="55" width="14" height="65" fill="currentColor" />
+            <rect x="390" y="65" width="10" height="55" fill="currentColor" />
+            <rect x="240" y="60" width="12" height="60" fill="currentColor" />
+            <rect x="220" y="70" width="8" height="50" fill="currentColor" />
+            <rect x="410" y="72" width="9" height="48" fill="currentColor" />
+            <rect x="180" y="75" width="15" height="45" fill="currentColor" />
+            <rect x="430" y="68" width="11" height="52" fill="currentColor" />
+            <rect x="450" y="78" width="7" height="42" fill="currentColor" />
+            <line x1="0" y1="120" x2="1200" y2="120" stroke="currentColor" strokeWidth="0.5" opacity="0.3" />
+          </svg>
+        </div>
 
         <motion.p
           className="hero-location-label"
@@ -126,30 +149,35 @@ export default function HeroSection({
           animate={{ opacity: 1 }}
           transition={{ delay: 0.35, duration: 0.7 }}
         >
-          SEATTLE, WA
+          MT. RAINIER FROM SEATTLE
         </motion.p>
 
         <motion.h1
-          className="hero-headline"
-          style={{ fontSize: "clamp(3.2rem, 8.5vw, 7.5rem)" }}
-          initial={{ opacity: 0, y: 28 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.45, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          className={`hero-answer ${isVisible ? "hero-answer-yes" : "hero-answer-no"}`}
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3, duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
         >
-          {isVisible ? "YES." : "NOT TODAY."}{" "}
-          <span className={isVisible ? "hero-headline-positive" : "hero-headline-negative"}>
-            {statusWord}.
-          </span>
+          {isVisible ? "YES" : "NO"}
         </motion.h1>
+
+        <motion.p
+          className="hero-status-word"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7, duration: 0.8 }}
+        >
+          {statusWord}
+        </motion.p>
 
         <motion.p
           className="hero-subtitle"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.8, duration: 0.7 }}
+          transition={{ delay: 1.0, duration: 0.7 }}
         >
           {isVisible
-            ? `Beautiful visibility right now from ${viewpointName}`
+            ? `The mountain is out. Enjoy the view from ${viewpointName}.`
             : durationMessage}
         </motion.p>
       </div>
