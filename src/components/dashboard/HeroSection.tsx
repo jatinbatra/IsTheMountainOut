@@ -30,7 +30,6 @@ interface HeroSectionProps {
 export default function HeroSection({
   backgroundImage,
   viewpointName,
-  viewpointSub,
   timeStr,
   tempF,
   weatherLabel,
