@@ -399,22 +399,22 @@ body {
 }
 
 .viewpoint-name {
-  font-size: 9px;
-  font-weight: 700;
+  font-size: 10px; /* Slightly larger for readability */
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--text-secondary);
+  color: #f8fafc; /* Forced bright white */
   text-align: center;
 }
 
 .viewpoint-sub {
-  font-size: 8px;
-  color: var(--text-tertiary);
+  font-size: 9px;
+  color: #cbd5e1; /* Forced bright slate */
   text-align: center;
 }
 
 .viewpoint-item.selected .viewpoint-name { color: var(--accent); }
-.viewpoint-item.selected .viewpoint-sub  { color: var(--text-secondary); }
+.viewpoint-item.selected .viewpoint-sub  { color: #f8fafc; }
 
 /* ─── Layout ─── */
 
