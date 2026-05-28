@@ -341,8 +341,6 @@ export default function Dashboard({ initialData }: Props) {
               className="card-factors"
             />
 
-            <FeaturedWebcam className="card-webcam" />
-
             <NeighborhoodCard 
               allScores={allScores}
               neighborhoodLabels={NEIGHBORHOOD_LABELS}
@@ -352,50 +350,58 @@ export default function Dashboard({ initialData }: Props) {
               className="card-map"
             />
 
-            <ForecastCard 
-              viewpointName={VIEWPOINTS[selectedVp]?.name}
-              hourlyTimeline={data.hourlyTimeline}
-              weeklyForecast={data.weeklyForecast}
-              currentScore={score}
-              fadeUp={fadeUp}
-              className="card-forecast"
-            />
-
-            <motion.div variants={fadeUp} className="dash-card dash-card-warm card-fact">
-              <div className="dash-card-header" style={{ color: "var(--accent-gold)" }}>Did You Know?</div>
-              <div className="flex items-start gap-4">
-                <div className="fun-fact-badge">
-                  <svg viewBox="0 0 48 48" className="w-10 h-10 flex-shrink-0">
-                    <circle cx="24" cy="24" r="22" fill="none" stroke="rgba(251, 191, 36, 0.2)" strokeWidth="1.5" />
-                    <polygon points="24,8 16,28 20,28 24,18 28,28 32,28" fill="var(--accent-gold)" opacity="0.6" />
-                    <text x="24" y="38" textAnchor="middle" fill="var(--accent-gold)" fontSize="5" opacity="0.6" fontWeight="700">RAINIER</text>
-                  </svg>
+            <div className="card-right">
+              <ForecastCard 
+                viewpointName={VIEWPOINTS[selectedVp]?.name}
+                hourlyTimeline={data.hourlyTimeline}
+                weeklyForecast={data.weeklyForecast}
+                currentScore={score}
+                fadeUp={fadeUp}
+              />
+              <FeaturedWebcam />
+              <motion.div variants={fadeUp} className="dash-card dash-card-warm">
+                <div className="dash-card-header" style={{ color: "var(--accent-gold)" }}>PNW Trivia</div>
+                <div className="flex items-start gap-4">
+                  <div className="fun-fact-badge">
+                    <svg viewBox="0 0 48 48" className="w-10 h-10 flex-shrink-0">
+                      <circle cx="24" cy="24" r="22" fill="none" stroke="rgba(251, 191, 36, 0.2)" strokeWidth="1.5" />
+                      <polygon points="24,8 16,28 20,28 24,18 28,28 32,28" fill="var(--accent-gold)" opacity="0.6" />
+                      <text x="24" y="38" textAnchor="middle" fill="var(--accent-gold)" fontSize="5" opacity="0.6" fontWeight="700">RAINIER</text>
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <AnimatePresence mode="wait">
+                      <motion.p
+                        key={factIdx}
+                        className="text-[11px] leading-relaxed"
+                        style={{ color: "var(--text-secondary)" }}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -8 }}
+                        transition={{ duration: 0.4 }}
+                      >
+                        {FUN_FACTS[factIdx].text}
+                      </motion.p>
+                    </AnimatePresence>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <AnimatePresence mode="wait">
-                    <motion.p
-                      key={factIdx}
-                      className="text-[11px] leading-relaxed"
-                      style={{ color: "var(--text-secondary)" }}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      transition={{ duration: 0.4 }}
-                    >
-                      {FUN_FACTS[factIdx].text}
-                    </motion.p>
-                  </AnimatePresence>
-                </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
 
             <motion.div variants={fadeUp} className="dash-card card-streak">
-              <div className="dash-card-header">Streak</div>
-              <div className="flex items-baseline gap-2">
-                <span className="font-display" style={{ fontSize: "2rem", color: accentColor, filter: `drop-shadow(${accentGlow})` }}>3</span>
-                <span className="text-[10px] font-semibold" style={{ color: "var(--text-primary)" }}>DAYS</span>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="dash-card-header" style={{ marginBottom: "8px" }}>Streak</div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="font-display" style={{ fontSize: "2.5rem", color: "var(--accent-gold)" }}>3</span>
+                    <span className="text-[10px] font-semibold" style={{ color: "var(--text-secondary)" }}>DAYS</span>
+                  </div>
+                  <p className="text-[9px] mt-1" style={{ color: "var(--text-tertiary)" }}>
+                    in a row the mountain<br />has been visible from here!
+                  </p>
+                </div>
+                <GlobalStreakBadge />
               </div>
-              <GlobalStreakBadge />
             </motion.div>
 
             <motion.div variants={fadeUp} className="dash-card card-elevation">

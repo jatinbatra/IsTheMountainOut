@@ -1,11 +1,10 @@
 import "./globals.css";
-import { Fraunces, JetBrains_Mono, Inter } from "next/font/google";
+import { Playfair_Display, JetBrains_Mono, Inter } from "next/font/google";
 
-const fraunces = Fraunces({
+const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
-  axes: ["opsz", "SOFT", "WONK"],
 });
 
 const inter = Inter({
@@ -28,11 +27,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`h-full antialiased ${inter.variable} ${fraunces.variable} ${mono.variable}`}>
+    <html lang="en" className={`h-full antialiased ${inter.variable} ${playfair.variable} ${mono.variable}`}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#f4f1eb" />
+        <meta name="theme-color" content="#06110d" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />

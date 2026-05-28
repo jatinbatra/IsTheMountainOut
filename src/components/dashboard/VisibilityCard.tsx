@@ -46,7 +46,7 @@ export default function VisibilityCard({
             <circle cx="75" cy="75" r={gaugeR} className="gauge-track" />
             <circle
               cx="75" cy="75" r={gaugeR}
-              className={isVisible ? "gauge-fill-positive" : "gauge-fill-negative"}
+              className="gauge-fill-pink"
               strokeDasharray={gaugeC}
               strokeDashoffset={gaugeOff}
             />
@@ -54,12 +54,12 @@ export default function VisibilityCard({
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span
               className="font-display tabular"
-              style={{ fontSize: "2.4rem", color: accentColor, filter: `drop-shadow(${accentGlow})` }}
+              style={{ fontSize: "3.5rem", color: "var(--text-hero)", filter: `drop-shadow(0 4px 10px rgba(0,0,0,0.5))` }}
             >
-              {score}<span style={{ fontSize: "1rem", opacity: 0.6 }}>%</span>
+              {score}<span style={{ fontSize: "1.5rem", color: "var(--text-secondary)" }}>%</span>
             </span>
-            <span className="text-[8px] uppercase tracking-[0.12em] font-semibold mt-0.5" style={{ color: "var(--text-tertiary)" }}>
-              {score >= 76 ? "Great" : score >= 50 ? "Moderate" : "Poor"}
+            <span className="text-[10px] uppercase tracking-[0.15em] font-bold mt-1" style={{ color: "var(--text-secondary)" }}>
+              {score >= 76 ? "Great Visibility" : score >= 50 ? "Moderate" : "Poor"}
             </span>
           </div>
         </div>

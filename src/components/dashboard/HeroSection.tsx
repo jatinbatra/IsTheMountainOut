@@ -157,7 +157,7 @@ export default function HeroSection({
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3, duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
         >
-          {isVisible ? "YES" : "NO"}
+          {isVisible ? "YES. CLEAR PEAK." : "NOT TODAY."}
         </motion.h1>
 
         <motion.p
