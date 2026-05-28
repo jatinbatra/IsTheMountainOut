@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
+import WebSocket from "ws";
 
+// Force the Node.js runtime (not Edge) — the `ws` package needs Node sockets.
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 interface AISPositionMessage {
@@ -44,57 +48,46 @@ export async function GET() {
   return new Promise<NextResponse>((resolve) => {
     let settled = false;
 
+    function unknown(reason: string) {
+      return NextResponse.json(
+        { status: "unknown", reason, lastUpdated: new Date().toISOString() },
+        { headers: { "Cache-Control": "no-store" } }
+      );
+    }
+
     function done(response: NextResponse) {
       if (settled) return;
       settled = true;
+      clearTimeout(timeout);
       try { ws.close(); } catch {}
       resolve(response);
     }
 
-    const timeout = setTimeout(() => {
-      done(
-        NextResponse.json(
-          { status: "unknown", reason: "timeout", lastUpdated: new Date().toISOString() },
-          { headers: { "Cache-Control": "no-store" } }
-        )
-      );
-    }, 8000);
+    const timeout = setTimeout(() => done(unknown("timeout")), 9000);
 
-    // Use Node.js 22 built-in WebSocket (no external package needed)
-    const ws = new (globalThis as unknown as { WebSocket: typeof WebSocket }).WebSocket(
-      "wss://stream.aisstream.io/v0/stream"
-    );
+    const ws = new WebSocket("wss://stream.aisstream.io/v0/stream");
 
-    ws.onopen = () => {
+    ws.on("open", () => {
       ws.send(
         JSON.stringify({
-          // AISstream requires APIKey + a BoundingBoxes covering the
-          // whole globe so the MMSI filter can find the vessel anywhere.
+          // AISstream requires APIKey + a BoundingBoxes covering the whole
+          // globe so the MMSI filter can find the vessel anywhere on earth.
           APIKey: apiKey,
           BoundingBoxes: [[[-90, -180], [90, 180]]],
           FiltersShipMMSI: [mmsi],
           FilterMessageTypes: ["PositionReport"],
         })
       );
-    };
+    });
 
-    ws.onmessage = (event: MessageEvent) => {
+    ws.on("message", (data: WebSocket.RawData) => {
       try {
-        const raw =
-          typeof event.data === "string" ? event.data : String(event.data);
-        const msg: AISPositionMessage & { error?: string } = JSON.parse(raw);
+        const msg: AISPositionMessage & { error?: string } = JSON.parse(data.toString());
 
-        // AISstream sends an `error` field if the subscription is rejected
-        // (e.g. bad API key or malformed request) — surface it instead of
-        // blindly waiting for a PositionReport that will never arrive.
+        // AISstream replies with an `error` field if the subscription is
+        // rejected (bad key / malformed request) — surface it directly.
         if (msg.error) {
-          clearTimeout(timeout);
-          done(
-            NextResponse.json(
-              { status: "unknown", reason: `ais_error: ${msg.error}`, lastUpdated: new Date().toISOString() },
-              { headers: { "Cache-Control": "no-store" } }
-            )
-          );
+          done(unknown(`ais_error: ${msg.error}`));
           return;
         }
 
@@ -107,7 +100,6 @@ export async function GET() {
         const lat = meta?.latitude ?? pos.Latitude;
         const lon = meta?.longitude ?? pos.Longitude;
 
-        clearTimeout(timeout);
         done(
           NextResponse.json(
             {
@@ -124,16 +116,15 @@ export async function GET() {
           )
         );
       } catch {}
-    };
+    });
 
-    ws.onerror = () => {
-      clearTimeout(timeout);
-      done(
-        NextResponse.json(
-          { status: "unknown", reason: "ws_error", lastUpdated: new Date().toISOString() },
-          { headers: { "Cache-Control": "no-store" } }
-        )
-      );
-    };
+    // Capture the real error string so we stop guessing at "ws_error".
+    ws.on("error", (err: Error) => {
+      done(unknown(`ws_error: ${err?.message ?? "unknown"}`));
+    });
+
+    ws.on("close", (code: number, reason: Buffer) => {
+      done(unknown(`ws_closed: ${code} ${reason?.toString() || ""}`.trim()));
+    });
   });
 }
