@@ -47,6 +47,9 @@ export async function GET() {
 
   return new Promise<NextResponse>((resolve) => {
     let settled = false;
+    let opened = false;
+    let sent = false;
+    let gotMessage = false;
 
     function unknown(reason: string) {
       return NextResponse.json(
@@ -68,6 +71,7 @@ export async function GET() {
     const ws = new WebSocket("wss://stream.aisstream.io/v0/stream");
 
     ws.on("open", () => {
+      opened = true;
       ws.send(
         JSON.stringify({
           // AISstream requires APIKey + a BoundingBoxes covering the whole
@@ -76,13 +80,16 @@ export async function GET() {
           BoundingBoxes: [[[-90, -180], [90, 180]]],
           FiltersShipMMSI: [mmsi],
           FilterMessageTypes: ["PositionReport"],
-        })
+        }),
+        (err) => { if (!err) sent = true; }
       );
     });
 
     ws.on("message", (data: WebSocket.RawData) => {
       try {
-        const msg: AISPositionMessage & { error?: string } = JSON.parse(data.toString());
+        gotMessage = true;
+        const text = data.toString();
+        const msg: AISPositionMessage & { error?: string } = JSON.parse(text);
 
         // AISstream replies with an `error` field if the subscription is
         // rejected (bad key / malformed request) — surface it directly.
@@ -118,13 +125,18 @@ export async function GET() {
       } catch {}
     });
 
-    // Capture the real error string so we stop guessing at "ws_error".
+    // Lifecycle breadcrumbs so an abnormal close tells us *where* it died:
+    // opened=false  -> never connected (Vercel egress / TLS / DNS)
+    // opened=true   -> handshake OK; server dropped us after subscribe,
+    //                  which almost always means a bad/invalid API key.
+    const trace = () => `[opened=${opened},sent=${sent},gotMsg=${gotMessage}]`;
+
     ws.on("error", (err: Error) => {
-      done(unknown(`ws_error: ${err?.message ?? "unknown"}`));
+      done(unknown(`ws_error: ${err?.message ?? "unknown"} ${trace()}`));
     });
 
     ws.on("close", (code: number, reason: Buffer) => {
-      done(unknown(`ws_closed: ${code} ${reason?.toString() || ""}`.trim()));
+      done(unknown(`ws_closed: ${code} ${reason?.toString() || ""} ${trace()}`.trim()));
     });
   });
 }
