@@ -39,7 +39,8 @@ function classifyLocation(lat: number, lon: number): "lake_union" | "seattle" | 
 
 export async function GET() {
   const apiKey = process.env.AISSTREAM_API_KEY;
-  const mmsi = process.env.YACHT_MMSI ?? "319008200";
+  // Launchpad (IMO 9857511) — set YACHT_MMSI in env to override
+  const mmsi = process.env.YACHT_MMSI ?? "319233000";
 
   if (!apiKey) {
     return NextResponse.json(
@@ -96,7 +97,7 @@ export async function GET() {
               sog: pos.Sog,
               cog: pos.Cog,
               heading: pos.TrueHeading,
-              shipName: meta?.ShipName?.trim() ?? "LAETITIA",
+              shipName: meta?.ShipName?.trim() ?? "LAUNCHPAD",
               lastUpdated: meta?.time_utc ?? new Date().toISOString(),
             },
             {

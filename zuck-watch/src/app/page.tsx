@@ -81,6 +81,9 @@ export default function Home() {
       ? "aisstream api key not configured"
       : "ais transponder off · zuck goes dark";
 
+  // Launchpad sets destination "XXX" to obscure tracking — show this when we have a signal
+  const showXxxNote = status === "lake_union" || status === "seattle";
+
   const emoji =
     status === "lake_union" ? "🛥️" :
     status === "seattle"    ? "⛵" :
@@ -231,6 +234,26 @@ export default function Home() {
               <div style={{ color: "var(--blue)", fontWeight: 500 }}>{value}</div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* XXX destination note */}
+      {showXxxNote && (
+        <div
+          style={{
+            fontFamily: "var(--font-inter)",
+            fontSize: "0.7rem",
+            color: "var(--gold-dim)",
+            letterSpacing: "0.06em",
+            background: "rgba(245,200,66,0.05)",
+            border: "1px solid rgba(245,200,66,0.12)",
+            borderRadius: "6px",
+            padding: "0.5rem 1rem",
+            textAlign: "center",
+            zIndex: 1,
+          }}
+        >
+          ⚠️ &nbsp;AIS destination set to &ldquo;XXX&rdquo; — deliberately obscured
         </div>
       )}
 
