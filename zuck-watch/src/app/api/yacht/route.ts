@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import WebSocket from "ws";
 
 export const revalidate = 0;
 
@@ -24,22 +23,15 @@ interface AISPositionMessage {
 }
 
 function classifyLocation(lat: number, lon: number): "lake_union" | "seattle" | "away" {
-  if (
-    lat >= 47.635 && lat <= 47.655 &&
-    lon >= -122.345 && lon <= -122.318
-  ) return "lake_union";
-
-  if (
-    lat >= 47.4 && lat <= 47.85 &&
-    lon >= -122.6 && lon <= -122.1
-  ) return "seattle";
-
+  if (lat >= 47.635 && lat <= 47.655 && lon >= -122.345 && lon <= -122.318)
+    return "lake_union";
+  if (lat >= 47.4 && lat <= 47.85 && lon >= -122.6 && lon <= -122.1)
+    return "seattle";
   return "away";
 }
 
 export async function GET() {
   const apiKey = process.env.AISSTREAM_API_KEY;
-  // Launchpad (IMO 9857511, MMSI 538072122) — set YACHT_MMSI in env to override
   const mmsi = process.env.YACHT_MMSI ?? "538072122";
 
   if (!apiKey) {
@@ -50,9 +42,17 @@ export async function GET() {
   }
 
   return new Promise<NextResponse>((resolve) => {
-    const timeout = setTimeout(() => {
+    let settled = false;
+
+    function done(response: NextResponse) {
+      if (settled) return;
+      settled = true;
       try { ws.close(); } catch {}
-      resolve(
+      resolve(response);
+    }
+
+    const timeout = setTimeout(() => {
+      done(
         NextResponse.json(
           { status: "unknown", reason: "timeout", lastUpdated: new Date().toISOString() },
           { headers: { "Cache-Control": "no-store" } }
@@ -60,9 +60,12 @@ export async function GET() {
       );
     }, 8000);
 
-    const ws = new WebSocket("wss://stream.aisstream.io/v0/stream");
+    // Use Node.js 22 built-in WebSocket (no external package needed)
+    const ws = new (globalThis as unknown as { WebSocket: typeof WebSocket }).WebSocket(
+      "wss://stream.aisstream.io/v0/stream"
+    );
 
-    ws.on("open", () => {
+    ws.onopen = () => {
       ws.send(
         JSON.stringify({
           Apikey: apiKey,
@@ -70,11 +73,13 @@ export async function GET() {
           FilterMessageTypes: ["PositionReport"],
         })
       );
-    });
+    };
 
-    ws.on("message", (raw) => {
+    ws.onmessage = (event: MessageEvent) => {
       try {
-        const msg: AISPositionMessage = JSON.parse(raw.toString());
+        const msg: AISPositionMessage = JSON.parse(
+          typeof event.data === "string" ? event.data : String(event.data)
+        );
         if (msg.MessageType !== "PositionReport") return;
 
         const pos = msg.Message.PositionReport;
@@ -83,15 +88,12 @@ export async function GET() {
 
         const lat = meta?.latitude ?? pos.Latitude;
         const lon = meta?.longitude ?? pos.Longitude;
-        const location = classifyLocation(lat, lon);
 
         clearTimeout(timeout);
-        ws.close();
-
-        resolve(
+        done(
           NextResponse.json(
             {
-              status: location,
+              status: classifyLocation(lat, lon),
               lat,
               lon,
               sog: pos.Sog,
@@ -100,24 +102,20 @@ export async function GET() {
               shipName: meta?.ShipName?.trim() ?? "LAUNCHPAD",
               lastUpdated: meta?.time_utc ?? new Date().toISOString(),
             },
-            {
-              headers: {
-                "Cache-Control": "public, s-maxage=120, stale-while-revalidate=60",
-              },
-            }
+            { headers: { "Cache-Control": "public, s-maxage=120, stale-while-revalidate=60" } }
           )
         );
       } catch {}
-    });
+    };
 
-    ws.on("error", () => {
+    ws.onerror = () => {
       clearTimeout(timeout);
-      resolve(
+      done(
         NextResponse.json(
           { status: "unknown", reason: "ws_error", lastUpdated: new Date().toISOString() },
           { headers: { "Cache-Control": "no-store" } }
         )
       );
-    });
+    };
   });
 }
