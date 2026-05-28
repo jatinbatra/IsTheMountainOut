@@ -68,7 +68,10 @@ export async function GET() {
     ws.onopen = () => {
       ws.send(
         JSON.stringify({
-          Apikey: apiKey,
+          // AISstream requires APIKey + a BoundingBoxes covering the
+          // whole globe so the MMSI filter can find the vessel anywhere.
+          APIKey: apiKey,
+          BoundingBoxes: [[[-90, -180], [90, 180]]],
           FiltersShipMMSI: [mmsi],
           FilterMessageTypes: ["PositionReport"],
         })
@@ -77,9 +80,24 @@ export async function GET() {
 
     ws.onmessage = (event: MessageEvent) => {
       try {
-        const msg: AISPositionMessage = JSON.parse(
-          typeof event.data === "string" ? event.data : String(event.data)
-        );
+        const raw =
+          typeof event.data === "string" ? event.data : String(event.data);
+        const msg: AISPositionMessage & { error?: string } = JSON.parse(raw);
+
+        // AISstream sends an `error` field if the subscription is rejected
+        // (e.g. bad API key or malformed request) — surface it instead of
+        // blindly waiting for a PositionReport that will never arrive.
+        if (msg.error) {
+          clearTimeout(timeout);
+          done(
+            NextResponse.json(
+              { status: "unknown", reason: `ais_error: ${msg.error}`, lastUpdated: new Date().toISOString() },
+              { headers: { "Cache-Control": "no-store" } }
+            )
+          );
+          return;
+        }
+
         if (msg.MessageType !== "PositionReport") return;
 
         const pos = msg.Message.PositionReport;
