@@ -34,9 +34,14 @@ function classifyLocation(lat: number, lon: number): "lake_union" | "seattle" | 
   return "away";
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   const apiKey = process.env.AISSTREAM_API_KEY;
   const mmsi = process.env.YACHT_MMSI ?? "538072122";
+
+  // ?debug=1 subscribes to the whole globe with NO vessel filter. If the
+  // API key is valid this floods with ship data instantly (proving the key
+  // works and isolating the issue to the MMSI filter / vessel transmission).
+  const debug = new URL(request.url).searchParams.get("debug") === "1";
 
   if (!apiKey) {
     return NextResponse.json(
@@ -72,17 +77,17 @@ export async function GET() {
 
     ws.on("open", () => {
       opened = true;
-      ws.send(
-        JSON.stringify({
-          // AISstream requires APIKey + a BoundingBoxes covering the whole
-          // globe so the MMSI filter can find the vessel anywhere on earth.
-          APIKey: apiKey,
-          BoundingBoxes: [[[-90, -180], [90, 180]]],
-          FiltersShipMMSI: [mmsi],
-          FilterMessageTypes: ["PositionReport"],
-        }),
-        (err) => { if (!err) sent = true; }
-      );
+      const sub: Record<string, unknown> = {
+        // AISstream requires APIKey + a BoundingBoxes covering the whole
+        // globe so the MMSI filter can find the vessel anywhere on earth.
+        APIKey: apiKey,
+        BoundingBoxes: [[[-90, -180], [90, 180]]],
+        FilterMessageTypes: ["PositionReport"],
+      };
+      // In normal mode, narrow to our one vessel. In debug mode, omit the
+      // filter so ANY ship's position proves the key/connection works.
+      if (!debug) sub.FiltersShipMMSI = [mmsi];
+      ws.send(JSON.stringify(sub), (err) => { if (!err) sent = true; });
     });
 
     ws.on("message", (data: WebSocket.RawData) => {
@@ -95,6 +100,23 @@ export async function GET() {
         // rejected (bad key / malformed request) — surface it directly.
         if (msg.error) {
           done(unknown(`ais_error: ${msg.error}`));
+          return;
+        }
+
+        // Debug mode: any message at all means the key + connection work.
+        if (debug) {
+          done(
+            NextResponse.json(
+              {
+                status: "debug_ok",
+                keyWorks: true,
+                firstMessageType: msg.MessageType,
+                shipName: msg.MetaData?.ShipName?.trim(),
+                mmsiSeen: msg.MetaData?.MMSI,
+              },
+              { headers: { "Cache-Control": "no-store" } }
+            )
+          );
           return;
         }
 
