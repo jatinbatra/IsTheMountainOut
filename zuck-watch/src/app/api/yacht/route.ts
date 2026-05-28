@@ -56,9 +56,21 @@ export async function GET(request: Request) {
     let sent = false;
     let gotMessage = false;
 
+    // Safe fingerprint of the key Vercel actually loaded (debug mode only).
+    // Lets us compare against the aisstream.io dashboard without exposing it.
+    const keyInfo = debug && apiKey
+      ? {
+          keyLen: apiKey.length,
+          keyHead: apiKey.slice(0, 4),
+          keyTail: apiKey.slice(-4),
+          keyHasWhitespace: /\s/.test(apiKey),
+          keyHasQuotes: /["']/.test(apiKey),
+        }
+      : undefined;
+
     function unknown(reason: string) {
       return NextResponse.json(
-        { status: "unknown", reason, lastUpdated: new Date().toISOString() },
+        { status: "unknown", reason, ...(keyInfo && { keyInfo }), lastUpdated: new Date().toISOString() },
         { headers: { "Cache-Control": "no-store" } }
       );
     }
