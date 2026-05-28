@@ -39,8 +39,8 @@ function classifyLocation(lat: number, lon: number): "lake_union" | "seattle" | 
 
 export async function GET() {
   const apiKey = process.env.AISSTREAM_API_KEY;
-  // Launchpad (IMO 9857511) — set YACHT_MMSI in env to override
-  const mmsi = process.env.YACHT_MMSI ?? "319233000";
+  // Launchpad (IMO 9857511, MMSI 538072122) — set YACHT_MMSI in env to override
+  const mmsi = process.env.YACHT_MMSI ?? "538072122";
 
   if (!apiKey) {
     return NextResponse.json(
