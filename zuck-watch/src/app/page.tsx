@@ -321,8 +321,12 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <footer style={{ position: "fixed", bottom: "1rem", left: 0, right: 0, textAlign: "center", fontFamily: "var(--font-inter)", fontSize: "0.65rem", color: "var(--text-dim)", letterSpacing: "0.1em", zIndex: 1, pointerEvents: "none" }}>
+      <footer style={{ position: "fixed", bottom: "1rem", left: 0, right: 0, textAlign: "center", fontFamily: "var(--font-inter)", fontSize: "0.65rem", color: "var(--text-dim)", letterSpacing: "0.1em", zIndex: 1 }}>
         no cookies · no tracking · we just want to see the boat
+        {" · "}
+        <a href="https://x.com/jatin_batra1" target="_blank" rel="noopener noreferrer" style={{ color: "var(--blue)", textDecoration: "none" }}>
+          @jatin_batra1
+        </a>
       </footer>
     </main>
   );
