@@ -322,135 +322,141 @@ export default function Dashboard({ initialData }: Props) {
             viewport={{ once: true, margin: "-40px" }}
             variants={staggerParent}
           >
-            <VisibilityCard
-              score={score}
-              isVisible={isVisible}
-              isNight={isNight}
-              isValidating={isValidating}
-              lastUpdate={lastUpdate}
-              now={now}
-              accentColor={accentColor}
-              accentGlow={accentGlow}
-              fadeUp={fadeUp}
-              className="card-score"
-              confidence={data.visibility.confidence}
-              durationMessage={data.visibility.durationMessage}
-            />
+            {/* ── Column A ── */}
+            <div className="dash-col">
+              <VisibilityCard
+                score={score}
+                isVisible={isVisible}
+                isNight={isNight}
+                isValidating={isValidating}
+                lastUpdate={lastUpdate}
+                now={now}
+                accentColor={accentColor}
+                accentGlow={accentGlow}
+                fadeUp={fadeUp}
+                className="card-score"
+                confidence={data.visibility.confidence}
+                durationMessage={data.visibility.durationMessage}
+              />
 
-            <FactorsCard 
-              isVisible={isVisible}
-              factors={factors}
-              fadeUp={fadeUp}
-              className="card-factors"
-            />
+              <FactorsCard
+                isVisible={isVisible}
+                factors={factors}
+                fadeUp={fadeUp}
+                className="card-factors"
+              />
 
-            <NeighborhoodCard 
-              allScores={allScores}
-              neighborhoodLabels={NEIGHBORHOOD_LABELS}
-              baseScore={score}
-              onSelectNeighborhood={setNeighborhood}
-              fadeUp={fadeUp}
-              className="card-map"
-            />
+              {/* Community sightings — "I see it too" */}
+              <motion.div variants={fadeUp} className="dash-card">
+                <div className="dash-card-header">Community Sightings</div>
+                <SpotterButton isVisible={isVisible} score={score} />
+                {(!isVisible || score < 55) && (
+                  <p className="text-[11px] mt-2" style={{ color: "var(--text-tertiary)" }}>
+                    When the mountain is out, tap to confirm you can see it — and see how many others can too.
+                  </p>
+                )}
+              </motion.div>
 
-            <ForecastCard
-              viewpointName={VIEWPOINTS[selectedVp]?.name}
-              hourlyTimeline={data.hourlyTimeline}
-              weeklyForecast={data.weeklyForecast}
-              currentScore={score}
-              fadeUp={fadeUp}
-            />
+              {/* Alerts */}
+              <motion.div variants={fadeUp} className="dash-card">
+                <div className="dash-card-header">Get an Alert</div>
+                <p className="text-[11px] mb-3 leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                  Be notified the moment Rainier comes out.
+                </p>
+                <NotifyButton />
+              </motion.div>
+            </div>
 
-            <motion.div variants={fadeUp}><FeaturedWebcam /></motion.div>
+            {/* ── Column B (map + forecast) ── */}
+            <div className="dash-col">
+              <NeighborhoodCard
+                allScores={allScores}
+                neighborhoodLabels={NEIGHBORHOOD_LABELS}
+                baseScore={score}
+                onSelectNeighborhood={setNeighborhood}
+                fadeUp={fadeUp}
+                className="card-map"
+              />
 
-            <motion.div variants={fadeUp} className="dash-card dash-card-warm">
-              <div className="dash-card-header" style={{ color: "var(--accent-gold)" }}>PNW Trivia</div>
-              <div className="flex items-start gap-4">
-                <div className="fun-fact-badge">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/images/ui/mountain-illustration.svg" alt="" aria-hidden="true" className="w-12 h-10 flex-shrink-0" />
+              <ForecastCard
+                viewpointName={VIEWPOINTS[selectedVp]?.name}
+                hourlyTimeline={data.hourlyTimeline}
+                weeklyForecast={data.weeklyForecast}
+                currentScore={score}
+                fadeUp={fadeUp}
+              />
+            </div>
+
+            {/* ── Column C ── */}
+            <div className="dash-col">
+              <motion.div variants={fadeUp}><FeaturedWebcam /></motion.div>
+
+              <motion.div variants={fadeUp} className="dash-card dash-card-warm">
+                <div className="dash-card-header" style={{ color: "var(--accent-gold)" }}>PNW Trivia</div>
+                <div className="flex items-start gap-4">
+                  <div className="fun-fact-badge">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/images/ui/mountain-illustration.svg" alt="" aria-hidden="true" className="w-12 h-10 flex-shrink-0" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <AnimatePresence mode="wait">
+                      <motion.p
+                        key={factIdx}
+                        className="text-[11px] leading-relaxed"
+                        style={{ color: "var(--text-secondary)" }}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -8 }}
+                        transition={{ duration: 0.4 }}
+                      >
+                        {FUN_FACTS[factIdx].text}
+                      </motion.p>
+                    </AnimatePresence>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <AnimatePresence mode="wait">
-                    <motion.p
-                      key={factIdx}
-                      className="text-[11px] leading-relaxed"
-                      style={{ color: "var(--text-secondary)" }}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      transition={{ duration: 0.4 }}
-                    >
-                      {FUN_FACTS[factIdx].text}
-                    </motion.p>
-                  </AnimatePresence>
-                </div>
-              </div>
-            </motion.div>
+              </motion.div>
 
-            <motion.div variants={fadeUp} className="dash-card card-streak">
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="grid grid-cols-2 gap-4">
+                <motion.div variants={fadeUp} className="dash-card">
                   <div className="dash-card-header" style={{ marginBottom: "8px" }}>Streak</div>
                   <div className="flex items-baseline gap-2">
                     <span className="font-display" style={{ fontSize: "2.5rem", color: "var(--accent-gold)" }}>3</span>
                     <span className="text-[10px] font-semibold" style={{ color: "var(--text-secondary)" }}>DAYS</span>
                   </div>
                   <p className="text-[9px] mt-1" style={{ color: "var(--text-tertiary)" }}>
-                    in a row the mountain<br />has been visible from here!
+                    in a row visible from here
                   </p>
-                </div>
-                <GlobalStreakBadge />
+                </motion.div>
+
+                <motion.div variants={fadeUp} className="dash-card">
+                  <div className="dash-card-header">Direction</div>
+                  <div className="flex items-center gap-2">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/images/ui/compass.svg" alt="" aria-hidden="true" className="w-9 h-9" />
+                    <div>
+                      <p className="font-display" style={{ fontSize: "1.1rem", color: "var(--text-primary)" }}>SSE</p>
+                      <p className="text-[9px]" style={{ color: "var(--text-tertiary)" }}>54 mi</p>
+                    </div>
+                  </div>
+                </motion.div>
               </div>
-            </motion.div>
 
-            <motion.div variants={fadeUp} className="dash-card card-elevation">
-              <div className="dash-card-header">Elevation</div>
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1">
-                  <p className="text-[12px] font-semibold" style={{ color: "var(--text-primary)" }}>You&apos;re at 275 ft</p>
-                  <p className="text-[9px] mt-0.5 leading-relaxed" style={{ color: "var(--text-tertiary)" }}>
-                    Every 1k ft helps.
-                  </p>
+              <motion.div variants={fadeUp} className="dash-card">
+                <div className="dash-card-header">Elevation</div>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1">
+                    <p className="text-[12px] font-semibold" style={{ color: "var(--text-primary)" }}>You&apos;re at 275 ft</p>
+                    <p className="text-[9px] mt-0.5 leading-relaxed" style={{ color: "var(--text-tertiary)" }}>
+                      Every 1k ft of elevation improves your odds.
+                    </p>
+                  </div>
+                  <svg viewBox="0 0 56 60" className="w-10 h-10 flex-shrink-0" aria-hidden="true">
+                    <path d="M8 56 L24 22 L32 6 L40 22 L56 56 Z" fill="var(--accent-gold)" opacity="0.15" />
+                    <path d="M24 22 L32 6 L40 22 L36 14 L28 14 Z" fill="var(--accent-gold)" opacity="0.3" />
+                  </svg>
                 </div>
-                <svg viewBox="0 0 56 60" className="w-10 h-10 flex-shrink-0" aria-hidden="true">
-                  <path d="M8 56 L24 22 L32 6 L40 22 L56 56 Z" fill="var(--accent-gold)" opacity="0.15" />
-                  <path d="M24 22 L32 6 L40 22 L36 14 L28 14 Z" fill="var(--accent-gold)" opacity="0.3" />
-                </svg>
-              </div>
-            </motion.div>
-
-            <motion.div variants={fadeUp} className="dash-card card-direction">
-              <div className="dash-card-header">Direction</div>
-              <div className="flex items-center gap-3">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/images/ui/compass.svg" alt="" aria-hidden="true" className="w-10 h-10" />
-                <div>
-                  <p className="font-display" style={{ fontSize: "1.2rem", color: "var(--text-primary)" }}>SSE</p>
-                  <p className="text-[9px]" style={{ color: "var(--text-tertiary)" }}>54 mi away</p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* ── Community sightings — "I see it too" ── */}
-            <motion.div variants={fadeUp} className="dash-card card-sightings">
-              <div className="dash-card-header">Community Sightings</div>
-              <SpotterButton isVisible={isVisible} score={score} />
-              {(!isVisible || score < 55) && (
-                <p className="text-[11px] mt-2" style={{ color: "var(--text-tertiary)" }}>
-                  When the mountain is out, tap to confirm you can see it — and see how many others can too.
-                </p>
-              )}
-            </motion.div>
-
-            {/* ── Alerts ── */}
-            <motion.div variants={fadeUp} className="dash-card card-alerts">
-              <div className="dash-card-header">Get an Alert</div>
-              <p className="text-[11px] mb-3 leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                Be notified the moment Rainier comes out.
-              </p>
-              <NotifyButton />
-            </motion.div>
+              </motion.div>
+            </div>
           </motion.div>
 
           <footer id="section-about" className="divider-cedar mt-12 pt-8 pb-10">
