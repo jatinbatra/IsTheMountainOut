@@ -50,10 +50,6 @@ export default function Sidebar({ activeNav, onNavClick }: SidebarProps) {
           <span>{item.label}</span>
         </button>
       ))}
-
-      <div className="sidebar-bottom">
-        <span className="sidebar-calling">THE MOUNTAIN IS CALLING</span>
-      </div>
     </nav>
   );
 }

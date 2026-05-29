@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Compass } from "lucide-react";
 
 import FeaturedWebcam from "@/components/FeaturedWebcam";
+import SpotterButton from "@/components/SpotterButton";
+import NotifyButton from "@/components/NotifyButton";
 import GlobalStreakBadge from "@/components/GlobalStreakBadge";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import PrivacyCommitment from "@/components/PrivacyCommitment";
@@ -321,7 +323,7 @@ export default function Dashboard({ initialData }: Props) {
             viewport={{ once: true, margin: "-40px" }}
             variants={staggerParent}
           >
-            <VisibilityCard 
+            <VisibilityCard
               score={score}
               isVisible={isVisible}
               isNight={isNight}
@@ -332,6 +334,8 @@ export default function Dashboard({ initialData }: Props) {
               accentGlow={accentGlow}
               fadeUp={fadeUp}
               className="card-score"
+              confidence={data.visibility.confidence}
+              durationMessage={data.visibility.durationMessage}
             />
 
             <FactorsCard 
@@ -429,6 +433,26 @@ export default function Dashboard({ initialData }: Props) {
                   <p className="text-[9px]" style={{ color: "var(--text-tertiary)" }}>54 mi away</p>
                 </div>
               </div>
+            </motion.div>
+
+            {/* ── Community sightings — "I see it too" ── */}
+            <motion.div variants={fadeUp} className="dash-card card-sightings">
+              <div className="dash-card-header">Community Sightings</div>
+              <SpotterButton isVisible={isVisible} score={score} />
+              {(!isVisible || score < 55) && (
+                <p className="text-[11px] mt-2" style={{ color: "var(--text-tertiary)" }}>
+                  When the mountain is out, tap to confirm you can see it — and see how many others can too.
+                </p>
+              )}
+            </motion.div>
+
+            {/* ── Alerts ── */}
+            <motion.div variants={fadeUp} className="dash-card card-alerts">
+              <div className="dash-card-header">Get an Alert</div>
+              <p className="text-[11px] mb-3 leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                Be notified the moment Rainier comes out.
+              </p>
+              <NotifyButton />
             </motion.div>
           </motion.div>
 
