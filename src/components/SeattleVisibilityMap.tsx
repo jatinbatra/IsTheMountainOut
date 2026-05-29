@@ -120,19 +120,19 @@ export default function SeattleVisibilityMap({ scores, labels, onSelectNeighborh
         </defs>
 
         {/* Background */}
-        <rect width="320" height="290" fill="rgba(15,23,42,0.4)" rx="12" />
+        <rect width="320" height="290" fill="rgba(26,22,17,0.5)" rx="12" />
 
         {/* Water bodies */}
         <path
           d="M0,0 L28,0 L30,40 Q35,90 25,140 Q18,190 28,250 L20,290 L0,290 Z"
-          fill="#1e293b" opacity="0.8"
+          fill="#2b3a44" opacity="0.8"
         />
         {/* Lake Union */}
-        <ellipse cx="170" cy="80" rx="18" ry="12" fill="#1e293b" opacity="0.7" />
+        <ellipse cx="170" cy="80" rx="18" ry="12" fill="#2b3a44" opacity="0.7" />
         {/* Lake Washington */}
         <path
           d="M280,10 L320,10 L320,280 L280,280 Q275,200 285,140 Q290,80 280,10 Z"
-          fill="#1e293b" opacity="0.7"
+          fill="#2b3a44" opacity="0.7"
         />
 
         {/* Subtle grid */}
@@ -211,7 +211,7 @@ export default function SeattleVisibilityMap({ scores, labels, onSelectNeighborh
               <rect
                 x={tx - 55} y={ty - 12}
                 width="110" height="24" rx="12"
-                fill="rgba(15,23,42,0.95)"
+                fill="rgba(22,19,15,0.96)"
                 stroke="rgba(255,255,255,0.15)" strokeWidth="1"
               />
               <text
