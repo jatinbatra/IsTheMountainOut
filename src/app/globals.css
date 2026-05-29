@@ -1,46 +1,46 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════════════════
-   IS THE MOUNTAIN OUT — HIGH-CONTRAST NIGHT THEME
-   Midnight Navy · Electric Teal · Golden Amber · Glass
+   IS THE MOUNTAIN OUT — WARM GOLDEN-HOUR THEME
+   Walnut Charcoal · Sage Green · Amber Gold · Dusty Rose
    ═══════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Page — deep midnight navy ── */
-  --bg-primary: #050608;
-  --bg-secondary: #0a0c10;
-  --bg-card: rgba(15, 18, 25, 0.7);
-  --bg-card-hover: rgba(20, 24, 32, 0.9);
-  --bg-tertiary: rgba(10, 12, 16, 0.6);
+  /* ── Page — warm walnut charcoal ── */
+  --bg-primary: #16130f;
+  --bg-secondary: #1c1813;
+  --bg-card: rgba(34, 29, 22, 0.72);
+  --bg-card-hover: rgba(42, 36, 27, 0.86);
+  --bg-tertiary: rgba(26, 22, 17, 0.6);
 
-  /* ── Text — crisp bone white and electric teal ── */
-  --text-hero: #ffffff;
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1; /* Brightened for readability */
-  --text-tertiary: #94a3b8;  /* Brightened for readability */
-  --text-warm: #fbbf24;
+  /* ── Text — warm cream ── */
+  --text-hero: #fbf6ee;
+  --text-primary: #ece4d6;
+  --text-secondary: #c6baa6;
+  --text-tertiary: #948775;
+  --text-warm: #e0a96d;
 
-  /* ── Accents — vibrant tech-forward tones ── */
-  --accent: #2dd4bf;      /* Vibrant Teal */
-  --accent-dim: rgba(45, 212, 191, 0.1);
-  --accent-glow: rgba(45, 212, 191, 0.3);
-  --accent-pink: #f43f5e; /* Vibrant Rose */
-  --accent-pink-dim: rgba(244, 63, 94, 0.1);
-  --accent-pink-glow: rgba(244, 63, 94, 0.3);
-  --accent-gold: #facc15;
-  --accent-amber: #f59e0b;
-  --accent-blue: #38bdf8;
-  --accent-warm: #fb923c;
+  /* ── Accents — warm golden-hour multi-tone ── */
+  --accent: #6cae7e;      /* Sage forest green — visible / good */
+  --accent-dim: rgba(108, 174, 126, 0.1);
+  --accent-glow: rgba(108, 174, 126, 0.3);
+  --accent-pink: #d98a96; /* Dusty rose — gauge / pin / hidden */
+  --accent-pink-dim: rgba(217, 138, 150, 0.1);
+  --accent-pink-glow: rgba(217, 138, 150, 0.3);
+  --accent-gold: #e0a96d; /* Amber gold — headline accent / chrome */
+  --accent-amber: #d99a5b;
+  --accent-blue: #7ba8c4;
+  --accent-warm: #e0a96d;
 
-  /* ── Glass ── */
-  --glass: rgba(15, 23, 42, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-highlight: rgba(255, 255, 255, 0.03);
+  /* ── Glass — warm ── */
+  --glass: rgba(34, 29, 22, 0.6);
+  --glass-border: rgba(224, 169, 109, 0.12);
+  --glass-highlight: rgba(255, 245, 230, 0.03);
 
   /* ── Shadows ── */
-  --shadow-card: 0 10px 30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.03);
-  --shadow-deep: 0 20px 50px rgba(0,0,0,0.7);
-  --shadow-glow: 0 0 40px rgba(45, 212, 191, 0.05);
+  --shadow-card: 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,245,230,0.04);
+  --shadow-deep: 0 20px 50px rgba(0,0,0,0.6);
+  --shadow-glow: 0 0 40px rgba(224, 169, 109, 0.06);
 
   /* ── Radii ── */
   --radius: 12px;
@@ -66,7 +66,7 @@ html {
 }
 
 body {
-  background: radial-gradient(circle at 50% -10%, #0f172a 0%, var(--bg-primary) 80%);
+  background: radial-gradient(circle at 50% -10%, #2a2018 0%, var(--bg-primary) 75%);
   color: var(--text-primary);
   font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -126,38 +126,37 @@ body {
   text-shadow: 0 0 40px rgba(0,0,0,0.5);
 }
 
-/* ─── Hero Answer — the giant YES/NO ─── */
+/* ─── Hero Answer — "YES. CLEAR PEAK." two-tone serif ─── */
 
 .hero-answer {
   font-family: var(--font-display), Georgia, 'Times New Roman', serif;
-  font-weight: 800;
+  font-weight: 700;
   text-align: center;
-  line-height: 0.82;
-  letter-spacing: -0.06em;
-  font-size: clamp(6rem, 18vw, 14rem);
-  text-shadow: 0 0 160px rgba(0,0,0,0.5), 0 4px 24px rgba(0,0,0,0.5);
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+  font-size: clamp(2.8rem, 7.5vw, 6rem);
+  text-shadow: 0 4px 30px rgba(0,0,0,0.55);
   position: relative;
   z-index: 2;
+  max-width: 92%;
 }
 
-.hero-answer-yes {
-  color: var(--accent);
-  text-shadow: 0 0 80px var(--accent-glow), 0 0 200px rgba(45,212,191,0.15), 0 4px 24px rgba(0,0,0,0.5);
+.hero-answer-primary {
+  color: var(--text-hero);
 }
 
-.hero-answer-no {
+.hero-answer-accent-yes {
+  color: var(--accent-gold);
+  text-shadow: 0 0 60px rgba(224,169,109,0.35), 0 4px 24px rgba(0,0,0,0.5);
+}
+
+.hero-answer-accent-no {
   color: var(--accent-pink);
-  text-shadow: 0 0 80px var(--accent-pink-glow), 0 0 200px rgba(244,63,94,0.15), 0 4px 24px rgba(0,0,0,0.5);
+  text-shadow: 0 0 60px var(--accent-pink-glow), 0 4px 24px rgba(0,0,0,0.5);
 }
 
 .hero-status-word {
-  font-family: var(--font-mono), monospace;
-  font-size: clamp(0.9rem, 2.5vw, 1.4rem);
-  text-transform: uppercase;
-  letter-spacing: 0.35em;
-  color: rgba(255,255,255,0.4);
-  margin-top: 12px;
-  text-align: center;
+  display: none;
 }
 
 .hero-skyline-silhouette {
@@ -211,8 +210,8 @@ body {
 
 .sidebar {
   width: 78px;
-  background: #020406;
-  border-right: 1px solid rgba(255, 255, 255, 0.02);
+  background: #0e0c09;
+  border-right: 1px solid rgba(224, 169, 109, 0.06);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -265,7 +264,7 @@ body {
 
 .sidebar-item.active {
   color: var(--accent);
-  background: rgba(45, 212, 191, 0.06);
+  background: rgba(108, 174, 126, 0.08);
 }
 
 .sidebar-bottom {
@@ -347,9 +346,9 @@ body {
 }
 
 .viewpoint-glass {
-  background: rgba(10, 12, 18, 0.8);
+  background: rgba(26, 22, 17, 0.82);
   backdrop-filter: blur(30px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(224, 169, 109, 0.08);
   border-radius: 24px;
   padding: 16px;
   display: flex;
@@ -443,8 +442,8 @@ body {
 /* ─── Misc ─── */
 
 .weather-widget {
-  background: rgba(10, 12, 18, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(26, 22, 17, 0.82);
+  border: 1px solid rgba(224, 169, 109, 0.1);
   padding: 12px 18px;
   border-radius: 16px;
 }
