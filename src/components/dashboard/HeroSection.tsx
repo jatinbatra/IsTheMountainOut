@@ -30,7 +30,6 @@ interface HeroSectionProps {
 export default function HeroSection({
   backgroundImage,
   viewpointName,
-  viewpointSub,
   timeStr,
   tempF,
   weatherLabel,
@@ -153,16 +152,22 @@ export default function HeroSection({
         </motion.p>
 
         <motion.h1
-          className="hero-answer"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
+          className={`hero-answer ${isVisible ? "hero-answer-yes" : "hero-answer-no"}`}
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3, duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
         >
-          <span className="hero-answer-primary">{isVisible ? "YES." : "NOT TODAY."}</span>{" "}
-          <span className={isVisible ? "hero-answer-accent-yes" : "hero-answer-accent-no"}>
-            {statusWord}.
-          </span>
+          {isVisible ? "YES. CLEAR PEAK." : "NOT TODAY."}
         </motion.h1>
+
+        <motion.p
+          className="hero-status-word"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7, duration: 0.8 }}
+        >
+          {statusWord}
+        </motion.p>
 
         <motion.p
           className="hero-subtitle"

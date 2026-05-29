@@ -148,8 +148,6 @@ export default function SeattleVisibilityMap({ scores, labels, onSelectNeighborh
           const s = scoreMap.get(hood.id) ?? 50;
           const color = scoreColor(s);
           const isHovered = hovered === hood.id;
-          const name = labels[hood.id] ?? hood.id;
-
           return (
             <g
               key={hood.id}
