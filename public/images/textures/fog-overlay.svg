@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice">
+  <filter id="fog">
+    <feTurbulence type="fractalNoise" baseFrequency="0.012 0.02" numOctaves="4" seed="7" stitchTiles="stitch"/>
+    <feColorMatrix type="saturate" values="0"/>
+    <feComponentTransfer><feFuncA type="gamma" amplitude="1" exponent="3" offset="0"/></feComponentTransfer>
+    <feGaussianBlur stdDeviation="6"/>
+  </filter>
+  <rect width="600" height="400" filter="url(#fog)" opacity="0.55"/>
+</svg>

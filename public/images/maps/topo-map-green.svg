@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice">
+  <rect width="600" height="400" fill="#2f4a3a"/>
+  <rect width="600" height="400" fill="#3a5a47" opacity="0.4"/>
+  <g fill="none" stroke="#1d3328" stroke-width="0.8" opacity="0.5">
+    <path d="M-20,120 C120,80 200,170 320,130 C440,90 520,160 640,120"/>
+    <path d="M-20,150 C120,110 200,200 320,160 C440,120 520,190 640,150"/>
+    <path d="M-20,185 C120,150 210,235 330,195 C450,155 530,225 640,185"/>
+    <path d="M-20,230 C140,190 220,275 340,240 C460,200 540,265 640,230"/>
+    <path d="M-20,275 C140,240 230,320 350,285 C470,250 550,310 640,275"/>
+    <ellipse cx="220" cy="200" rx="60" ry="40"/>
+    <ellipse cx="220" cy="200" rx="38" ry="24"/>
+    <ellipse cx="420" cy="150" rx="48" ry="30"/>
+  </g>
+  <path d="M0,300 C140,270 230,340 350,310 C470,285 560,330 600,310 L600,400 L0,400 Z" fill="#243d2f" opacity="0.6"/>
+</svg>

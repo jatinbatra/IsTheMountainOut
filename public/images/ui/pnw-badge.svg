@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <defs>
+    <style>.g{fill:none;stroke:#e0a96d;stroke-width:1.5}</style>
+  </defs>
+  <circle cx="100" cy="100" r="92" class="g"/>
+  <circle cx="100" cy="100" r="78" class="g" stroke-width="1"/>
+  <!-- arched top text -->
+  <path id="top" d="M40,100 A60,60 0 0 1 160,100" fill="none"/>
+  <text fill="#e0a96d" font-family="Georgia, serif" font-size="13" font-weight="700" letter-spacing="3">
+    <textPath href="#top" startOffset="50%" text-anchor="middle">PACIFIC NORTHWEST</textPath>
+  </text>
+  <!-- bottom text -->
+  <text x="100" y="150" fill="#e0a96d" font-family="Georgia, serif" font-size="13" font-weight="700"
+        letter-spacing="6" text-anchor="middle">PNW</text>
+  <!-- side dots -->
+  <circle cx="46" cy="128" r="2" fill="#e0a96d"/>
+  <circle cx="154" cy="128" r="2" fill="#e0a96d"/>
+  <!-- three pines -->
+  <g fill="#e0a96d">
+    <path d="M100,52 L110,84 L104,84 L112,104 L88,104 L96,84 L90,84 Z"/>
+    <path d="M78,66 L86,92 L81,92 L88,108 L68,108 L75,92 L70,92 Z" opacity="0.85"/>
+    <path d="M122,66 L130,92 L125,92 L132,108 L112,108 L119,92 L114,92 Z" opacity="0.85"/>
+  </g>
+  <rect x="96" y="104" width="8" height="8" fill="#e0a96d"/>
+</svg>

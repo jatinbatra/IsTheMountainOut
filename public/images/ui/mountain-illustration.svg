@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 200" fill="none">
+  <!-- main massif -->
+  <path d="M20,180 L92,58 L120,30 L150,70 L220,180 Z" fill="#2f4a3a"/>
+  <path d="M20,180 L92,58 L120,30 L150,70 L160,90 L130,80 L110,92 L90,78 L70,96 Z" fill="#264033"/>
+  <!-- snow cap -->
+  <path d="M92,58 L120,30 L150,70 L138,66 L128,76 L116,62 L106,74 L98,64 Z" fill="#f3efe6"/>
+  <path d="M120,30 L150,70 L138,66 L128,76 L120,58 Z" fill="#d8d2c4"/>
+  <!-- pine foreground -->
+  <g fill="#1d3328">
+    <path d="M40,180 L52,138 L46,138 L56,116 L50,116 L60,98 L70,116 L64,116 L74,138 L68,138 L80,180 Z"/>
+    <path d="M168,180 L178,144 L173,144 L181,126 L176,126 L186,108 L196,126 L191,126 L199,144 L194,144 L204,180 Z"/>
+  </g>
+  <rect x="56" y="178" width="8" height="6" fill="#1d3328"/>
+  <rect x="182" y="178" width="8" height="6" fill="#1d3328"/>
+</svg>

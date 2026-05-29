@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <circle cx="100" cy="100" r="90" stroke="#e0a96d" stroke-width="1.5"/>
+  <circle cx="100" cy="100" r="74" stroke="#e0a96d" stroke-width="1"/>
+  <!-- tick marks -->
+  <g stroke="#e0a96d" stroke-width="1">
+    <line x1="100" y1="10" x2="100" y2="22"/>
+    <line x1="100" y1="178" x2="100" y2="190"/>
+    <line x1="10" y1="100" x2="22" y2="100"/>
+    <line x1="178" y1="100" x2="190" y2="100"/>
+  </g>
+  <!-- main star (N/S/E/W) -->
+  <polygon points="100,28 110,100 100,100" fill="#e0a96d"/>
+  <polygon points="100,28 90,100 100,100" fill="#c98f55"/>
+  <polygon points="100,172 110,100 100,100" fill="#c98f55"/>
+  <polygon points="100,172 90,100 100,100" fill="#b07f48"/>
+  <polygon points="28,100 100,90 100,100" fill="#c98f55"/>
+  <polygon points="28,100 100,110 100,100" fill="#b07f48"/>
+  <polygon points="172,100 100,90 100,100" fill="#e0a96d"/>
+  <polygon points="172,100 100,110 100,100" fill="#c98f55"/>
+  <!-- diagonal rays -->
+  <g fill="#8a6a3f" opacity="0.7">
+    <polygon points="100,100 150,50 110,90"/>
+    <polygon points="100,100 50,50 90,90"/>
+    <polygon points="100,100 150,150 110,110"/>
+    <polygon points="100,100 50,150 90,110"/>
+  </g>
+  <circle cx="100" cy="100" r="6" fill="#16130f" stroke="#e0a96d" stroke-width="1.5"/>
+  <g fill="#e0a96d" font-family="Georgia, serif" font-size="13" font-weight="700" text-anchor="middle">
+    <text x="100" y="18">N</text>
+    <text x="100" y="196">S</text>
+    <text x="192" y="105">E</text>
+    <text x="8" y="105">W</text>
+  </g>
+</svg>
