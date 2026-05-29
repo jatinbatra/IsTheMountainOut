@@ -15,6 +15,8 @@ interface VisibilityCardProps {
   accentGlow: string;
   fadeUp: Variants;
   className?: string;
+  confidence?: string;
+  durationMessage?: string;
 }
 
 export default function VisibilityCard({
@@ -28,6 +30,8 @@ export default function VisibilityCard({
   accentGlow,
   fadeUp,
   className = "",
+  confidence,
+  durationMessage,
 }: VisibilityCardProps) {
   const gaugeR = 64; // Adjusted for smaller bento layout
   const gaugeC = 2 * Math.PI * gaugeR;
@@ -65,7 +69,25 @@ export default function VisibilityCard({
         </div>
       </div>
 
-      <div className="w-full px-2 mt-1">
+      {(confidence || durationMessage) && (
+        <div className="w-full mt-2 flex flex-col items-center gap-1.5">
+          {confidence && (
+            <span
+              className="text-[8.5px] uppercase tracking-[0.12em] font-bold px-2.5 py-0.5 rounded-full"
+              style={{ color: "var(--accent-gold)", background: "rgba(224,169,109,0.1)", border: "1px solid rgba(224,169,109,0.25)" }}
+            >
+              {confidence} confidence
+            </span>
+          )}
+          {durationMessage && (
+            <p className="text-[10px] text-center leading-snug px-3" style={{ color: "var(--text-secondary)" }}>
+              {durationMessage}
+            </p>
+          )}
+        </div>
+      )}
+
+      <div className="w-full px-2 mt-3">
         <MountainSilhouetteScore score={score} isVisible={isVisible} isNight={isNight} seasonLabel="" />
       </div>
 

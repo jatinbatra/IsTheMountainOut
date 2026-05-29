@@ -440,6 +440,7 @@ body {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 16px;
+  align-items: start; /* prevents cards stretching to the tallest column */
 }
 
 .card-score     { grid-column: span 3; }
@@ -455,6 +456,8 @@ body {
 .card-streak    { grid-column: span 4; }
 .card-elevation { grid-column: span 4; }
 .card-direction { grid-column: span 4; }
+.card-sightings { grid-column: span 8; }
+.card-alerts    { grid-column: span 4; }
 
 /* ─── Misc ─── */
 
