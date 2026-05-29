@@ -37,7 +37,7 @@ export default function VisibilityCard({
     <motion.div variants={fadeUp} className={`dash-card flex flex-col items-center ${className}`}>
       <div className="dash-card-header w-full flex items-center justify-between">
         <span>Visibility Score</span>
-        <span className="ai-badge"><Sparkles className="w-2.5 h-2.5" /><span className="ai-badge-dot" /> AI</span>
+        <span className="ai-badge"><Sparkles className="w-2.5 h-2.5" /><span className="ai-badge-dot" /> AI Prediction</span>
       </div>
 
       <div className="relative my-1">

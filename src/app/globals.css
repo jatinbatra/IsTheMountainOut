@@ -1,29 +1,32 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════════════════
-   IS THE MOUNTAIN OUT — FOREST GREEN EDITORIAL THEME
+   IS THE MOUNTAIN OUT — WARM GOLDEN-HOUR THEME
+   Walnut Charcoal · Sage Green · Amber Gold · Dusty Rose
    Inspired by the provided mockup
    ═══════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Palette from Mockup ── */
-  --bg-primary: #06110d;
-  --bg-secondary: #08130f;
-  --bg-card: #08130f;
-  --bg-card-hover: #0c1a15;
-  
-  --border-primary: #123329;
-  
-  /* ── Text ── */
-  --text-hero: #ede6d8;
-  --text-primary: #ede6d8;
-  --text-secondary: #9ca8a4;
-  --text-tertiary: #9ca8a4;
-  
-  /* ── Accents ── */
-  --accent: #2c5f4a;      /* Muted green */
-  --accent-gold: #d4a373; /* Gold */
-  --accent-pink: #ff5cad; /* Vibrant Pink */
+  /* ── Page — warm walnut charcoal ── */
+  --bg-primary: #16130f;
+  --bg-secondary: #1c1813;
+  --bg-card: #221d16;
+  --bg-card-hover: #2a2420;
+
+  --border-primary: #3a3026;
+
+  /* ── Text — warm cream ── */
+  --text-hero: #fbf6ee;
+  --text-primary: #ece4d6;
+  --text-secondary: #c6baa6;
+  --text-tertiary: #948775;
+
+  /* ── Accents — warm golden-hour multi-tone ── */
+  --accent: #6cae7e;      /* Sage forest green — visible / good */
+  --accent-gold: #e0a96d; /* Amber gold — headline accent / chrome */
+  --accent-pink: #d98a96; /* Dusty rose — gauge / pin / hidden */
+  --accent-glow: rgba(108, 174, 126, 0.3);
+  --accent-pink-glow: rgba(217, 138, 150, 0.3);
 
   /* ── Radii ── */
   --radius: 12px;
@@ -33,6 +36,25 @@
 
   /* ── Typography ── */
   --font-display: "Playfair Display", Georgia, serif;
+
+  /* ── Back-compat aliases (older components use these names) ── */
+  --type-1: var(--text-primary);
+  --type-2: var(--text-secondary);
+  --type-3: var(--text-secondary);
+  --type-4: var(--text-tertiary);
+  --rule: var(--border-primary);
+  --ink: var(--bg-primary);
+  --ink-deep: var(--bg-secondary);
+  --paper: var(--bg-card);
+  --accent-clear: var(--accent);
+  --accent-warm: var(--accent-gold);
+  --accent-amber: var(--accent-gold);
+  --accent-glow: rgba(108, 174, 126, 0.3);
+  --accent-pink-glow: rgba(217, 138, 150, 0.3);
+  --season-accent: var(--accent-gold);
+  --season-accent-secondary: var(--accent-pink);
+  --season-mountain-base: #3a3026;
+  --season-mountain-snow: #fbf6ee;
 }
 
 @theme inline {
@@ -49,7 +71,7 @@ html {
 }
 
 body {
-  background: var(--bg-primary);
+  background: radial-gradient(circle at 50% -10%, #2a2018 0%, var(--bg-primary) 75%);
   color: var(--text-primary);
   font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -98,19 +120,34 @@ body {
   margin-bottom: 20px;
 }
 
-/* ─── Hero Answer — the giant YES/NO ─── */
+/* ─── Hero Answer — "YES. CLEAR PEAK." two-tone serif ─── */
 
 .hero-answer {
   font-family: var(--font-display);
   font-weight: 700;
   text-align: center;
-  line-height: 0.9;
+  line-height: 0.95;
   letter-spacing: -0.02em;
-  font-size: clamp(4rem, 12vw, 10rem);
-  text-shadow: 0 4px 24px rgba(0,0,0,0.8);
+  font-size: clamp(2.8rem, 7.5vw, 6rem);
+  text-shadow: 0 4px 30px rgba(0,0,0,0.55);
   position: relative;
   z-index: 2;
   color: var(--text-hero);
+  max-width: 92%;
+}
+
+.hero-answer-primary {
+  color: var(--text-hero);
+}
+
+.hero-answer-accent-yes {
+  color: var(--accent-gold);
+  text-shadow: 0 0 60px rgba(224,169,109,0.35), 0 4px 24px rgba(0,0,0,0.5);
+}
+
+.hero-answer-accent-no {
+  color: var(--accent-pink);
+  text-shadow: 0 0 60px var(--accent-pink-glow), 0 4px 24px rgba(0,0,0,0.5);
 }
 
 .hero-status-word {
@@ -128,7 +165,7 @@ body {
   transform: translateX(-50%);
   width: 100%;
   height: 250px;
-  color: #08130f; /* Silhouette color matching background */
+  color: #16130f; /* Silhouette color matching background */
   pointer-events: none;
   z-index: 1;
 }
@@ -168,11 +205,26 @@ body {
   opacity: 0.8;
 }
 
+/* ─── Neighborhood Map ─── */
+.seattle-map-svg {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.seattle-map-svg svg { display: block; width: 100%; height: auto; }
+.map-region { cursor: pointer; transition: opacity 0.2s ease; }
+.map-region:hover { opacity: 0.92; }
+.map-label {
+  font-family: var(--font-sans), sans-serif;
+  pointer-events: none;
+  user-select: none;
+}
+
 /* ─── Sidebar ─── */
 
 .sidebar {
   width: 100px; /* Wider to match mockup */
-  background: #06110d;
+  background: #0e0c09;
   border-right: 1px solid var(--border-primary);
   display: flex;
   flex-direction: column;
@@ -419,7 +471,7 @@ body {
   stroke-width: 9;
   stroke-linecap: round;
   stroke: var(--accent-pink);
-  filter: drop-shadow(0 0 16px rgba(255, 92, 173, 0.4));
+  filter: drop-shadow(0 0 16px rgba(217, 138, 150, 0.45));
   transition: stroke-dashoffset 1.6s ease;
 }
 .gauge-fill-positive {
@@ -442,6 +494,31 @@ body {
 .factor-bar-fill.good { background: var(--accent); }
 .factor-bar-fill.warning { background: var(--accent-gold); }
 .factor-bar-fill.critical { background: var(--accent-pink); }
+
+/* ─── AI Prediction badge ─── */
+.ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  background: rgba(224, 169, 109, 0.12);
+  border: 1px solid rgba(224, 169, 109, 0.28);
+  color: var(--accent-gold);
+  font-family: var(--font-sans), sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ai-badge-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent-gold);
+  box-shadow: 0 0 8px rgba(224, 169, 109, 0.8);
+  animation: live-pulse 2s infinite;
+}
 
 ::selection {
   background: var(--accent);
