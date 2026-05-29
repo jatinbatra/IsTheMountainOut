@@ -4,7 +4,6 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import { motion, AnimatePresence } from "framer-motion";
-import { Compass } from "lucide-react";
 
 import FeaturedWebcam from "@/components/FeaturedWebcam";
 import SpotterButton from "@/components/SpotterButton";
@@ -354,43 +353,40 @@ export default function Dashboard({ initialData }: Props) {
               className="card-map"
             />
 
-            <div className="card-right">
-              <ForecastCard 
-                viewpointName={VIEWPOINTS[selectedVp]?.name}
-                hourlyTimeline={data.hourlyTimeline}
-                weeklyForecast={data.weeklyForecast}
-                currentScore={score}
-                fadeUp={fadeUp}
-              />
-              <FeaturedWebcam />
-              <motion.div variants={fadeUp} className="dash-card dash-card-warm">
-                <div className="dash-card-header" style={{ color: "var(--accent-gold)" }}>PNW Trivia</div>
-                <div className="flex items-start gap-4">
-                  <div className="fun-fact-badge">
-                    <svg viewBox="0 0 48 48" className="w-10 h-10 flex-shrink-0">
-                      <circle cx="24" cy="24" r="22" fill="none" stroke="rgba(251, 191, 36, 0.2)" strokeWidth="1.5" />
-                      <polygon points="24,8 16,28 20,28 24,18 28,28 32,28" fill="var(--accent-gold)" opacity="0.6" />
-                      <text x="24" y="38" textAnchor="middle" fill="var(--accent-gold)" fontSize="5" opacity="0.6" fontWeight="700">RAINIER</text>
-                    </svg>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <AnimatePresence mode="wait">
-                      <motion.p
-                        key={factIdx}
-                        className="text-[11px] leading-relaxed"
-                        style={{ color: "var(--text-secondary)" }}
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -8 }}
-                        transition={{ duration: 0.4 }}
-                      >
-                        {FUN_FACTS[factIdx].text}
-                      </motion.p>
-                    </AnimatePresence>
-                  </div>
+            <ForecastCard
+              viewpointName={VIEWPOINTS[selectedVp]?.name}
+              hourlyTimeline={data.hourlyTimeline}
+              weeklyForecast={data.weeklyForecast}
+              currentScore={score}
+              fadeUp={fadeUp}
+            />
+
+            <motion.div variants={fadeUp}><FeaturedWebcam /></motion.div>
+
+            <motion.div variants={fadeUp} className="dash-card dash-card-warm">
+              <div className="dash-card-header" style={{ color: "var(--accent-gold)" }}>PNW Trivia</div>
+              <div className="flex items-start gap-4">
+                <div className="fun-fact-badge">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/images/ui/mountain-illustration.svg" alt="" aria-hidden="true" className="w-12 h-10 flex-shrink-0" />
                 </div>
-              </motion.div>
-            </div>
+                <div className="flex-1 min-w-0">
+                  <AnimatePresence mode="wait">
+                    <motion.p
+                      key={factIdx}
+                      className="text-[11px] leading-relaxed"
+                      style={{ color: "var(--text-secondary)" }}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.4 }}
+                    >
+                      {FUN_FACTS[factIdx].text}
+                    </motion.p>
+                  </AnimatePresence>
+                </div>
+              </div>
+            </motion.div>
 
             <motion.div variants={fadeUp} className="dash-card card-streak">
               <div className="flex items-center justify-between">
@@ -427,7 +423,8 @@ export default function Dashboard({ initialData }: Props) {
             <motion.div variants={fadeUp} className="dash-card card-direction">
               <div className="dash-card-header">Direction</div>
               <div className="flex items-center gap-3">
-                <Compass className="w-8 h-8" style={{ color: "var(--accent-gold)", opacity: 0.55 }} />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/images/ui/compass.svg" alt="" aria-hidden="true" className="w-10 h-10" />
                 <div>
                   <p className="font-display" style={{ fontSize: "1.2rem", color: "var(--text-primary)" }}>SSE</p>
                   <p className="text-[9px]" style={{ color: "var(--text-tertiary)" }}>54 mi away</p>
@@ -459,20 +456,9 @@ export default function Dashboard({ initialData }: Props) {
           <footer id="section-about" className="divider-cedar mt-12 pt-8 pb-10">
             <PrivacyCommitment />
             <div className="flex items-center gap-3 mb-3 mt-4" aria-hidden="true">
-              <svg viewBox="0 0 80 32" className="w-16 h-6" style={{ color: "rgba(255,255,255,0.08)" }}>
-                <path d="M5,22 Q8,28 40,28 Q72,28 75,22 L70,22 Q68,26 40,26 Q12,26 10,22 Z" fill="currentColor" />
-                <rect x="15" y="16" width="50" height="6" rx="1" fill="currentColor" />
-                <rect x="22" y="9" width="36" height="7" rx="1" fill="currentColor" />
-                <rect x="48" y="4" width="6" height="5" fill="currentColor" />
-                <g fill="rgba(255,255,255,0.06)">
-                  <rect x="26" y="11" width="3" height="3" rx="0.5" />
-                  <rect x="32" y="11" width="3" height="3" rx="0.5" />
-                  <rect x="38" y="11" width="3" height="3" rx="0.5" />
-                  <rect x="44" y="11" width="3" height="3" rx="0.5" />
-                </g>
-                <path d="M0,30 Q10,28 20,30 Q30,32 40,30 Q50,28 60,30 Q70,32 80,30" fill="none" stroke="currentColor" strokeWidth="0.8" opacity="0.5" />
-              </svg>
-              <div className="h-px flex-1" style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.05), transparent)" }} />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/images/ui/pnw-badge.svg" alt="" className="w-12 h-12 opacity-70" />
+              <div className="h-px flex-1" style={{ background: "linear-gradient(90deg, rgba(224,169,109,0.18), transparent)" }} />
             </div>
             <p className="text-[11px] leading-relaxed max-w-2xl" style={{ color: "var(--text-tertiary)" }}>
               A Pacific Northwest field report. Mt. Rainier visibility scored from real-time cloud layers,
