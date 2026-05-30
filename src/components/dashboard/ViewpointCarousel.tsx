@@ -79,6 +79,21 @@ export default function ViewpointCarousel({
                       opacity: selectedVp === i ? 0.7 : 0.35,
                     }}
                   />
+                  <div
+                    className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rounded-full flex items-center justify-center"
+                    style={{
+                      width: 24,
+                      height: 24,
+                      fontSize: 9,
+                      fontWeight: 700,
+                      color: "#fff",
+                      background: vpColor,
+                      border: "2px solid rgba(0,0,0,0.3)",
+                      zIndex: 2,
+                    }}
+                  >
+                    {vpScore}
+                  </div>
                 </div>
                 <span className="viewpoint-name">{vp.name}</span>
                 <span className="viewpoint-sub">{vp.sub}</span>

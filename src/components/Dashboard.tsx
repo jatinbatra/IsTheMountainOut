@@ -219,8 +219,8 @@ export default function Dashboard({ initialData }: Props) {
     [data.visibility.score, neighborhood, data.weather.humidity]
   );
 
-  const isVisible       = score >= 50;
   const isNight         = !data.weather.isDay;
+  const isVisible       = isNight ? false : score >= 50;
   const visMiles        = Math.round(data.weather.visibilityMeters / 1609.34);
   const tempF           = Math.round((data.weather.temperature * 9) / 5 + 32);
 
@@ -277,8 +277,8 @@ export default function Dashboard({ initialData }: Props) {
       <Sidebar activeNav={activeNav} onNavClick={navTo} />
 
       <main className="main-with-sidebar flex-1 ml-[78px] min-h-screen">
-        <HeroSection 
-          backgroundImage={VIEWPOINTS[selectedVp]?.image ?? "/images/hero/rainier-waterfront.jpg"}
+        <HeroSection
+          backgroundImage="/images/hero/rainier-waterfront.jpg"
           viewpointName={VIEWPOINTS[selectedVp]?.name}
           viewpointSub={VIEWPOINTS[selectedVp]?.sub}
           timeStr={timeStr}
@@ -288,6 +288,7 @@ export default function Dashboard({ initialData }: Props) {
           humidity={data.weather.humidity}
           visMiles={visMiles}
           isVisible={isVisible}
+          isNight={isNight}
           statusWord={statusWord}
           durationMessage={data.visibility.durationMessage}
           sunrise={data.weather.sunrise}

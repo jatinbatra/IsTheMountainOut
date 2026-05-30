@@ -108,7 +108,10 @@ export function getSeasonalPalette(season?: Season): SeasonalPalette {
 
 export function getSeasonalStatusWord(season: Season, isVisible: boolean, isNight: boolean): string {
   const palette = PALETTES[season];
-  if (isNight && isVisible) return "CLEAR TONIGHT";
+  if (isNight) {
+    if (isVisible) return "STARLIT";
+    return "HIDDEN";
+  }
   return isVisible ? palette.statusVisible : palette.statusHidden;
 }
 

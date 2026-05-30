@@ -65,8 +65,8 @@ export const VIEWPOINTS: Viewpoint[] = [
     lon: -122.3551,
     region: "seattle",
     mapsUrl: "https://www.google.com/maps/place/Olympic+Sculpture+Park/@47.6166,-122.3553,17z",
-    elevationAdvantage: 0.1,
-    obstructionFactor: 0.15,
+    elevationAdvantage: 0.05,
+    obstructionFactor: 0.4,
     distancePenalty: 0.39,
   },
   {
@@ -99,8 +99,8 @@ export const VIEWPOINTS: Viewpoint[] = [
     lon: -122.3365,
     region: "seattle",
     mapsUrl: "https://www.google.com/maps/place/South+Lake+Union+Park/@47.6243,-122.3365,17z",
-    elevationAdvantage: 0.15,
-    obstructionFactor: 0.25,
+    elevationAdvantage: 0.1,
+    obstructionFactor: 0.35,
     distancePenalty: 0.39,
   },
   {
