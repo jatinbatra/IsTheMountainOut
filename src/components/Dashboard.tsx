@@ -26,6 +26,7 @@ import {
 } from "@/lib/seasonal";
 
 import Sidebar from "@/components/dashboard/Sidebar";
+import MobileNav from "@/components/dashboard/MobileNav";
 import HeroSection from "@/components/dashboard/HeroSection";
 import ViewpointCarousel from "@/components/dashboard/ViewpointCarousel";
 import VisibilityCard from "@/components/dashboard/VisibilityCard";
@@ -224,6 +225,12 @@ export default function Dashboard({ initialData }: Props) {
   const visMiles        = Math.round(data.weather.visibilityMeters / 1609.34);
   const tempF           = Math.round((data.weather.temperature * 9) / 5 + 32);
 
+  // When a neighborhood is active (via ?hood= or the map), the whole page —
+  // hero, subtitle, forecast — should speak to that location, not the default
+  // viewpoint. Falls back to the selected carousel viewpoint otherwise.
+  const hoodLabel          = neighborhood ? NEIGHBORHOOD_LABELS[neighborhood] : null;
+  const activeLocationName = hoodLabel ?? VIEWPOINTS[selectedVp]?.name;
+
   const allScores = useMemo(
     () => getAllNeighborhoodScores(data.visibility.score, data.weather.humidity),
     [data.visibility.score, data.weather.humidity]
@@ -236,9 +243,13 @@ export default function Dashboard({ initialData }: Props) {
     timeZone: "America/Los_Angeles",
   });
 
-  const [now, setNow] = useState(() => Date.now());
+  // Seed from the (deterministic) server timestamp so SSR and first client
+  // render produce identical "Updated 0 min ago" markup — no hydration mismatch.
+  // The real clock kicks in only after mount.
+  const [now, setNow] = useState(() => lastUpdate.getTime());
 
   useEffect(() => {
+    setNow(Date.now());
     const interval = setInterval(() => setNow(Date.now()), 60000);
     return () => clearInterval(interval);
   }, []);
@@ -275,12 +286,13 @@ export default function Dashboard({ initialData }: Props) {
       <PWAInstallPrompt />
 
       <Sidebar activeNav={activeNav} onNavClick={navTo} />
+      <MobileNav activeNav={activeNav} onNavClick={navTo} />
 
       <main className="main-with-sidebar flex-1 ml-[78px] min-h-screen">
         <HeroSection
           backgroundImage={isNight ? "/images/hero/rainier-waterfront.jpg" : isVisible ? "/images/hero/hero-clear-peak.jpg" : "/images/hero/hero-spring-rain.jpg"}
-          viewpointName={VIEWPOINTS[selectedVp]?.name}
-          viewpointSub={VIEWPOINTS[selectedVp]?.sub}
+          viewpointName={activeLocationName}
+          viewpointSub={hoodLabel ? "Your neighborhood" : VIEWPOINTS[selectedVp]?.sub}
           timeStr={timeStr}
           tempF={tempF}
           weatherLabel={weatherLabel}
@@ -380,7 +392,7 @@ export default function Dashboard({ initialData }: Props) {
               />
 
               <ForecastCard
-                viewpointName={VIEWPOINTS[selectedVp]?.name}
+                viewpointName={activeLocationName}
                 hourlyTimeline={data.hourlyTimeline}
                 weeklyForecast={data.weeklyForecast}
                 currentScore={score}
