@@ -539,4 +539,65 @@ body {
   .hero-answer { font-size: clamp(4.5rem, 22vw, 7rem); }
   .hero-skyline-silhouette { width: 80%; height: 50px; bottom: 5%; }
   .mountain-divider { padding: 0 12px; height: 28px; }
+
+  /* Show the bottom tab bar and leave room for it above the content/footer. */
+  .mobile-nav { display: flex; }
+  .main-with-sidebar { padding-bottom: 72px; }
+}
+
+/* ─── Prevent horizontal scroll on mobile ─── */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+.main-with-sidebar { overflow-x: hidden; }
+
+/* ─── Mobile bottom navigation ─── */
+.mobile-nav {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 60;
+  background: rgba(14, 12, 9, 0.96);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border-primary);
+  padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+  justify-content: space-around;
+  align-items: stretch;
+}
+.mobile-nav-item {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 2px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+.mobile-nav-item.active {
+  color: var(--accent);
+  background: rgba(44, 95, 74, 0.18);
+}
+
+/* ─── Mobile hero header: stop the pill + weather widget overflowing ─── */
+@media (max-width: 640px) {
+  .hero-header {
+    padding: 12px 14px !important;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .hero-header-pill {
+    padding: 8px 12px !important;
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+  .weather-widget { padding: 8px 12px; }
 }

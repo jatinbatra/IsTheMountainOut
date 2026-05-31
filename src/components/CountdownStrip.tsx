@@ -46,9 +46,14 @@ function formatTime(d: Date): string {
 }
 
 export default function CountdownStrip({ sunrise, sunset, alpenglow }: Props) {
+  // Countdown values are inherently "now"-relative, so they can't match between
+  // server and client. Render nothing until mounted to avoid hydration errors.
+  const [mounted, setMounted] = useState(false);
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
+    setMounted(true);
+    setNow(Date.now());
     const i = setInterval(() => setNow(Date.now()), 30_000);
     return () => clearInterval(i);
   }, []);
@@ -90,7 +95,7 @@ export default function CountdownStrip({ sunrise, sunset, alpenglow }: Props) {
       .sort((a, b) => a.time.getTime() - b.time.getTime());
   }, [sunrise, sunset, alpenglow, now]);
 
-  if (events.length === 0) return null;
+  if (!mounted || events.length === 0) return null;
 
   return (
     <div className="flex items-center gap-4 sm:gap-6 overflow-x-auto py-2 text-sm">

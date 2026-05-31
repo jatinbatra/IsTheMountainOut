@@ -140,13 +140,17 @@ export async function generateMetadata({
 
   const description = hoodLabel
     ? `Mt. Rainier visibility from ${hoodLabel}: ${isVisible ? "YES" : "NO"} (${score}/100). Live score, webcams, 7-day forecast.`
-    : "Real-time prediction of whether Mt. Rainier is visible from Seattle. No cookies, no tracking, 100% free.";
+    : "Real-time prediction of whether Mt. Rainier is visible from Seattle. No ads, no accounts, no third-party trackers — 100% free.";
 
   const ogImageUrl = `${SITE_URL}/api/og?score=${score}&visible=${isVisible}&hood=${encodeURIComponent(hood)}`;
 
   return {
     title,
     description,
+    metadataBase: new URL(SITE_URL),
+    // Collapse every ?hood= variant to a single canonical so they don't
+    // index as duplicate pages.
+    alternates: { canonical: "/" },
     openGraph: {
       title: hoodLabel
         ? `Is the Mountain Out from ${hoodLabel}?`

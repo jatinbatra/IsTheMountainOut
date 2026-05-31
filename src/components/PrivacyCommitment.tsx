@@ -3,9 +3,9 @@
 const CHIPS = [
   "No ads",
   "No cookies",
-  "No tracking",
   "No accounts",
-  "No data storage",
+  "No personal data",
+  "No third-party trackers",
 ];
 
 export default function PrivacyCommitment() {
@@ -19,7 +19,8 @@ export default function PrivacyCommitment() {
         Private by design
       </p>
       <p className="text-sm text-[color:var(--type-2)] font-display font-light leading-snug">
-        Just a weather app. Nothing about you leaves this page.
+        Just a weather app. We keep an anonymous on-device ID to count visits and
+        sightings — no names, no emails, no third-party trackers, ever.
       </p>
       <ul className="flex flex-wrap gap-1.5 mt-3" aria-label="What we don't do">
         {CHIPS.map((chip) => (

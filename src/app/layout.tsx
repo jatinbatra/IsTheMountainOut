@@ -1,4 +1,5 @@
 import "./globals.css";
+import type { Viewport } from "next";
 import { Playfair_Display, JetBrains_Mono, Inter } from "next/font/google";
 
 const playfair = Playfair_Display({
@@ -21,6 +22,14 @@ const mono = JetBrains_Mono({
   display: "swap",
 });
 
+// Single source of truth for the viewport — prevents duplicate <meta viewport> tags.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#16130f",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,10 +38,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`h-full antialiased ${inter.variable} ${playfair.variable} ${mono.variable}`}>
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#16130f" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
       </head>
