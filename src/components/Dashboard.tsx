@@ -278,7 +278,7 @@ export default function Dashboard({ initialData }: Props) {
 
       <main className="main-with-sidebar flex-1 ml-[78px] min-h-screen">
         <HeroSection
-          backgroundImage={isNight ? "/images/hero/rainier-waterfront.jpg" : "/images/hero/hero-clear-peak.jpg"}
+          backgroundImage={isNight ? "/images/hero/rainier-waterfront.jpg" : isVisible ? "/images/hero/hero-clear-peak.jpg" : "/images/hero/hero-spring-rain.jpg"}
           viewpointName={VIEWPOINTS[selectedVp]?.name}
           viewpointSub={VIEWPOINTS[selectedVp]?.sub}
           timeStr={timeStr}
