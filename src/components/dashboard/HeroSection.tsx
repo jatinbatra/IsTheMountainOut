@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { MapPin, Sun, Wind, Droplets, Eye } from "lucide-react";
+import { MapPin, Sun, Moon, Wind, Droplets, Eye } from "lucide-react";
 
 import CountdownStrip from "@/components/CountdownStrip";
 
@@ -16,6 +16,7 @@ interface HeroSectionProps {
   humidity: number;
   visMiles: number;
   isVisible: boolean;
+  isNight: boolean;
   statusWord: string;
   durationMessage: string;
   sunrise?: string;
@@ -37,6 +38,7 @@ export default function HeroSection({
   humidity,
   visMiles,
   isVisible,
+  isNight,
   statusWord,
   durationMessage,
   sunrise,
@@ -88,7 +90,9 @@ export default function HeroSection({
         {/* ── Weather Widget (warm card, top-right) ── */}
         <div className="weather-widget">
           <div className="weather-widget-main">
-            <Sun className="w-5 h-5" style={{ color: "#f59e0b" }} />
+            {isNight
+              ? <Moon className="w-5 h-5" style={{ color: "#a0b4d0" }} />
+              : <Sun className="w-5 h-5" style={{ color: "#f59e0b" }} />}
             <span className="weather-widget-temp">{tempF}°F</span>
           </div>
           <span className="weather-widget-label">{weatherLabel}</span>
@@ -157,10 +161,19 @@ export default function HeroSection({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
         >
-          <span className="hero-answer-primary">{isVisible ? "YES." : "NOT TODAY."}</span>{" "}
-          <span className={isVisible ? "hero-answer-accent-yes" : "hero-answer-accent-no"}>
-            {statusWord}.
-          </span>
+          {isNight ? (
+            <>
+              <span className="hero-answer-primary">GOODNIGHT.</span>{" "}
+              <span className="hero-answer-accent-no">{statusWord}.</span>
+            </>
+          ) : (
+            <>
+              <span className="hero-answer-primary">{isVisible ? "YES." : "NOT TODAY."}</span>{" "}
+              <span className={isVisible ? "hero-answer-accent-yes" : "hero-answer-accent-no"}>
+                {statusWord}.
+              </span>
+            </>
+          )}
         </motion.h1>
 
         <motion.p
@@ -169,9 +182,11 @@ export default function HeroSection({
           animate={{ opacity: 1 }}
           transition={{ delay: 0.9, duration: 0.7 }}
         >
-          {isVisible
-            ? `The mountain is out. Enjoy the view from ${viewpointName}.`
-            : durationMessage}
+          {isNight
+            ? `The mountain is resting. Check back at sunrise${sunrise ? ` (${sunrise})` : ""}.`
+            : isVisible
+              ? `The mountain is out. Enjoy the view from ${viewpointName}.`
+              : durationMessage}
         </motion.p>
       </div>
     </section>

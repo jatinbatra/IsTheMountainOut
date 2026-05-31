@@ -236,13 +236,14 @@ export function calculateVisibility(weather: WeatherData): VisibilityResult {
   );
 
   const reasons = flags.map((f) => FLAG_LABELS[f]);
-  const isVisible = score >= 50;
+  const isNight = !weather.isDay;
+  const isVisible = isNight ? false : score >= 50;
 
   const { durationHours, nextChangeHour } = estimateDuration(
     weather.hourlyForecast,
     isVisible
   );
-  const durationMessage = buildDurationMessage(isVisible, durationHours, nextChangeHour);
+  const durationMessage = buildDurationMessage(isVisible, durationHours, nextChangeHour, isNight);
 
   const confidence =
     score >= 80 ? "high" : score >= 60 ? "moderate" : score >= 40 ? "low" : "very low";
@@ -291,15 +292,16 @@ export function calculateLineOfSightVisibility(
   );
 
   const reasons = flags.map((f) => FLAG_LABELS[f]);
-  const isVisible = score >= 50;
+  const isNight = !localWeather.isDay;
+  const isVisible = isNight ? false : score >= 50;
 
-  // For duration, we'll stick to the local forecast for simplicity, 
+  // For duration, we'll stick to the local forecast for simplicity,
   // as predicting combined line-of-sight for 24h is expensive API-wise.
   const { durationHours, nextChangeHour } = estimateDuration(
     localWeather.hourlyForecast,
     isVisible
   );
-  const durationMessage = buildDurationMessage(isVisible, durationHours, nextChangeHour);
+  const durationMessage = buildDurationMessage(isVisible, durationHours, nextChangeHour, isNight);
 
   const confidence =
     score >= 80 ? "high" : score >= 60 ? "moderate" : score >= 40 ? "low" : "very low";
@@ -364,8 +366,15 @@ function estimateDuration(
 export function buildDurationMessage(
   isVisible: boolean,
   durationHours: number,
-  nextChangeHour: string | null
+  nextChangeHour: string | null,
+  isNight?: boolean
 ): string {
+  if (isNight) {
+    if (isVisible) {
+      return "Clear skies tonight — conditions look good for sunrise views.";
+    }
+    return "The mountain is hiding. Check back in the morning.";
+  }
   if (isVisible) {
     if (durationHours >= 8) {
       return "The mountain is out! Clear conditions expected for the rest of the day.";

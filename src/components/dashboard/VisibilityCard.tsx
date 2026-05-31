@@ -63,7 +63,7 @@ export default function VisibilityCard({
               {score}<span style={{ fontSize: "1.5rem", color: "var(--text-secondary)" }}>%</span>
             </span>
             <span className="text-[10px] uppercase tracking-[0.15em] font-bold mt-1" style={{ color: "var(--text-secondary)" }}>
-              {score >= 76 ? "Great Visibility" : score >= 50 ? "Moderate" : "Poor"}
+              {isNight ? "Nighttime" : score >= 76 ? "Great Visibility" : score >= 50 ? "Moderate" : "Poor"}
             </span>
           </div>
         </div>
@@ -98,14 +98,25 @@ export default function VisibilityCard({
         </div>
         <span style={{ color: "rgba(90,79,62,0.4)" }}>·</span>
         <div className="flex items-center gap-1">
-          <span>Trend</span>
-          {isVisible
-            ? <TrendingUp className="w-[11px] h-[11px]" style={{ color: "var(--accent)" }} />
-            : <TrendingDown className="w-[11px] h-[11px]" style={{ color: "var(--accent-pink)" }} />
-          }
-          <span style={{ color: isVisible ? "var(--accent)" : "var(--accent-pink)" }}>
-            {isVisible ? "Improving" : "Declining"}
-          </span>
+          {isNight ? (
+            <>
+              <span style={{ color: "var(--text-tertiary)" }}>Night — check at sunrise</span>
+            </>
+          ) : isVisible ? (
+            <>
+              <TrendingUp className="w-[11px] h-[11px]" style={{ color: "var(--accent)" }} />
+              <span style={{ color: "var(--accent)" }}>
+                {score >= 76 ? "Clear skies" : "Partly visible"}
+              </span>
+            </>
+          ) : (
+            <>
+              <TrendingDown className="w-[11px] h-[11px]" style={{ color: "var(--accent-pink)" }} />
+              <span style={{ color: "var(--accent-pink)" }}>
+                {score >= 40 ? "Marginal" : "Obscured"}
+              </span>
+            </>
+          )}
         </div>
       </div>
     </motion.div>
