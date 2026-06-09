@@ -35,7 +35,7 @@ function classifyLocation(lat: number, lon: number): "lake_union" | "seattle" | 
 }
 
 export async function GET(request: Request) {
-  const apiKey = process.env.AISSTREAM_API_KEY;
+  const apiKey = process.env.AISSTREAM_API_KEY?.trim();
   const mmsi = process.env.YACHT_MMSI ?? "538072122";
 
   // ?debug=1 subscribes to the whole globe with NO vessel filter. If the
