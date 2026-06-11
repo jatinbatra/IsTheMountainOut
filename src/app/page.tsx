@@ -6,6 +6,7 @@ import {
   scoreDailyForecast,
   getNeighborhoodAdjustedScore,
   NEIGHBORHOOD_LABELS,
+  VISIBLE_THRESHOLD,
 } from "@/lib/visibility";
 import { predictAlpenglow } from "@/lib/alpenglow";
 import { rankViewpoints } from "@/lib/viewpoints";
@@ -131,7 +132,7 @@ export async function generateMetadata({
       hood,
       data.weather.humidity
     );
-    isVisible = score >= 50;
+    isVisible = score >= VISIBLE_THRESHOLD;
   }
 
   const title = hoodLabel

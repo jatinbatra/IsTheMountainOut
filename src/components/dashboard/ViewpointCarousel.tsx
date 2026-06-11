@@ -38,7 +38,7 @@ export default function ViewpointCarousel({
   };
 
   return (
-    <div id="section-viewpoints" className="viewpoint-section">
+    <div id="section-viewpoints" data-testid="viewpoint-carousel" className="viewpoint-section">
       <div className="viewpoint-glass">
         <button className="carousel-btn" onClick={() => scroll("left")} aria-label="Previous">
           <ChevronLeft className="w-4 h-4" />

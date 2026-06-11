@@ -166,12 +166,17 @@ export async function fetchWeatherData(options?: {
       fetch(aqUrl.toString(), fetchOpts),
     ]);
   } catch {
-    // APIs unreachable (e.g. no internet in dev sandbox), use mock data
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("Weather API unreachable");
+    }
     console.warn("Weather APIs unreachable, using mock data");
     return getMockWeatherData();
   }
 
   if (!weatherRes.ok) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error(`Weather API returned ${weatherRes.status}`);
+    }
     console.warn(`Weather API returned ${weatherRes.status}, falling back to mock`);
     return getMockWeatherData();
   }

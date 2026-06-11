@@ -8,7 +8,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import FeaturedWebcam from "@/components/FeaturedWebcam";
 import SpotterButton from "@/components/SpotterButton";
 import NotifyButton from "@/components/NotifyButton";
-import GlobalStreakBadge from "@/components/GlobalStreakBadge";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import PrivacyCommitment from "@/components/PrivacyCommitment";
 import { registerSW } from "@/lib/notifications";
@@ -16,6 +15,7 @@ import {
   getNeighborhoodAdjustedScore,
   getAllNeighborhoodScores,
   NEIGHBORHOOD_LABELS,
+  VISIBLE_THRESHOLD,
 } from "@/lib/visibility";
 import { useAutoLocation } from "@/hooks/useAutoLocation";
 import {
@@ -221,7 +221,7 @@ export default function Dashboard({ initialData }: Props) {
   );
 
   const isNight         = !data.weather.isDay;
-  const isVisible       = isNight ? false : score >= 50;
+  const isVisible       = isNight ? false : score >= VISIBLE_THRESHOLD;
   const visMiles        = Math.round(data.weather.visibilityMeters / 1609.34);
   const tempF           = Math.round((data.weather.temperature * 9) / 5 + 32);
 
@@ -230,6 +230,8 @@ export default function Dashboard({ initialData }: Props) {
   // viewpoint. Falls back to the selected carousel viewpoint otherwise.
   const hoodLabel          = neighborhood ? NEIGHBORHOOD_LABELS[neighborhood] : null;
   const activeLocationName = hoodLabel ?? VIEWPOINTS[selectedVp]?.name;
+  const activeVpId         = VIEWPOINTS[selectedVp]?.id;
+  const activeVpData       = data.viewpoints.find((v) => v.id === activeVpId);
 
   const allScores = useMemo(
     () => getAllNeighborhoodScores(data.visibility.score, data.weather.humidity),
@@ -248,11 +250,13 @@ export default function Dashboard({ initialData }: Props) {
   // The real clock kicks in only after mount.
   const [now, setNow] = useState(() => lastUpdate.getTime());
 
+  /* eslint-disable react-hooks/set-state-in-effect -- hydration gate: must sync client time after mount */
   useEffect(() => {
     setNow(Date.now());
     const interval = setInterval(() => setNow(Date.now()), 60000);
     return () => clearInterval(interval);
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const season     = getCurrentSeason();
   const palette    = getSeasonalPalette(season);
@@ -271,8 +275,7 @@ export default function Dashboard({ initialData }: Props) {
     { label: "Lighting",           desc: isNight ? "Night — reduced visibility" : "Golden hour boost", value: lightScore, status: lightScore >= 70 ? "EXCELLENT" : lightScore >= 40 ? "FAIR" : "POOR" },
   ];
 
-  const accentColor = isVisible ? "var(--accent)" : "var(--accent-warm)";
-  const accentGlow  = isVisible ? "0 0 28px rgba(190, 242, 100, 0.45)" : "0 0 28px rgba(251, 146, 60, 0.45)";
+
 
   const weatherLabel = data.weather.cloudLow < 20 ? "Sunny" : data.weather.cloudLow < 50 ? "Partly Cloudy" : data.weather.cloudLow < 80 ? "Mostly Cloudy" : "Overcast";
 
@@ -344,8 +347,6 @@ export default function Dashboard({ initialData }: Props) {
                 isValidating={isValidating}
                 lastUpdate={lastUpdate}
                 now={now}
-                accentColor={accentColor}
-                accentGlow={accentGlow}
                 fadeUp={fadeUp}
                 className="card-score"
                 confidence={data.visibility.confidence}
@@ -431,44 +432,33 @@ export default function Dashboard({ initialData }: Props) {
 
               <div className="grid grid-cols-2 gap-4">
                 <motion.div variants={fadeUp} className="dash-card">
-                  <div className="dash-card-header" style={{ marginBottom: "8px" }}>Streak</div>
-                  <div className="flex items-baseline gap-2">
-                    <span className="font-display" style={{ fontSize: "2.5rem", color: "var(--accent-gold)" }}>3</span>
-                    <span className="text-[10px] font-semibold" style={{ color: "var(--text-secondary)" }}>DAYS</span>
-                  </div>
-                  <p className="text-[9px] mt-1" style={{ color: "var(--text-tertiary)" }}>
-                    in a row visible from here
-                  </p>
-                </motion.div>
-
-                <motion.div variants={fadeUp} className="dash-card">
                   <div className="dash-card-header">Direction</div>
                   <div className="flex items-center gap-2">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src="/images/ui/compass.svg" alt="" aria-hidden="true" className="w-9 h-9" />
                     <div>
-                      <p className="font-display" style={{ fontSize: "1.1rem", color: "var(--text-primary)" }}>SSE</p>
-                      <p className="text-[9px]" style={{ color: "var(--text-tertiary)" }}>54 mi</p>
+                      <p className="font-display" style={{ fontSize: "1.1rem", color: "var(--text-primary)" }}>{activeVpData?.direction ?? "SSE"}</p>
+                      <p className="text-[9px]" style={{ color: "var(--text-tertiary)" }}>{activeVpData?.distanceMiles ?? 54} mi</p>
                     </div>
                   </div>
                 </motion.div>
-              </div>
 
-              <motion.div variants={fadeUp} className="dash-card">
-                <div className="dash-card-header">Elevation</div>
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex-1">
-                    <p className="text-[12px] font-semibold" style={{ color: "var(--text-primary)" }}>You&apos;re at 275 ft</p>
-                    <p className="text-[9px] mt-0.5 leading-relaxed" style={{ color: "var(--text-tertiary)" }}>
-                      Every 1k ft of elevation improves your odds.
-                    </p>
+                <motion.div variants={fadeUp} className="dash-card">
+                  <div className="dash-card-header">Elevation</div>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1">
+                      <p className="text-[12px] font-semibold" style={{ color: "var(--text-primary)" }}>{activeVpData?.elevation ?? 275} ft</p>
+                      <p className="text-[9px] mt-0.5 leading-relaxed" style={{ color: "var(--text-tertiary)" }}>
+                        Every 1k ft of elevation improves your odds.
+                      </p>
+                    </div>
+                    <svg viewBox="0 0 56 60" className="w-10 h-10 flex-shrink-0" aria-hidden="true">
+                      <path d="M8 56 L24 22 L32 6 L40 22 L56 56 Z" fill="var(--accent-gold)" opacity="0.15" />
+                      <path d="M24 22 L32 6 L40 22 L36 14 L28 14 Z" fill="var(--accent-gold)" opacity="0.3" />
+                    </svg>
                   </div>
-                  <svg viewBox="0 0 56 60" className="w-10 h-10 flex-shrink-0" aria-hidden="true">
-                    <path d="M8 56 L24 22 L32 6 L40 22 L56 56 Z" fill="var(--accent-gold)" opacity="0.15" />
-                    <path d="M24 22 L32 6 L40 22 L36 14 L28 14 Z" fill="var(--accent-gold)" opacity="0.3" />
-                  </svg>
-                </div>
-              </motion.div>
+                </motion.div>
+              </div>
             </div>
           </motion.div>
 

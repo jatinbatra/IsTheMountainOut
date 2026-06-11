@@ -3,6 +3,7 @@ import {
   calculateVisibility,
   getNeighborhoodAdjustedScore,
   NEIGHBORHOOD_LABELS,
+  VISIBLE_THRESHOLD,
 } from "@/lib/visibility";
 
 export const revalidate = 900;
@@ -24,7 +25,7 @@ export default async function EmbedPage({
 
   if (hood && hoodLabel) {
     score = getNeighborhoodAdjustedScore(visibility.score, hood, weather.humidity);
-    isVisible = score >= 50;
+    isVisible = score >= VISIBLE_THRESHOLD;
   }
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://is-the-mountain-out.vercel.app";

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchWeatherData } from "@/lib/weather";
-import { scoreHourForTimeline } from "@/lib/visibility";
+import { scoreHourForTimeline, VISIBLE_THRESHOLD } from "@/lib/visibility";
 
 interface ForecastHour {
   time: string;
@@ -90,7 +90,7 @@ function findBestWindow(hours: ForecastHour[]): BestWindow {
     const score = hours[i].score;
 
     // Window continues if visible
-    if (score >= 50) {
+    if (score >= VISIBLE_THRESHOLD) {
       currentScore = Math.max(currentScore, score);
       continue;
     }
