@@ -36,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`h-full antialiased ${inter.variable} ${playfair.variable} ${mono.variable}`}>
+    <html lang="en" className={`antialiased ${inter.variable} ${playfair.variable} ${mono.variable}`}>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -44,7 +44,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
       </head>
-      <body className="min-h-full flex flex-col overscroll-none">{children}</body>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }
