@@ -166,17 +166,14 @@ export async function fetchWeatherData(options?: {
       fetch(aqUrl.toString(), fetchOpts),
     ]);
   } catch {
-    if (process.env.NODE_ENV === "production") {
-      throw new Error("Weather API unreachable");
-    }
+    // Never throw here: this runs during static prerender and ISR revalidation.
+    // Throwing would crash the build / blank the page. ISR keeps serving the
+    // last good page during real outages, so mock is only hit on cold builds.
     console.warn("Weather APIs unreachable, using mock data");
     return getMockWeatherData();
   }
 
   if (!weatherRes.ok) {
-    if (process.env.NODE_ENV === "production") {
-      throw new Error(`Weather API returned ${weatherRes.status}`);
-    }
     console.warn(`Weather API returned ${weatherRes.status}, falling back to mock`);
     return getMockWeatherData();
   }
