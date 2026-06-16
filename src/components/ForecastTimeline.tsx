@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import { Sun, CloudRain, CloudSnow, CloudFog, Cloud } from "lucide-react";
+import { VISIBLE_THRESHOLD } from "@/lib/visibility";
 
 interface HourData {
   time: string;
@@ -30,7 +31,7 @@ function getWeatherIcon(code: number) {
 
 function getBarColor(score: number): string {
   if (score >= 70) return "bg-[#2d8a4e]";
-  if (score >= 50) return "bg-[#d4a843]";
+  if (score >= VISIBLE_THRESHOLD) return "bg-[#d4a843]";
   return "bg-[#c75a3a]/60";
 }
 

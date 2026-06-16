@@ -166,7 +166,9 @@ export async function fetchWeatherData(options?: {
       fetch(aqUrl.toString(), fetchOpts),
     ]);
   } catch {
-    // APIs unreachable (e.g. no internet in dev sandbox), use mock data
+    // Never throw here: this runs during static prerender and ISR revalidation.
+    // Throwing would crash the build / blank the page. ISR keeps serving the
+    // last good page during real outages, so mock is only hit on cold builds.
     console.warn("Weather APIs unreachable, using mock data");
     return getMockWeatherData();
   }

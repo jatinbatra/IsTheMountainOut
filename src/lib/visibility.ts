@@ -26,6 +26,8 @@ export const WEIGHTS = {
   AIR_QUALITY: 10,   // PM2.5 / PM10 haze
 } as const;
 
+export const VISIBLE_THRESHOLD = 50;
+
 export type VisibilityStatus = "hiding" | "peeking" | "out";
 
 export function getVisibilityStatus(score: number): VisibilityStatus {
@@ -237,7 +239,7 @@ export function calculateVisibility(weather: WeatherData): VisibilityResult {
 
   const reasons = flags.map((f) => FLAG_LABELS[f]);
   const isNight = !weather.isDay;
-  const isVisible = isNight ? false : score >= 50;
+  const isVisible = isNight ? false : score >= VISIBLE_THRESHOLD;
 
   const { durationHours, nextChangeHour } = estimateDuration(
     weather.hourlyForecast,
@@ -293,7 +295,7 @@ export function calculateLineOfSightVisibility(
 
   const reasons = flags.map((f) => FLAG_LABELS[f]);
   const isNight = !localWeather.isDay;
-  const isVisible = isNight ? false : score >= 50;
+  const isVisible = isNight ? false : score >= VISIBLE_THRESHOLD;
 
   // For duration, we'll stick to the local forecast for simplicity,
   // as predicting combined line-of-sight for 24h is expensive API-wise.
@@ -328,7 +330,7 @@ function scoreHour(h: HourlyForecast): number {
 
 export function scoreHourForTimeline(h: HourlyForecast): { score: number; isVisible: boolean } {
   const score = scoreHour(h);
-  return { score, isVisible: score >= 50 };
+  return { score, isVisible: score >= VISIBLE_THRESHOLD };
 }
 
 export function scoreDailyForecast(d: DailyForecast): { score: number; isVisible: boolean } {
@@ -336,7 +338,7 @@ export function scoreDailyForecast(d: DailyForecast): { score: number; isVisible
     d.cloudLow, d.cloudMid, d.cloudHigh,
     d.visibility, d.weatherCode
   ).score;
-  return { score, isVisible: score >= 50 };
+  return { score, isVisible: score >= VISIBLE_THRESHOLD };
 }
 
 // ── Duration Estimation ─────────────────────────────────────────────

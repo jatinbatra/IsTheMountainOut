@@ -13,10 +13,7 @@ import {
   evaluateTransition,
   buildNewState,
 } from "@/lib/state";
-import { snapshotHoodScores } from "@/lib/hoods";
-import { settleWeekIfDue, recordDailyActual } from "@/lib/pool";
 import { recordGlobalStreak, getGlobalStreak } from "@/lib/globalStreak";
-import { recordPeakCandidate } from "@/lib/guess";
 
 type CalendarData = Record<string, { score: number; isVisible: boolean }>;
 
@@ -77,12 +74,8 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "CRON_SECRET not configured" }, { status: 500 });
   }
 
-  const { searchParams } = new URL(request.url);
   const authHeader = request.headers.get("authorization");
-  const querySecret = searchParams.get("secret");
-  const providedSecret = authHeader?.replace("Bearer ", "") || querySecret;
-
-  if (providedSecret !== cronSecret) {
+  if (authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -120,11 +113,7 @@ export async function GET(request: Request) {
     await saveMountainState(newState);
 
     await saveCalendarSnapshot(visibility.score, visibility.isVisible);
-    await snapshotHoodScores(visibility.score, weather.humidity);
-    await recordDailyActual(visibility.score);
-    await settleWeekIfDue();
     await recordGlobalStreak(visibility.isVisible);
-    await recordPeakCandidate(visibility.score);
 
     if (transition.shouldNotify) {
       const titles: Record<string, string> = {

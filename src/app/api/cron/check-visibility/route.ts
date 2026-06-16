@@ -2,27 +2,29 @@ import { NextResponse } from "next/server";
 import { kv } from "@vercel/kv";
 import webpush from "web-push";
 import { fetchWeatherData } from "@/lib/weather";
-import { calculateVisibility } from "@/lib/visibility";
+import { calculateVisibility, VISIBLE_THRESHOLD } from "@/lib/visibility";
 
 export async function GET(request: Request) {
-  // Configure Web Push inside the request handler
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret) {
+    return NextResponse.json({ error: "CRON_SECRET not configured" }, { status: 500 });
+  }
+  const authHeader = request.headers.get("authorization");
+  if (authHeader !== `Bearer ${cronSecret}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   webpush.setVapidDetails(
-    "mailto:jatinbatra1@gmail.com",
+    process.env.VAPID_EMAIL ?? "mailto:hello@isthemountainout.com",
     process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "",
     process.env.VAPID_PRIVATE_KEY || ""
   );
-
-  // Verify Cron secret if needed (optional for this demo, but good practice)
-  const authHeader = request.headers.get("authorization");
-  if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return new Response("Unauthorized", { status: 401 });
-  }
 
   try {
     // 1. Fetch current visibility
     const weather = await fetchWeatherData({ noCache: true });
     const visibility = calculateVisibility(weather);
-    const isOut = visibility.score >= 50;
+    const isOut = visibility.score >= VISIBLE_THRESHOLD;
 
     // 2. Get previous state
     const prevState = await kv.get<boolean>("mountain:isOut");

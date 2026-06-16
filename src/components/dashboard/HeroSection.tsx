@@ -46,7 +46,7 @@ export default function HeroSection({
   alpenglow,
 }: HeroSectionProps) {
   return (
-    <section id="section-home" className="hero-section" style={{ height: "72vh", minHeight: "560px" }}>
+    <section id="section-home" data-testid="hero-section" className="hero-section" style={{ height: "72vh", minHeight: "560px" }}>
       <div
         className="absolute inset-0 z-[0] ken-burns"
         style={{

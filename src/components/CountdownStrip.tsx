@@ -51,12 +51,14 @@ export default function CountdownStrip({ sunrise, sunset, alpenglow }: Props) {
   const [mounted, setMounted] = useState(false);
   const [now, setNow] = useState(() => Date.now());
 
+  /* eslint-disable react-hooks/set-state-in-effect -- hydration gate: must sync client time after mount */
   useEffect(() => {
     setMounted(true);
     setNow(Date.now());
     const i = setInterval(() => setNow(Date.now()), 30_000);
     return () => clearInterval(i);
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const events = useMemo<Event[]>(() => {
     const out: Event[] = [];

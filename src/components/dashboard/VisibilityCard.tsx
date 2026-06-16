@@ -2,6 +2,7 @@
 
 import { motion, Variants } from "framer-motion";
 import { Sparkles, RefreshCw, TrendingUp, TrendingDown } from "lucide-react";
+import { VISIBLE_THRESHOLD } from "@/lib/visibility";
 
 interface VisibilityCardProps {
   score: number;
@@ -10,8 +11,6 @@ interface VisibilityCardProps {
   isValidating: boolean;
   lastUpdate: Date;
   now: number;
-  accentColor: string;
-  accentGlow: string;
   fadeUp: Variants;
   className?: string;
   confidence?: string;
@@ -25,8 +24,6 @@ export default function VisibilityCard({
   isValidating,
   lastUpdate,
   now,
-  accentColor,
-  accentGlow,
   fadeUp,
   className = "",
   confidence,
@@ -40,7 +37,7 @@ export default function VisibilityCard({
     ? "var(--text-tertiary)"
     : score >= 70
       ? "var(--accent)"
-      : score >= 50
+      : score >= VISIBLE_THRESHOLD
         ? "var(--accent-gold)"
         : "var(--accent-pink)";
 
@@ -48,7 +45,7 @@ export default function VisibilityCard({
     ? "Nighttime"
     : score >= 76
       ? "Great Visibility"
-      : score >= 50
+      : score >= VISIBLE_THRESHOLD
         ? "Moderate"
         : score >= 30
           ? "Poor"
@@ -86,6 +83,7 @@ export default function VisibilityCard({
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span
+            data-testid="visibility-score"
             className="font-display tabular-nums leading-none"
             style={{ fontSize: "2.8rem", color: "var(--text-hero)" }}
           >
