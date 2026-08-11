@@ -35,9 +35,25 @@ export async function registerSW(): Promise<ServiceWorkerRegistration | null> {
   }
 
   try {
+    // If an OLD service worker is already controlling this page, a change of
+    // controller means the new (v2, network-first) worker has taken over and
+    // purged the stale caches — reload once so the fresh HTML/CSS/JS loads.
+    // Guarded against reload loops; skipped for first-time visitors (no
+    // existing controller) so they don't get a needless double-load.
+    if (navigator.serviceWorker.controller) {
+      let reloaded = false;
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (reloaded) return;
+        reloaded = true;
+        window.location.reload();
+      });
+    }
+
     const registration = await navigator.serviceWorker.register("/sw.js", {
       scope: "/",
     });
+    // Force an immediate update check so stuck clients pick up v2 right away.
+    registration.update().catch(() => {});
     console.log("[SW] Registered:", registration.scope);
     return registration;
   } catch (err) {
