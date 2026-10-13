@@ -36,5 +36,5 @@ Every server path that computes live visibility (the status API the dashboard po
 
 ## Scheduled jobs
 
-- **Vercel cron** (`vercel.json`): `/api/cron/evaluate` once a day. The Hobby plan only allows daily crons — a more frequent schedule makes every deployment fail.
+- **No Vercel crons**: `crons` in `vercel.json` made every production deployment on this account fail (hourly schedules fail on Hobby, and even a daily one failed production), so scheduling lives in GitHub Actions instead.
 - **GitHub Actions heartbeat** (`.github/workflows/heartbeat.yml`): every 15 minutes, pings `/api/mountain-status` so the log fills in with no visitors, and calls `/api/cron/evaluate` (push alerts) when the `CRON_SECRET` repo secret is set.
