@@ -1,8 +1,8 @@
 name: Mountain heartbeat
 
 # Keeps the mountain log filling in when nobody has the site open.
-# Vercel's Hobby plan only allows once-a-day crons (more frequent schedules
-# make every deployment fail), so frequent pings run here instead.
+# Vercel crons are not used: having them in vercel.json made production
+# deployments on this account fail, so all scheduling runs here instead.
 #
 # - Hitting /api/mountain-status records the current reading (one per 15 min).
 # - If the CRON_SECRET repo secret is set, /api/cron/evaluate also runs,
