@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion, Variants } from "framer-motion";
 
 interface Factor {
@@ -14,6 +15,8 @@ interface FactorsCardProps {
   factors: Factor[];
   fadeUp: Variants;
   className?: string;
+  /** Context such as a location adjustment or night caveat. */
+  note?: string;
 }
 
 export default function FactorsCard({
@@ -21,7 +24,9 @@ export default function FactorsCard({
   factors,
   fadeUp,
   className = "",
+  note,
 }: FactorsCardProps) {
+  const [open, setOpen] = useState(false);
   return (
     <motion.div variants={fadeUp} className={`dash-card ${className}`}>
       <div className="dash-card-header">
@@ -57,12 +62,40 @@ export default function FactorsCard({
         ))}
       </div>
 
+      {note && (
+        <p className="mt-3 text-[10.5px] leading-relaxed" style={{ color: "var(--text-tertiary)" }}>
+          {note}
+        </p>
+      )}
+
       <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
         className="mt-4 text-[9.5px] uppercase tracking-wider font-mono flex items-center gap-1 transition-colors hover:opacity-80"
         style={{ color: "var(--accent-gold)" }}
       >
-        How it works →
+        How it works {open ? "↑" : "→"}
       </button>
+      {open && (
+        <div className="mt-3 space-y-2 text-[11px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+          <p>
+            Every 15 minutes we pull live conditions from Open-Meteo for the air between Seattle and the
+            mountain, plus Seattle air quality, and add up points out of 100:
+          </p>
+          <p>
+            <b>Low clouds 40</b> · <b>mid clouds 20</b> · <b>high clouds 10</b> · <b>visibility distance 20</b> (full
+            marks at 90 km, roughly the distance to Rainier) · <b>air quality 10</b>. Fog removes 25, showers 20,
+            rain or snow 15. Thick cloud also caps the score — a solid low deck hides the mountain no matter how
+            clear the air above it is.
+          </p>
+          <p>
+            50 or more counts as “out” during daylight. Each neighborhood is then adjusted for its elevation,
+            fog and buildings. It&apos;s a transparent weather formula, not a black box — and every reading is
+            logged and checked against later conditions in the Mountain Log below.
+          </p>
+        </div>
+      )}
     </motion.div>
   );
 }

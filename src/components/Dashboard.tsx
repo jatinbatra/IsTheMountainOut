@@ -16,6 +16,8 @@ import {
   getAllNeighborhoodScores,
   NEIGHBORHOOD_LABELS,
   VISIBLE_THRESHOLD,
+  WEIGHTS,
+  scoreBreakdown,
 } from "@/lib/visibility";
 import { useAutoLocation } from "@/hooks/useAutoLocation";
 import {
@@ -34,6 +36,7 @@ import FactorsCard from "@/components/dashboard/FactorsCard";
 import NeighborhoodCard from "@/components/dashboard/NeighborhoodCard";
 import ForecastCard from "@/components/dashboard/ForecastCard";
 import HistoryCard from "@/components/dashboard/HistoryCard";
+import TelemetryCard from "@/components/dashboard/TelemetryCard";
 import DebugOverlay from "@/components/DebugOverlay";
 
 interface ViewpointData {
@@ -104,6 +107,9 @@ export interface MountainData {
     pm10?: number;
     sunrise?: string;
     sunset?: string;
+    sunriseNext?: string;
+    sunsetNext?: string;
+    observedAt?: string;
   };
   viewpoints: ViewpointData[];
   skyTheme: {
@@ -275,19 +281,49 @@ export default function Dashboard({ initialData }: Props) {
   const statusWord = getSeasonalStatusWord(season, isVisible, isNight);
   const seasonVars = getCSSVariables(palette);
 
-  const cloudScore    = Math.round(100 - data.weather.cloudLow);
-  const aqScore       = data.weather.pm25 != null ? Math.round(Math.max(0, 100 - (data.weather.pm25 / 50) * 100)) : 85;
-  const humidityScore = Math.round(Math.max(0, 100 - (data.weather.humidity - 40)));
-  const lightScore    = isNight ? 38 : 82;
-
+  // The factors card shows the model's real per-factor points (the same
+  // function the score is computed with), not decorative stand-ins.
+  const breakdown = useMemo(
+    () =>
+      scoreBreakdown({
+        cloudLow: data.weather.cloudLow,
+        cloudMid: data.weather.cloudMid,
+        cloudHigh: data.weather.cloudHigh,
+        visibilityM: data.weather.visibilityMeters,
+        weatherCode: data.weather.weatherCode,
+        pm25: data.weather.pm25,
+      }),
+    [data.weather]
+  );
+  const rate = (pts: number, max: number) => {
+    const r = pts / max;
+    return { value: Math.round(r * 100), status: r >= 0.7 ? "GOOD" : r >= 0.4 ? "FAIR" : "POOR" };
+  };
   const factors = [
-    { label: "Cloud Cover",        desc: `${data.weather.cloudLow}% cloud coverage`,         value: cloudScore,    status: cloudScore >= 70 ? "GOOD" : cloudScore >= 40 ? "FAIR" : "POOR" },
-    { label: "Air Quality (PM2.5)", desc: data.weather.pm25 != null ? `${data.weather.pm25.toFixed(1)} µg/m³` : "Good", value: aqScore, status: aqScore >= 70 ? "GOOD" : aqScore >= 40 ? "FAIR" : "POOR" },
-    { label: "Humidity",           desc: `${data.weather.humidity}% relative humidity`,       value: humidityScore, status: humidityScore >= 70 ? "GOOD" : humidityScore >= 40 ? "FAIR" : "POOR" },
-    { label: "Lighting",           desc: isNight ? "Night — reduced visibility" : "Golden hour boost", value: lightScore, status: lightScore >= 70 ? "EXCELLENT" : lightScore >= 40 ? "FAIR" : "POOR" },
+    { label: "Low clouds (under 2 km)", desc: `${data.weather.cloudLow}% cover · ${breakdown.lowClouds}/${WEIGHTS.LOW_CLOUDS} pts — the main blocker`, ...rate(breakdown.lowClouds, WEIGHTS.LOW_CLOUDS) },
+    { label: "Mid clouds (2–6 km)", desc: `${data.weather.cloudMid}% cover · ${breakdown.midClouds}/${WEIGHTS.MID_CLOUDS} pts`, ...rate(breakdown.midClouds, WEIGHTS.MID_CLOUDS) },
+    { label: "High clouds (6 km+)", desc: `${data.weather.cloudHigh}% cover · ${breakdown.highClouds}/${WEIGHTS.HIGH_CLOUDS} pts`, ...rate(breakdown.highClouds, WEIGHTS.HIGH_CLOUDS) },
+    { label: "Visibility distance", desc: `${Math.round(data.weather.visibilityMeters / 1000)} km (Rainier is ~90 km) · ${breakdown.visibility}/${WEIGHTS.VISIBILITY} pts`, ...rate(breakdown.visibility, WEIGHTS.VISIBILITY) },
+    {
+      label: "Air quality (PM2.5)",
+      desc: data.weather.pm25 != null
+        ? `${data.weather.pm25.toFixed(1)} µg/m³ · ${breakdown.airQuality}/${WEIGHTS.AIR_QUALITY} pts`
+        : `No reading — half credit · ${breakdown.airQuality}/${WEIGHTS.AIR_QUALITY} pts`,
+      ...rate(breakdown.airQuality, WEIGHTS.AIR_QUALITY),
+    },
+    ...(breakdown.weatherPenalty > 0
+      ? [{ label: "Fog / precipitation", desc: `−${breakdown.weatherPenalty} pts penalty`, value: 0, status: "PENALTY" }]
+      : []),
   ];
-
-
+  const adjustment = score - breakdown.total;
+  const capNote = breakdown.cappedBy
+    ? `Capped at ${breakdown.ceiling}: ${breakdown.cappedBy === "low_clouds" ? `${data.weather.cloudLow}% low` : `${data.weather.cloudMid}% mid-level`} cloud hides the mountain whatever the other factors say. `
+    : "";
+  const factorsNote = capNote + (isNight
+    ? "It's night — the score shows sky clarity, but the mountain can't be seen in the dark."
+    : adjustment !== 0
+      ? `Base score ${breakdown.total}; ${adjustment > 0 ? "+" : ""}${adjustment} adjustment for ${hoodLabel ?? "this location"} (elevation, fog, buildings).`
+      : "") || undefined;
 
   const weatherLabel = data.weather.cloudLow < 20 ? "Sunny" : data.weather.cloudLow < 50 ? "Partly Cloudy" : data.weather.cloudLow < 80 ? "Mostly Cloudy" : "Overcast";
 
@@ -321,6 +357,9 @@ export default function Dashboard({ initialData }: Props) {
           durationMessage={data.visibility.durationMessage}
           sunrise={data.weather.sunrise}
           sunset={data.weather.sunset}
+          sunriseNext={data.weather.sunriseNext}
+          sunsetNext={data.weather.sunsetNext}
+          now={now}
           alpenglow={data.alpenglow}
         />
 
@@ -378,6 +417,7 @@ export default function Dashboard({ initialData }: Props) {
               <FactorsCard
                 isVisible={isVisible}
                 factors={factors}
+                note={factorsNote}
                 fadeUp={fadeUp}
                 className="card-factors"
               />
@@ -485,6 +525,7 @@ export default function Dashboard({ initialData }: Props) {
           </motion.div>
 
           <HistoryCard />
+          <TelemetryCard />
 
           <footer id="section-about" className="divider-cedar mt-12 pt-8 pb-10">
             <PrivacyCommitment />

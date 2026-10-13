@@ -1,5 +1,6 @@
 import { kv } from "@vercel/kv";
 import { VISIBLE_THRESHOLD } from "@/lib/visibility";
+import type { Signals } from "@/lib/telemetry";
 
 // ── Mountain log ─────────────────────────────────────────────────────
 // Records what the mountain was doing over time, at 15-minute resolution.
@@ -28,6 +29,8 @@ export interface Observation {
   ts: string; // ISO timestamp
   score: number;
   state: MountainState;
+  /** Full telemetry snapshot (readings logged before telemetry existed lack it). */
+  signals?: Signals;
 }
 
 export interface DaySummary {
@@ -96,6 +99,8 @@ export async function recordObservation(input: {
   isDay: boolean;
   isFallback?: boolean;
   at?: Date;
+  /** Builds the telemetry snapshot; only called when this reading claims a new slot. */
+  buildSignals?: () => Promise<Signals>;
 }): Promise<void> {
   if (input.isFallback) return; // never log estimated/mock data as history
   if (process.env.NEXT_PHASE === "phase-production-build") return;
@@ -114,6 +119,16 @@ export async function recordObservation(input: {
     const claimed = await kv.hsetnx(dayKey, slot, JSON.stringify(obs));
     if (claimed !== 1) return; // slot already recorded
 
+    if (input.buildSignals) {
+      // Claim first with the bare reading (cheap, race-free), then attach the
+      // full snapshot — so normal traffic never pays for building it.
+      try {
+        obs.signals = await input.buildSignals();
+        await kv.hset(dayKey, { [slot]: JSON.stringify(obs) });
+      } catch (err) {
+        console.warn("[history] signals failed:", err);
+      }
+    }
     await kv.expire(dayKey, DAY_TTL_SECONDS);
     await Promise.all([updateDaySummary(day, obs), updateEvents(obs)]);
   } catch (err) {

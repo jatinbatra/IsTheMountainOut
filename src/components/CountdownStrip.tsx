@@ -2,10 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Sunrise, Sunset, Sparkles, Palette } from "lucide-react";
+import { TZ } from "@/lib/time";
 
 interface Props {
   sunrise?: string;
   sunset?: string;
+  sunriseNext?: string;
+  sunsetNext?: string;
   alpenglow?: {
     probability: number;
     minutesToSunset: number;
@@ -17,37 +20,29 @@ type Event = {
   key: string;
   label: string;
   time: Date;
+  end?: Date; // for windows (golden hour)
   icon: typeof Sunrise;
 };
 
-function formatCountdown(ms: number): string {
-  const isPast = ms < 0;
-  const absMs = Math.abs(ms);
-  const totalMinutes = Math.floor(absMs / 60_000);
-  
-  let timeStr = "";
-  if (totalMinutes < 60) {
-    timeStr = `${totalMinutes}m`;
-  } else {
-    const h = Math.floor(totalMinutes / 60);
-    const m = totalMinutes % 60;
-    timeStr = m === 0 ? `${h}h` : `${h}h ${m}m`;
-  }
-  
-  return isPast ? `${timeStr} ago` : timeStr;
+// Golden hour ≈ the last hour of direct sun before sunset.
+const GOLDEN_MINUTES = 60;
+const ALPENGLOW_LEAD_MINUTES = 30;
+
+function formatIn(ms: number): string {
+  const totalMinutes = Math.max(0, Math.round(ms / 60_000));
+  if (totalMinutes < 60) return `${totalMinutes}m`;
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
+  return m === 0 ? `${h}h` : `${h}h ${m}m`;
 }
 
 function formatTime(d: Date): string {
-  return d.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    timeZone: "America/Los_Angeles",
-  });
+  return d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: TZ });
 }
 
-export default function CountdownStrip({ sunrise, sunset, alpenglow }: Props) {
-  // Countdown values are inherently "now"-relative, so they can't match between
-  // server and client. Render nothing until mounted to avoid hydration errors.
+export default function CountdownStrip({ sunrise, sunset, sunriseNext, sunsetNext, alpenglow }: Props) {
+  // Countdowns are "now"-relative, so they can't match between server and
+  // client. Render nothing until mounted to avoid hydration errors.
   const [mounted, setMounted] = useState(false);
   const [now, setNow] = useState(() => Date.now());
 
@@ -60,60 +55,66 @@ export default function CountdownStrip({ sunrise, sunset, alpenglow }: Props) {
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
 
-  const events = useMemo<Event[]>(() => {
-    const out: Event[] = [];
-    const sunriseDate = sunrise ? new Date(sunrise) : null;
-    const sunsetDate = sunset ? new Date(sunset) : null;
+  const { active, upcoming } = useMemo(() => {
+    const all: Event[] = [];
+    for (const [rise, set, isToday] of [
+      [sunrise, sunset, true],
+      [sunriseNext, sunsetNext, false],
+    ] as const) {
+      if (rise) all.push({ key: `sunrise-${rise}`, label: "Sunrise", time: new Date(rise), icon: Sunrise });
+      if (set) {
+        const setDate = new Date(set);
+        all.push({
+          key: `golden-${set}`,
+          label: "Golden hour",
+          time: new Date(setDate.getTime() - GOLDEN_MINUTES * 60_000),
+          end: setDate,
+          icon: Sparkles,
+        });
+        // Alpenglow prediction only applies to today's sunset.
+        if (isToday && alpenglow?.isLikely && alpenglow.probability >= 40) {
+          all.push({
+            key: `alpenglow-${set}`,
+            label: "Alpenglow",
+            time: new Date(setDate.getTime() - ALPENGLOW_LEAD_MINUTES * 60_000),
+            icon: Palette,
+          });
+        }
+        all.push({ key: `sunset-${set}`, label: "Sunset", time: setDate, icon: Sunset });
+      }
+    }
+    const valid = all.filter((e) => !Number.isNaN(e.time.getTime()));
+    const active = valid.find((e) => e.end && e.time.getTime() <= now && now < e.end.getTime()) ?? null;
+    const upcoming = valid
+      .filter((e) => e.time.getTime() > now)
+      .sort((a, b) => a.time.getTime() - b.time.getTime())
+      .slice(0, active ? 2 : 3);
+    return { active, upcoming };
+  }, [sunrise, sunset, sunriseNext, sunsetNext, alpenglow, now]);
 
-    if (sunriseDate) {
-      out.push({ key: "sunrise", label: "Sunrise", time: sunriseDate, icon: Sunrise });
-    }
-    if (sunsetDate) {
-      const goldenStart = new Date(sunsetDate.getTime() - 90 * 60_000);
-      out.push({ key: "golden", label: "Golden hour", time: goldenStart, icon: Sparkles });
-    }
-    if (alpenglow && alpenglow.isLikely && alpenglow.probability >= 40 && sunsetDate) {
-      const alpenStart = new Date(sunsetDate.getTime() - 30 * 60_000);
-      out.push({ key: "alpenglow", label: "Alpenglow", time: alpenStart, icon: Palette });
-    }
-    if (sunsetDate) {
-      out.push({ key: "sunset", label: "Sunset", time: sunsetDate, icon: Sunset });
-    }
-
-    // Prefer future events, but show past ones if they just happened
-    return out
-      .sort((a, b) => {
-        const aDiff = a.time.getTime() - now;
-        const bDiff = b.time.getTime() - now;
-        
-        // If one is future and one is past, prefer future
-        if (aDiff > 0 && bDiff < 0) return -1;
-        if (aDiff < 0 && bDiff > 0) return 1;
-        
-        // Otherwise, closest to now first
-        return Math.abs(aDiff) - Math.abs(bDiff);
-      })
-      .slice(0, 3)
-      .sort((a, b) => a.time.getTime() - b.time.getTime());
-  }, [sunrise, sunset, alpenglow, now]);
-
-  if (!mounted || events.length === 0) return null;
+  if (!mounted || (!active && upcoming.length === 0)) return null;
 
   return (
     <div className="flex items-center gap-4 sm:gap-6 overflow-x-auto overflow-y-hidden py-2 text-sm">
-      {events.map((e) => {
+      {active && (
+        <div className="flex items-center gap-2 whitespace-nowrap">
+          <active.icon className="w-3.5 h-3.5 text-[color:var(--accent-gold)]" aria-hidden="true" />
+          <span className="text-[color:var(--accent-gold)]">{active.label} · now</span>
+          <span className="text-[color:var(--type-4)] text-xs tabular-nums">
+            ends in {formatIn(active.end!.getTime() - now)}
+          </span>
+        </div>
+      )}
+      {upcoming.map((e) => {
         const Icon = e.icon;
-        const delta = e.time.getTime() - now;
         return (
           <div key={e.key} className="flex items-center gap-2 whitespace-nowrap">
             <Icon className="w-3.5 h-3.5 text-[color:var(--type-4)]" aria-hidden="true" />
             <span className="text-[color:var(--type-3)]">{e.label}</span>
             <span className="font-display font-bold text-[color:var(--type-1)] tabular-nums">
-              {formatCountdown(delta)}
+              in {formatIn(e.time.getTime() - now)}
             </span>
-            <span className="text-[color:var(--type-4)] text-xs tabular-nums">
-              {formatTime(e.time)}
-            </span>
+            <span className="text-[color:var(--type-4)] text-xs tabular-nums">{formatTime(e.time)}</span>
           </div>
         );
       })}

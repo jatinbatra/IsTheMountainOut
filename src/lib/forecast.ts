@@ -1,3 +1,5 @@
+import { ptDate, TZ } from "@/lib/time";
+
 const CLEAR_THRESHOLD = 76;
 const MIN_WINDOW_HOURS = 2;
 
@@ -28,23 +30,23 @@ function parseTime(iso: string): Date {
 function formatHourPT(iso: string): string {
   return new Date(iso).toLocaleTimeString("en-US", {
     hour: "numeric",
-    timeZone: "America/Los_Angeles",
+    timeZone: TZ,
   });
 }
 
+// All day comparisons use Seattle calendar dates (never the machine's timezone,
+// which differs between the UTC server and visitors' browsers).
+function addDays(day: string, n: number): string {
+  const [y, m, d] = day.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10);
+}
+
 function sameDayLabel(iso: string, nowIso: string): string {
-  const d = parseTime(iso);
-  const now = new Date(nowIso);
-  const midnight = new Date(now);
-  midnight.setHours(23, 59, 59, 999);
-  if (d <= midnight) return "today";
-  const tomorrowEnd = new Date(midnight);
-  tomorrowEnd.setDate(tomorrowEnd.getDate() + 1);
-  if (d <= tomorrowEnd) return "tomorrow";
-  return d.toLocaleDateString("en-US", {
-    weekday: "long",
-    timeZone: "America/Los_Angeles",
-  });
+  const day = ptDate(parseTime(iso));
+  const today = ptDate(new Date(nowIso));
+  if (day <= today) return "today";
+  if (day === addDays(today, 1)) return "tomorrow";
+  return parseTime(iso).toLocaleDateString("en-US", { weekday: "long", timeZone: TZ });
 }
 
 export function findNextClearWindow(
@@ -93,7 +95,7 @@ export function findNextClearWindow(
           const startIso = upcoming[runStart].time;
           const endIso = h.time;
           return {
-            kind: parseTime(startIso).toDateString() === now.toDateString() ? "today" : "upcoming",
+            kind: ptDate(parseTime(startIso)) === ptDate(now) ? "today" : "upcoming",
             startIso,
             endIso,
             dayLabel: sameDayLabel(startIso, nowIso),
@@ -110,7 +112,7 @@ export function findNextClearWindow(
       const startIso = upcoming[runStart].time;
       const lastIso = upcoming[upcoming.length - 1].time;
       return {
-        kind: parseTime(startIso).toDateString() === now.toDateString() ? "today" : "upcoming",
+        kind: ptDate(parseTime(startIso)) === ptDate(now) ? "today" : "upcoming",
         startIso,
         endIso: lastIso,
         dayLabel: sameDayLabel(startIso, nowIso),
@@ -121,7 +123,8 @@ export function findNextClearWindow(
   }
 
   if (daily && daily.length) {
-    const upcoming = daily.filter((d) => parseTime(d.date).getTime() >= new Date(now.toDateString()).getTime());
+    const today = ptDate(now);
+    const upcoming = daily.filter((d) => d.date >= today); // YYYY-MM-DD strings compare correctly
     const hit = upcoming.find((d) => d.score >= CLEAR_THRESHOLD);
     if (hit) {
       return {

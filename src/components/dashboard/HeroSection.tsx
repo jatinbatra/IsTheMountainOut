@@ -21,6 +21,10 @@ interface HeroSectionProps {
   durationMessage: string;
   sunrise?: string;
   sunset?: string;
+  sunriseNext?: string;
+  sunsetNext?: string;
+  /** Hydration-safe clock from the dashboard. */
+  now: number;
   alpenglow?: {
     probability: number;
     isLikely: boolean;
@@ -43,8 +47,16 @@ export default function HeroSection({
   durationMessage,
   sunrise,
   sunset,
+  sunriseNext,
+  sunsetNext,
+  now,
   alpenglow,
 }: HeroSectionProps) {
+  // Next sunrise that hasn't happened yet (today's, or tomorrow's after dawn).
+  const nextSunrise = [sunrise, sunriseNext].find((t) => t && new Date(t).getTime() > now);
+  const nextSunriseLabel = nextSunrise
+    ? new Date(nextSunrise).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/Los_Angeles" })
+    : null;
   return (
     <section id="section-home" data-testid="hero-section" className="hero-section" style={{ height: "72vh", minHeight: "560px" }}>
       <div
@@ -83,7 +95,7 @@ export default function HeroSection({
           </div>
 
           <div className="ml-1">
-            <CountdownStrip sunrise={sunrise} sunset={sunset} alpenglow={alpenglow} />
+            <CountdownStrip sunrise={sunrise} sunset={sunset} sunriseNext={sunriseNext} sunsetNext={sunsetNext} alpenglow={alpenglow} />
           </div>
         </div>
 
@@ -99,7 +111,7 @@ export default function HeroSection({
           <div className="weather-widget-details">
             <div className="weather-widget-detail">
               <Wind className="w-3 h-3" />
-              <span>{Math.round(windSpeed)} mph</span>
+              <span>{Math.round(windSpeed * 0.621371)} mph</span>
             </div>
             <div className="weather-widget-detail">
               <Droplets className="w-3 h-3" />
@@ -183,7 +195,7 @@ export default function HeroSection({
           transition={{ delay: 0.9, duration: 0.7 }}
         >
           {isNight
-            ? `The mountain is resting. Check back at sunrise${sunrise ? ` (${sunrise})` : ""}.`
+            ? `The mountain is resting. Check back at sunrise${nextSunriseLabel ? ` (${nextSunriseLabel})` : ""}.`
             : isVisible
               ? `The mountain is out. Enjoy the view from ${viewpointName}.`
               : durationMessage}

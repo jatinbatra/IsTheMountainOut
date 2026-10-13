@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback } from "react";
 import { Sun, CloudRain, CloudSnow, CloudFog, Cloud } from "lucide-react";
 import { VISIBLE_THRESHOLD } from "@/lib/visibility";
+import { ptHour } from "@/lib/time";
 
 interface HourData {
   time: string;
@@ -41,8 +42,7 @@ export default function ForecastTimeline({ hourlyTimeline }: Props) {
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const now = new Date();
-  const currentHour = now.getHours();
+  const currentHour = ptHour(); // timeline index = Seattle hour
 
   const getHourFromEvent = useCallback(
     (clientX: number) => {
