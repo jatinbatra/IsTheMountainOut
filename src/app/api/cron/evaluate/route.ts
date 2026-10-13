@@ -14,7 +14,7 @@ import {
   buildNewState,
 } from "@/lib/state";
 import { getGlobalStreak } from "@/lib/globalStreak";
-import { recordObservation } from "@/lib/history";
+import { recordReading } from "@/lib/telemetry";
 
 async function sendPushToAll(title: string, body: string) {
   const rawEmail = process.env.VAPID_EMAIL;
@@ -92,11 +92,7 @@ export async function GET(request: Request) {
     const newState = buildNewState(visibility.score, visibility.isVisible, previousState);
     await saveMountainState(newState);
 
-    await recordObservation({
-      score: visibility.score,
-      isDay: weather.isDay,
-      isFallback: weather.isFallback,
-    });
+    await recordReading(weather, visibility);
 
     if (transition.shouldNotify) {
       const titles: Record<string, string> = {

@@ -25,7 +25,7 @@ export default async function EmbedPage({
 
   if (hood && hoodLabel) {
     score = getNeighborhoodAdjustedScore(visibility.score, hood, weather.humidity);
-    isVisible = score >= VISIBLE_THRESHOLD;
+    isVisible = weather.isDay && score >= VISIBLE_THRESHOLD;
   }
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://is-the-mountain-out.vercel.app";

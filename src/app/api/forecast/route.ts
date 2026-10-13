@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchWeatherData } from "@/lib/weather";
+import { ptHour } from "@/lib/time";
 import { scoreHourForTimeline, VISIBLE_THRESHOLD } from "@/lib/visibility";
 
 interface ForecastHour {
@@ -34,8 +35,7 @@ export async function GET(request: NextRequest) {
     const weather = await fetchWeatherData();
 
     // Get hourly forecast
-    const now = new Date();
-    const currentHour = now.getHours();
+    const currentHour = ptHour(); // hourly series starts at Seattle midnight
     const forecastHours: ForecastHour[] = weather.hourlyForecast
       .slice(currentHour, currentHour + hours)
       .map((h) => {

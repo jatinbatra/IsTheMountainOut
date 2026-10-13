@@ -1,3 +1,4 @@
+import { ptHour, ptHourOf } from "@/lib/time";
 import { WeatherData } from "./weather";
 
 export interface SkyTheme {
@@ -19,8 +20,7 @@ export interface SkyTheme {
  * Creates gradients and colors that simulate current conditions.
  */
 export function getSkyTheme(weather: WeatherData, alpenglowProb: number = 0): SkyTheme {
-  const now = new Date();
-  const hour = now.getHours();
+  const hour = ptHour();
   const isDay = weather.isDay;
 
   // Alpenglow theme (special override during sunset)
@@ -42,10 +42,10 @@ export function getSkyTheme(weather: WeatherData, alpenglowProb: number = 0): Sk
 
   // Parse sunrise/sunset times
   const sunriseHour = weather.sunrise
-    ? new Date(weather.sunrise).getHours()
+    ? ptHourOf(weather.sunrise)
     : 6;
   const sunsetHour = weather.sunset
-    ? new Date(weather.sunset).getHours()
+    ? ptHourOf(weather.sunset)
     : 18;
 
   const isGoldenHour =

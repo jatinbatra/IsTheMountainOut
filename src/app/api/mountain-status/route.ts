@@ -9,10 +9,15 @@ import {
 import { rankViewpoints, VIEWPOINTS } from "@/lib/viewpoints";
 import { getSkyTheme } from "@/lib/sky";
 import { predictAlpenglow } from "@/lib/alpenglow";
-import { recordObservation } from "@/lib/history";
+import { recordReading } from "@/lib/telemetry";
 
 // Cache for standard (midpoint) weather
-let cachedMidpointResult: { data: ReturnType<typeof buildResponse>; timestamp: number } | null = null;
+let cachedMidpointResult: {
+  data: ReturnType<typeof buildResponse>;
+  weather: Awaited<ReturnType<typeof fetchWeatherData>>;
+  visibility: ReturnType<typeof calculateVisibility>;
+  timestamp: number;
+} | null = null;
 const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
 
 const RAINIER_LAT = 46.8523;
@@ -95,6 +100,9 @@ function buildResponse(
       pm10: weather.pm10,
       sunrise: weather.sunrise,
       sunset: weather.sunset,
+      sunriseNext: weather.sunriseNext,
+      sunsetNext: weather.sunsetNext,
+      observedAt: weather.observedAt,
     },
     viewpoints,
     skyTheme,
@@ -121,23 +129,15 @@ export async function GET(request: NextRequest) {
     // Standard midpoint request (can be cached)
     if (!hood) {
       if (cachedMidpointResult && now - cachedMidpointResult.timestamp < CACHE_TTL) {
-        const cached = cachedMidpointResult.data;
-        await recordObservation({
-          score: cached.visibility.score,
-          isDay: cached.weather.isDay,
-          isFallback: cached.isFallback,
-        });
-        return NextResponse.json(cached);
+        await recordReading(cachedMidpointResult.weather, cachedMidpointResult.visibility);
+        return NextResponse.json(cachedMidpointResult.data);
       }
       const weather = await fetchWeatherData();
-      const data = buildResponse(weather);
-      cachedMidpointResult = { data, timestamp: now };
-      // Log this reading to the mountain history (one write per 15-min slot).
-      await recordObservation({
-        score: data.visibility.score,
-        isDay: weather.isDay,
-        isFallback: weather.isFallback,
-      });
+      const visibility = calculateVisibility(weather);
+      const data = buildResponse(weather, visibility);
+      cachedMidpointResult = { data, weather, visibility, timestamp: now };
+      // Log this reading + full telemetry to the mountain history (one per 15-min slot).
+      await recordReading(weather, visibility);
       return NextResponse.json(data);
     }
 

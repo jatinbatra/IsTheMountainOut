@@ -11,7 +11,7 @@ import {
 import { predictAlpenglow } from "@/lib/alpenglow";
 import { rankViewpoints } from "@/lib/viewpoints";
 import { getSkyTheme } from "@/lib/sky";
-import { recordObservation } from "@/lib/history";
+import { recordReading } from "@/lib/telemetry";
 import Dashboard from "@/components/Dashboard";
 import type { MountainData } from "@/components/Dashboard";
 
@@ -24,11 +24,7 @@ export const revalidate = 900;
 async function getMountainData(): Promise<MountainData> {
   const weather = await fetchWeatherData();
   const visibility = calculateVisibility(weather);
-  await recordObservation({
-    score: visibility.score,
-    isDay: weather.isDay,
-    isFallback: weather.isFallback,
-  });
+  await recordReading(weather, visibility);
   const viewpoints = rankViewpoints(
     visibility.score,
     visibility.isVisible,
@@ -99,6 +95,9 @@ async function getMountainData(): Promise<MountainData> {
       pm10: weather.pm10,
       sunrise: weather.sunrise,
       sunset: weather.sunset,
+      sunriseNext: weather.sunriseNext,
+      sunsetNext: weather.sunsetNext,
+      observedAt: weather.observedAt,
     },
     viewpoints,
     skyTheme,
@@ -139,7 +138,7 @@ export async function generateMetadata({
       hood,
       data.weather.humidity
     );
-    isVisible = score >= VISIBLE_THRESHOLD;
+    isVisible = data.weather.isDay && score >= VISIBLE_THRESHOLD;
   }
 
   const title = hoodLabel
