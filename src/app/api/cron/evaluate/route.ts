@@ -13,28 +13,8 @@ import {
   evaluateTransition,
   buildNewState,
 } from "@/lib/state";
-import { recordGlobalStreak, getGlobalStreak } from "@/lib/globalStreak";
-
-type CalendarData = Record<string, { score: number; isVisible: boolean }>;
-
-async function saveCalendarSnapshot(score: number, isVisible: boolean) {
-  const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
-  try {
-    const data = (await kv.get<CalendarData>("calendar:data")) || {};
-    data[today] = { score, isVisible };
-
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - 400);
-    const cutoffStr = cutoff.toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
-    for (const key of Object.keys(data)) {
-      if (key < cutoffStr) delete data[key];
-    }
-
-    await kv.set("calendar:data", data);
-  } catch (err) {
-    console.warn("[Cron] Calendar snapshot failed:", err);
-  }
-}
+import { getGlobalStreak } from "@/lib/globalStreak";
+import { recordObservation } from "@/lib/history";
 
 async function sendPushToAll(title: string, body: string) {
   const rawEmail = process.env.VAPID_EMAIL;
@@ -112,8 +92,11 @@ export async function GET(request: Request) {
     const newState = buildNewState(visibility.score, visibility.isVisible, previousState);
     await saveMountainState(newState);
 
-    await saveCalendarSnapshot(visibility.score, visibility.isVisible);
-    await recordGlobalStreak(visibility.isVisible);
+    await recordObservation({
+      score: visibility.score,
+      isDay: weather.isDay,
+      isFallback: weather.isFallback,
+    });
 
     if (transition.shouldNotify) {
       const titles: Record<string, string> = {

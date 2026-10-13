@@ -33,6 +33,7 @@ import VisibilityCard from "@/components/dashboard/VisibilityCard";
 import FactorsCard from "@/components/dashboard/FactorsCard";
 import NeighborhoodCard from "@/components/dashboard/NeighborhoodCard";
 import ForecastCard from "@/components/dashboard/ForecastCard";
+import HistoryCard from "@/components/dashboard/HistoryCard";
 
 interface ViewpointData {
   id: string;
@@ -124,6 +125,8 @@ export interface MountainData {
     isLikely: boolean;
     minutesToSunset: number;
   };
+  /** True when live weather was unreachable and figures are an estimate. */
+  isFallback?: boolean;
   lastUpdated: string;
 }
 
@@ -131,7 +134,15 @@ interface Props {
   initialData: MountainData;
 }
 
-const fetcher = (url: string) => fetch(url).then((r) => r.json());
+// Throw on non-2xx so SWR treats it as an error and keeps the last good data,
+// instead of handing `{ error }` to the dashboard (which crashed the page).
+const fetcher = async (url: string): Promise<MountainData> => {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`mountain-status ${r.status}`);
+  const json = await r.json();
+  if (!json?.visibility || !json?.weather) throw new Error("mountain-status: malformed response");
+  return json;
+};
 
 const VIEWPOINTS = [
   { id: "kerry-park",      name: "Kerry Park",      sub: "Queen Anne",          image: "/images/viewpoints/kerry-park.jpg" },
@@ -331,6 +342,15 @@ export default function Dashboard({ initialData }: Props) {
         </div>
 
         <div className="dashboard-content">
+          {data.isFallback && (
+            <p
+              role="status"
+              className="mb-4 rounded-xl px-4 py-2.5 text-[11px]"
+              style={{ border: "1px solid var(--accent-gold)", color: "var(--accent-gold)", background: "rgba(224,169,109,0.06)" }}
+            >
+              Live weather data is temporarily unavailable — figures below are an estimate and will refresh automatically.
+            </p>
+          )}
           <motion.div
             className="dashboard-grid"
             initial="initial"
@@ -461,6 +481,8 @@ export default function Dashboard({ initialData }: Props) {
               </div>
             </div>
           </motion.div>
+
+          <HistoryCard />
 
           <footer id="section-about" className="divider-cedar mt-12 pt-8 pb-10">
             <PrivacyCommitment />

@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Eye, Map, BarChart3, Clock, Star, Info } from "lucide-react";
+import { Home, Eye, Map, BarChart3, Clock, Info } from "lucide-react";
 
 export const SIDEBAR_ITEMS = [
   { icon: Home,      label: "Home",      id: "home" },
@@ -8,7 +8,6 @@ export const SIDEBAR_ITEMS = [
   { icon: Map,       label: "Map",       id: "map" },
   { icon: BarChart3, label: "Forecast",  id: "forecast" },
   { icon: Clock,     label: "History",   id: "history" },
-  { icon: Star,      label: "Favorites", id: "favorites" },
   { icon: Info,      label: "About",     id: "about" },
 ] as const;
 

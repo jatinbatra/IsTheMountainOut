@@ -100,7 +100,7 @@ export default function CountdownStrip({ sunrise, sunset, alpenglow }: Props) {
   if (!mounted || events.length === 0) return null;
 
   return (
-    <div className="flex items-center gap-4 sm:gap-6 overflow-x-auto py-2 text-sm">
+    <div className="flex items-center gap-4 sm:gap-6 overflow-x-auto overflow-y-hidden py-2 text-sm">
       {events.map((e) => {
         const Icon = e.icon;
         const delta = e.time.getTime() - now;

@@ -11,6 +11,7 @@ import {
 import { predictAlpenglow } from "@/lib/alpenglow";
 import { rankViewpoints } from "@/lib/viewpoints";
 import { getSkyTheme } from "@/lib/sky";
+import { recordObservation } from "@/lib/history";
 import Dashboard from "@/components/Dashboard";
 import type { MountainData } from "@/components/Dashboard";
 
@@ -23,6 +24,11 @@ export const revalidate = 900;
 async function getMountainData(): Promise<MountainData> {
   const weather = await fetchWeatherData();
   const visibility = calculateVisibility(weather);
+  await recordObservation({
+    score: visibility.score,
+    isDay: weather.isDay,
+    isFallback: weather.isFallback,
+  });
   const viewpoints = rankViewpoints(
     visibility.score,
     visibility.isVisible,
@@ -105,6 +111,7 @@ async function getMountainData(): Promise<MountainData> {
           minutesToSunset: alpenglowData.minutesToSunset,
         }
       : undefined,
+    isFallback: Boolean(weather.isFallback),
     lastUpdated: new Date().toISOString(),
   };
 }

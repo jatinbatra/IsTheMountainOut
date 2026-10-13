@@ -9,6 +9,7 @@ import {
 import { rankViewpoints, VIEWPOINTS } from "@/lib/viewpoints";
 import { getSkyTheme } from "@/lib/sky";
 import { predictAlpenglow } from "@/lib/alpenglow";
+import { recordObservation } from "@/lib/history";
 
 // Cache for standard (midpoint) weather
 let cachedMidpointResult: { data: ReturnType<typeof buildResponse>; timestamp: number } | null = null;
@@ -106,6 +107,7 @@ function buildResponse(
           minutesToSunset: alpenglowData.minutesToSunset,
         }
       : undefined,
+    isFallback: Boolean(weather.isFallback),
     lastUpdated: new Date().toISOString(),
   };
 }
@@ -119,11 +121,23 @@ export async function GET(request: NextRequest) {
     // Standard midpoint request (can be cached)
     if (!hood) {
       if (cachedMidpointResult && now - cachedMidpointResult.timestamp < CACHE_TTL) {
-        return NextResponse.json(cachedMidpointResult.data);
+        const cached = cachedMidpointResult.data;
+        await recordObservation({
+          score: cached.visibility.score,
+          isDay: cached.weather.isDay,
+          isFallback: cached.isFallback,
+        });
+        return NextResponse.json(cached);
       }
       const weather = await fetchWeatherData();
       const data = buildResponse(weather);
       cachedMidpointResult = { data, timestamp: now };
+      // Log this reading to the mountain history (one write per 15-min slot).
+      await recordObservation({
+        score: data.visibility.score,
+        isDay: weather.isDay,
+        isFallback: weather.isFallback,
+      });
       return NextResponse.json(data);
     }
 

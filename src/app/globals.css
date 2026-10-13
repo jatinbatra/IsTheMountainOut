@@ -372,6 +372,10 @@ body {
   display: flex;
   gap: 24px;
   overflow-x: auto;
+  /* overflow-x:auto silently makes overflow-y auto too; pin it so this strip
+     can never capture vertical wheel/touch gestures meant for the page. */
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
   scrollbar-width: none;
   flex: 1;
 }
