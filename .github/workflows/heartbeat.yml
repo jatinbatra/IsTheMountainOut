@@ -1,0 +1,31 @@
+name: Mountain heartbeat
+
+# Keeps the mountain log filling in when nobody has the site open.
+# Vercel's Hobby plan only allows once-a-day crons (more frequent schedules
+# make every deployment fail), so frequent pings run here instead.
+#
+# - Hitting /api/mountain-status records the current reading (one per 15 min).
+# - If the CRON_SECRET repo secret is set, /api/cron/evaluate also runs,
+#   which sends push notifications on state changes.
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      SITE_URL: ${{ vars.SITE_URL || 'https://is-the-mountain-out.vercel.app' }}
+      CRON_SECRET: ${{ secrets.CRON_SECRET }}
+    steps:
+      - name: Record current reading
+        run: curl -fsS --max-time 60 "$SITE_URL/api/mountain-status" -o /dev/null -w "mountain-status %{http_code}\n"
+
+      - name: Evaluate alerts
+        if: env.CRON_SECRET != ''
+        run: curl -fsS --max-time 60 -H "Authorization: Bearer $CRON_SECRET" "$SITE_URL/api/cron/evaluate" -o /dev/null -w "evaluate %{http_code}\n"

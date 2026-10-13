@@ -18,6 +18,8 @@ export interface WeatherData {
   sunset: string;
   pm25?: number;               // µg/m³ air quality
   pm10?: number;
+  /** True when the live APIs failed and these numbers are a local estimate. */
+  isFallback?: boolean;
 }
 
 export interface HourlyForecast {
@@ -119,6 +121,7 @@ function getMockWeatherData(): WeatherData {
     sunset: `${today}T19:45`,
     pm25: 8.2,
     pm10: 15.5,
+    isFallback: true,
   };
 }
 

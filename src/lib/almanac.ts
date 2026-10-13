@@ -1,5 +1,6 @@
 import { kv } from "@vercel/kv";
 import { getGlobalStreak } from "@/lib/globalStreak";
+import { isStorageConfigured } from "@/lib/history";
 
 type CalendarData = Record<string, { score: number; isVisible: boolean }>;
 
@@ -187,10 +188,12 @@ function buildPressQuotes(stats: Omit<AlmanacStats, "pressQuotes">): string[] {
 
 export async function getAlmanacStats(): Promise<AlmanacStats> {
   let data: CalendarData = {};
-  try {
-    data = (await kv.get<CalendarData>("calendar:data")) || {};
-  } catch (err) {
-    console.warn("[Almanac] calendar fetch failed:", err);
+  if (isStorageConfigured()) {
+    try {
+      data = (await kv.get<CalendarData>("calendar:data")) || {};
+    } catch (err) {
+      console.warn("[Almanac] calendar fetch failed:", err);
+    }
   }
 
   const streak = await getGlobalStreak().catch(() => null);

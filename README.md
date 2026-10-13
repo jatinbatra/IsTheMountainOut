@@ -23,16 +23,18 @@ npm run dev
 
 | Variable | Required | Purpose |
 |---|---|---|
-| `KV_REST_API_URL` | For KV features | Vercel KV connection |
-| `KV_REST_API_TOKEN` | For KV features | Vercel KV auth |
-| `CRON_SECRET` | Production | Protects cron endpoints |
+| `KV_REST_API_URL` | For history/analytics | Redis (Vercel KV / Upstash) connection |
+| `KV_REST_API_TOKEN` | For history/analytics | Redis auth |
+| `CRON_SECRET` | For push alerts | Protects `/api/cron/evaluate` |
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | For push | Web push VAPID public key |
 | `VAPID_PRIVATE_KEY` | For push | Web push VAPID private key |
 | `VAPID_EMAIL` | For push | Contact email for VAPID |
-| `BLOB_READ_WRITE_TOKEN` | For uploads | Vercel Blob storage |
 
-## Cron jobs
+## Mountain log (history)
 
-Configured in `vercel.json`. Requires `CRON_SECRET` env var set in Vercel:
-- `/api/cron/evaluate` — hourly: scores visibility, updates calendar, sends push notifications on state changes
-- `/api/cron/check-visibility` — every 15min during 6am-10pm PT: lightweight state-change check + push
+Every server path that computes live visibility (the status API the dashboard polls, the page render, the cron) records the reading via `src/lib/history.ts`. Each 15-minute slot is claimed with `HSETNX`, so only one reading per slot is stored no matter the traffic, and the daily summary / change log update at most once per slot. `/api/history` serves the last 24h, 30-day record, change log, and stats; the dashboard's **Mountain Log** section renders it. Without `KV_REST_API_*` set, logging is skipped and the UI says storage isn't connected.
+
+## Scheduled jobs
+
+- **Vercel cron** (`vercel.json`): `/api/cron/evaluate` once a day. The Hobby plan only allows daily crons — a more frequent schedule makes every deployment fail.
+- **GitHub Actions heartbeat** (`.github/workflows/heartbeat.yml`): every 15 minutes, pings `/api/mountain-status` so the log fills in with no visitors, and calls `/api/cron/evaluate` (push alerts) when the `CRON_SECRET` repo secret is set.
