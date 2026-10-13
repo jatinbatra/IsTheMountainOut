@@ -36,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`antialiased ${inter.variable} ${playfair.variable} ${mono.variable}`}>
+    <html lang="en" data-build={(process.env.VERCEL_GIT_COMMIT_SHA || "local").slice(0, 7)} className={`antialiased ${inter.variable} ${playfair.variable} ${mono.variable}`}>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

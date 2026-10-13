@@ -34,6 +34,7 @@ import FactorsCard from "@/components/dashboard/FactorsCard";
 import NeighborhoodCard from "@/components/dashboard/NeighborhoodCard";
 import ForecastCard from "@/components/dashboard/ForecastCard";
 import HistoryCard from "@/components/dashboard/HistoryCard";
+import DebugOverlay from "@/components/DebugOverlay";
 
 interface ViewpointData {
   id: string;
@@ -298,6 +299,7 @@ export default function Dashboard({ initialData }: Props) {
   return (
     <div className="flex min-h-screen" style={seasonVars as React.CSSProperties}>
       <PWAInstallPrompt />
+      {searchParams.get("debug") && <DebugOverlay mode={searchParams.get("debug")!} />}
 
       <Sidebar activeNav={activeNav} onNavClick={navTo} />
       <MobileNav activeNav={activeNav} onNavClick={navTo} />
